@@ -128,7 +128,7 @@ minetest.register_entity("water_life:whale",{
 	physical = true,
 	stepheight = 0.1,				--EVIL!
 	collide_with_objects = true,
-	collisionbox = {-4, -4, -4, 4, 4, 4},
+	collisionbox = {-3, -2, -3, 3, 2, 3},
 	visual = "mesh",
 	mesh = "whale.b3d",
 	textures = {"water_life_whale.png"},
@@ -161,6 +161,20 @@ minetest.register_entity("water_life:whale",{
 		},
 	
 	brainfunc = whale_brain,
+    
+    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if mobkit.is_alive(self) then
+			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
+			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
+			
+			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+
+			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
+				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
+				mobkit.hq_aqua_attack(self,20,puncher,2)				-- get revenge
+			end
+		end
+	end,
 	
 })
 
