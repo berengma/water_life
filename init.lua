@@ -105,9 +105,9 @@ local function spawnstep(dtime)
                     local b=pos2.y
                     local c=pos2.z
                     
-                    local water = minetest.find_nodes_in_area({x=a-4, y=b-4, z=c-4}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
+                    local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
                     
-                    if #water < 200 then return end    -- whales need water, much water
+                    if #water < 800 then return end    -- whales need water, much water
                     local ms = count_whales(pos)
                     local mw = count_whales(pos2)
                     --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..ms.." - "..mw.." abo="..abo.." abr="..abr)
@@ -146,8 +146,8 @@ minetest.register_entity("water_life:whale",{
 	view_range = 32,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 500,
-	timeout=600,
-	attack={range=0.8,damage_groups={fleshy=7}},
+	timeout=300,
+	attack={range=1.5,damage_groups={fleshy=15}},
 	sounds = {
       random = "whale_1",
       death = "whale_1",
@@ -171,7 +171,7 @@ minetest.register_entity("water_life:whale",{
 
 			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
 				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
-				mobkit.hq_aqua_attack(self,20,puncher,2)				-- get revenge
+				mobkit.hq_aqua_attack(self,20,puncher,-3)				-- get revenge
 			end
 		end
 	end,
