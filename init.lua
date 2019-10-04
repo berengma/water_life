@@ -47,7 +47,7 @@ local function whale_brain(self)
 		return
 	end
 	
-	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,-1) end
+	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,20,-1) end
 end
 -- spawning is too specific to be included in the api, this is an example.
 -- a modder will want to refer to specific names according to games/mods they're using 
@@ -109,8 +109,9 @@ local function spawnstep(dtime)
                     
                     if #water < 200 then return end    -- whales need water, much water
                     local ms = count_whales(pos)
-                    --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..ms.." abo="..abo.." abr="..abr)
-                    if ms > maxwhales then return end  -- whales are no sardines
+                    local mw = count_whales(pos2)
+                    --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..ms.." - "..mw.." abo="..abo.." abr="..abr)
+                    if ms > (maxwhales-1) then return end  -- whales are no sardines
 
                     local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
 				end
@@ -127,7 +128,7 @@ minetest.register_entity("water_life:whale",{
 	physical = true,
 	stepheight = 0.1,				--EVIL!
 	collide_with_objects = true,
-	collisionbox = {-0.9, -1.2, -0.9, 0.9, 0.9, 0.9},
+	collisionbox = {-4, -4, -4, 4, 4, 4},
 	visual = "mesh",
 	mesh = "whale.b3d",
 	textures = {"water_life_whale.png"},
