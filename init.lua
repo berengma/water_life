@@ -149,14 +149,15 @@ local function whale_brain(self)
         
         local cpos = mobkit.pos_translate2d(pos,cleft,20)
         local c2pos = mobkit.pos_translate2d(pos,cright,20)
+        cpos = mobkit.pos_shift(cpos,{y=4})
         c2pos = mobkit.pos_shift(c2pos,{y=-4})
         yaw = yaw - pi
         
         local checker= minetest.find_nodes_in_area(cpos,c2pos, {"group:water"})
-        --minetest.chat_send_all(dump(#checker))
-        if #checker < 5 then
+        minetest.chat_send_all(dump(#checker))
+        if #checker < 8 then
             mobkit.clear_queue_high(self)
-            mobkit.hq_aqua_turn(self,30,yaw+(pi/4),-1)
+            mobkit.hq_aqua_turn(self,30,yaw+(pi/8),-0.5)
         end
     end
         
