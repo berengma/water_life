@@ -38,7 +38,96 @@ end
 return whales
 end
 
+local function aqua_radar_dumb(pos,yaw,range,reverse)
+	range = range or 4
+	
+	local function okpos(p)
+		local node = mobkit.nodeatpos(p)
+		if node then 
+			if node.drawtype == 'liquid' then 
+				local nodeu = mobkit.nodeatpos(mobkit.pos_shift(p,{y=1}))
+				local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-1}))
+				if (nodeu and nodeu.drawtype == 'liquid') or (noded and noded.drawtype == 'liquid') then
+					return true
+				else
+					return false
+				end
+			else
+				local h,l = mobkit.get_terrain_height(p)
+				if h then 
+					local node2 = mobkit.nodeatpos({x=p.x,y=h+1.99,z=p.z})
+					if node2 and node2.drawtype == 'liquid' then return true, h end
+				else
+					return false
+				end
+			end
+		else
+			return false
+		end
+	end
+	
+	local fpos = mobkit.pos_translate2d(pos,yaw,range)
+	local ok,h = okpos(fpos)
+	if not ok then
+		local ffrom, fto, fstep
+		if reverse then 
+			ffrom, fto, fstep = 3,1,-1
+		else
+			ffrom, fto, fstep = 1,3,1
+		end
+		for i=ffrom, fto, fstep  do
+			local ok,h = okpos(mobkit.pos_translate2d(pos,yaw+i,range))
+			if ok then return yaw+i,h end
+			ok,h = okpos(mobkit.pos_translate2d(pos,yaw-i,range))
+			if ok then return yaw-i,h end
+		end
+		return yaw+pi,h
+	else 
+		return yaw, h
+	end	
+end
 
+local function big_aqua_roam(self,prty,speed)
+	local tyaw = 0
+	local init = true
+	local prvscanpos = {x=0,y=0,z=0}
+	local center = self.object:get_pos()
+	local func = function(self)
+		if init then
+			mobkit.animate(self,'def')
+			init = false
+		end
+		local pos = mobkit.get_stand_pos(self)
+		local yaw = self.object:get_yaw()
+		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
+		if not vector.equals(prvscanpos,scanpos) then
+			prvscanpos=scanpos
+			local nyaw,height = aqua_radar_dumb(pos,yaw,speed,true)
+			if height and height > pos.y then
+				local vel = self.object:get_velocity()
+				vel.y = vel.y+1
+				self.object:set_velocity(vel)
+			end	
+			if yaw ~= nyaw then
+				tyaw=nyaw
+				mobkit.hq_aqua_turn(self,prty+1,tyaw,speed)
+				return
+			end
+		end
+		if mobkit.timer(self,10) then
+			if vector.distance(pos,center) > abr*16*0.5 then
+				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
+			else
+				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end
+			end
+		end
+		
+		if mobkit.timer(self,20) then mobkit.turn2yaw(self,tyaw,-1) end
+		local yaw = self.object:get_yaw()
+		mobkit.go_forward_horizontal(self,yaw,speed)
+	end
+	mobkit.queue_high(self,func,prty)
+end
 
 local function whale_brain(self)
 	if self.hp <= 0 then	
@@ -51,7 +140,7 @@ local function whale_brain(self)
     -- big animals need to avoid obstacles
     
     
-    if mobkit.timer(self,10) then
+    if mobkit.timer(self,2) then
         local yaw =  self.object:get_yaw() + pi
         local cleft = math.floor((yaw - 0.01)*100)/100
         local cright = math.floor((yaw + 0.01)*100)/100
@@ -67,12 +156,12 @@ local function whale_brain(self)
         --minetest.chat_send_all(dump(#checker))
         if #checker < 5 then
             mobkit.clear_queue_high(self)
-            mobkit.hq_aqua_turn(self,30,yaw+(pi/4),1)
+            mobkit.hq_aqua_turn(self,30,yaw+(pi/4),-1)
         end
     end
         
     
-	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,20,-1) end
+	if mobkit.is_queue_empty_high(self) then big_aqua_roam(self,20,-1) end
 end
 
 
@@ -136,7 +225,7 @@ local function spawnstep(dtime)
                     
                     local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
                     
-                    if #water < 800 then return end    -- whales need water, much water
+                    if #water < 900 then return end    -- whales need water, much water
                     local ms = count_whales(pos)
                     local mw = count_whales(pos2)
                     --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..ms.." - "..mw.." abo="..abo.." abr="..abr)
