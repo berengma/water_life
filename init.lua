@@ -154,7 +154,7 @@ local function whale_brain(self)
         yaw = yaw - pi
         
         local checker= minetest.find_nodes_in_area(cpos,c2pos, {"group:water"})
-        minetest.chat_send_all(dump(#checker))
+        --minetest.chat_send_all(dump(#checker))
         if #checker < 8 then
             mobkit.clear_queue_high(self)
             mobkit.hq_aqua_turn(self,30,yaw+(pi/8),-0.5)
