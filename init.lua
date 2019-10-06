@@ -1,8 +1,8 @@
 
 
 
-local abr = minetest.get_mapgen_setting('active_block_range')
-local abo = minetest.get_mapgen_setting('active_object_send_range_blocks')
+local abr = minetest.get_mapgen_setting('active_block_range') or 1
+local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 2
 local nodename_water = minetest.registered_aliases.mapgen_water_source
 local maxwhales = 1 -- (2 ^ (abo -1)) + 2
 
@@ -140,25 +140,31 @@ local function whale_brain(self)
     -- big animals need to avoid obstacles
     
     
-    if mobkit.timer(self,2) then
+    if mobkit.timer(self,1) then
         local yaw =  self.object:get_yaw() + pi
-        local cleft = math.floor((yaw - 0.01)*100)/100
-        local cright = math.floor((yaw + 0.01)*100)/100
-        
         local pos = mobkit.get_stand_pos(self)
         
-        local cpos = mobkit.pos_translate2d(pos,cleft,20)
-        local c2pos = mobkit.pos_translate2d(pos,cright,20)
-        cpos = mobkit.pos_shift(cpos,{y=4})
-        c2pos = mobkit.pos_shift(c2pos,{y=-4})
+        local spos = mobkit.pos_translate2d(pos,yaw,15)
+                
+        local left = mobkit.pos_shift(spos,{x=-3,y=3,z=-3})
+        local right = mobkit.pos_shift(spos,{x=3,y=3,z=3})
+        
+        
+        local up = mobkit.pos_shift(spos,{x=-1,y=3,z=-1})
+        local down = mobkit.pos_shift(spos,{x=1,y=-2,z=1})
+        
+        
+        
         yaw = yaw - pi
         
-        local checker= minetest.find_nodes_in_area(cpos,c2pos, {"group:water"})
-        --minetest.chat_send_all(dump(#checker))
-        if #checker < 8 then
+        local vcheck= minetest.find_nodes_in_area(up,down, {"group:water"})
+        local hcheck = minetest.find_nodes_in_area(left,right, {"group:water"})
+        --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
+        if #vcheck < 54 or #hcheck < 49 then
             mobkit.clear_queue_high(self)
-            mobkit.hq_aqua_turn(self,30,yaw+(pi/8),-0.5)
+            mobkit.hq_aqua_turn(self,30,yaw+(pi/16),-0.5)
         end
+        
     end
         
     
