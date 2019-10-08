@@ -87,6 +87,18 @@ local function aqua_radar_dumb(pos,yaw,range,reverse)
 	end	
 end
 
+
+local function big_hq_aqua_turn(self,prty,tyaw,speed)
+	local func = function(self)
+		local finished=mobkit.turn2yaw(self,tyaw,0.4)
+		if finished then return true end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+
+
 local function big_aqua_roam(self,prty,speed)
 	local tyaw = 0
 	local init = true
@@ -129,7 +141,42 @@ local function big_aqua_roam(self,prty,speed)
 	mobkit.queue_high(self,func,prty)
 end
 
+
+local function chose_turn(self,pos,yaw)
+    
+    local remember = mobkit.recall(self,"turn") or "0"
+    local clockpos = mobkit.pos_translate2d(pos,yaw+(pi/4),10)
+    local clockpos1 = mobkit.pos_shift(clockpos,{x=-3,y=-2,z=-3})
+    clockpos = mobkit.pos_shift(clockpos,{x=3,y=3,z=3})
+    local revpos = mobkit.pos_translate2d(pos,yaw-(pi/4),10)
+    local revpos1 = mobkit.pos_shift(revpos,{x=-3,y=-2,z=-3})
+    revpos = mobkit.pos_shift(revpos,{x=3,y=3,z=3})
+    
+    local ccheck= minetest.find_nodes_in_area(clockpos,clockpos1, {"group:water"})
+    local rcheck = minetest.find_nodes_in_area(revpos,revpos1, {"group:water"})
+    --minetest.chat_send_all(dump(#rcheck).." : "..dump(#ccheck).."    "..dump(remember).."     --> "..dump(self.isonground))
+    local a = #ccheck
+    local b = #rcheck
+    
+    if a > b+25 then 
+        mobkit.remember(self,"turn", "1")
+        return false
+        
+    elseif a < b-25 then
+        mobkit.remember(self,"turn","0")
+        return true
+        
+    else 
+        
+        if remember == "0" then return true else return false end
+    
+    end
+end
+    
+
+
 local function whale_brain(self)
+    
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
 		mobkit.hq_die(self)
@@ -157,12 +204,18 @@ local function whale_brain(self)
         
         yaw = yaw - pi
         
+        
         local vcheck= minetest.find_nodes_in_area(up,down, {"group:water"})
         local hcheck = minetest.find_nodes_in_area(left,right, {"group:water"})
         --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
         if #vcheck < 54 or #hcheck < 49 then
             mobkit.clear_queue_high(self)
-            mobkit.hq_aqua_turn(self,30,yaw+(pi/16),-0.5)
+            if chose_turn(self,pos,yaw) then
+                big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
+            else
+                big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
+            end
+           
         end
         
     end
@@ -291,13 +344,11 @@ minetest.register_entity("water_life:whale",{
 		if mobkit.is_alive(self) then
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
 			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
+            self.object:add_velocity({x=0,y=-5, z=0})
 			
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 
-			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
-				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
-				mobkit.hq_aqua_attack(self,20,puncher,-3)				-- get revenge
-			end
+			
 		end
 	end,
 	
