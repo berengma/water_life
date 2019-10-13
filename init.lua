@@ -1,6 +1,11 @@
+water_life = {}
 
 math.randomseed(os.time()) --init random seed
 
+
+local path = minetest.get_modpath(minetest.get_current_modname())
+
+dofile(path.."/api.lua") -- load water_life api
 
 
 minetest.register_entity(":sharks:shark", {
@@ -28,10 +33,15 @@ local sign = math.sign
 
 local time = os.time
 
-local whale_spawn_rate =  0.1
+local whale_spawn_rate =  0.05
 local shark_spawn_rate =  0.2
 
 
+
+-------------------
+-- Helper Functions
+-------------------
+        
 
 
 local function leftorright()
@@ -221,77 +231,17 @@ end
     
 
 
-local function whale_brain(self)
-    
-	if self.hp <= 0 then	
-		mobkit.clear_queue_high(self)
-		mobkit.hq_die(self)
-		return
-	end
-    
-    
-    
-    -- big animals need to avoid obstacles
-    
-    
-    if mobkit.timer(self,1) then
-        local remember = mobkit.recall(self,"time")
-        if remember then
-            if self.time_total - remember > 59 then
-                mobkit.forget(self,"turn")
-                mobkit.forget(self,"time")
-                
-            end
-        end
-        local yaw =  self.object:get_yaw() + pi
-        local pos = mobkit.get_stand_pos(self)
-        
-        local spos = mobkit.pos_translate2d(pos,yaw,15)
-                
-        local left = mobkit.pos_shift(spos,{x=-3,y=3,z=-3})
-        local right = mobkit.pos_shift(spos,{x=3,y=3,z=3})
-        
-        
-        local up = mobkit.pos_shift(spos,{x=-1,y=3,z=-1})
-        local down = mobkit.pos_shift(spos,{x=1,y=-2,z=1})
-        
-        
-        
-        yaw = yaw - pi
-        
-        
-        local vcheck= minetest.find_nodes_in_area(up,down, {"group:water","default:sand_with_kelp"})
-        local hcheck = minetest.find_nodes_in_area(left,right, {"group:water","default:sand_with_kelp"})
-        --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
-        if #vcheck < 54 or #hcheck < 49 then
-            mobkit.clear_queue_high(self)
-            if chose_turn(self,pos,yaw) then
-                big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
-            else
-                big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
-            end
-           
-        end
-        
-    end
-        
-    
-	if mobkit.is_queue_empty_high(self) then big_aqua_roam(self,20,-1) end
-    --minetest.chat_send_all(dump(self))
-    
-end
 
-
-
-
--- spawning is too specific to be included in the api, this is an example.
--- a modder will want to refer to specific names according to games/mods they're using 
--- in order for mobs not to spawn on treetops, certain biomes etc.
+-----------------
+-- Spawn Function
+-----------------
+        
 
 local function spawnstep(dtime)
 
 	for _,plyr in ipairs(minetest.get_connected_players()) do
-		if random()<dtime*0.2 then	-- each player gets a spawn chance every 5s on average
+        --minetest.chat_send_all(dump(dtime*0.2))
+		if random()<dtime*0.1 then	-- each player gets a spawn chance every 5s on average
 			local vel = plyr:get_player_velocity()
 			local spd = vector.length(vel)
 			local chance = shark_spawn_rate * 1/(spd*0.75+1)  -- chance is quadrupled for speed=4
@@ -381,73 +331,81 @@ end
 
 
 
-
-minetest.register_entity("water_life:whale",{
-											-- common props
-	physical = true,
-	stepheight = 0.1,				--EVIL!
-    weight = 250,
-	collide_with_objects = true,
-	collisionbox = {-3, -2, -3, 3, 2, 3},
-	visual = "mesh",
-	mesh = "water_life_whale.b3d",
-	textures = {"water_life_whale.png"},
-	visual_size = {x = 3.5, y = 3.5},
-	static_save = true,
-	makes_footstep_sound = true,
-	on_step = mobkit.stepfunc,	-- required
-	on_activate = mobkit.actfunc,		-- required
-	get_staticdata = mobkit.statfunc,
-											-- api props
-	springiness=0,
-	buoyancy = 0.98,					-- portion of hitbox submerged
-	max_speed = -1,                        -- no matter which number is here, whales always at same speed
-	jump_height = 1.26,
-	view_range = 32,
---	lung_capacity = 0, 		-- seconds
-	max_hp = 500,
-	timeout=300,
-	attack={range=1.5,damage_groups={fleshy=15}},
-	sounds = {
-      random = "water_life_whale",
-      death = "water_life_whale",
-      distance = 50,
-	},
-    
-	animation = {
-		def={range={x=1,y=59},speed=5,loop=true},	
-		fast={range={x=1,y=59},speed=20,loop=true},
-		back={range={x=15,y=1},speed=7,loop=false},
-		},
-	
-	brainfunc = whale_brain,
-    
-    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		if mobkit.is_alive(self) then
-			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
-			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
-            self.object:add_velocity({x=0,y=-5, z=0})
-			
-			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
-
-			
-		end
-	end,
-	
-})
-
 minetest.register_globalstep(spawnstep)
 
 
 
+-------------
+-- The Brains
+-------------
 
---sharks
+local function whale_brain(self)
+    
+	if self.hp <= 0 then	
+		mobkit.clear_queue_high(self)
+        water_life.handle_drops(self)
+		mobkit.hq_die(self)
+		return
+	end
+    
+    
+    
+    -- big animals need to avoid obstacles
+    
+    
+    if mobkit.timer(self,1) then
+        local remember = mobkit.recall(self,"time")
+        if remember then
+            if self.time_total - remember > 59 then
+                mobkit.forget(self,"turn")
+                mobkit.forget(self,"time")
+                
+            end
+        end
+        local yaw =  self.object:get_yaw() + pi
+        local pos = mobkit.get_stand_pos(self)
+        
+        local spos = mobkit.pos_translate2d(pos,yaw,15)
+                
+        local left = mobkit.pos_shift(spos,{x=-3,y=3,z=-3})
+        local right = mobkit.pos_shift(spos,{x=3,y=3,z=3})
+        
+        
+        local up = mobkit.pos_shift(spos,{x=-1,y=3,z=-1})
+        local down = mobkit.pos_shift(spos,{x=1,y=-2,z=1})
+        
+        
+        
+        yaw = yaw - pi
+        
+        
+        local vcheck= minetest.find_nodes_in_area(up,down, {"group:water","default:sand_with_kelp"})
+        local hcheck = minetest.find_nodes_in_area(left,right, {"group:water","default:sand_with_kelp"})
+        --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
+        if #vcheck < 54 or #hcheck < 49 then
+            mobkit.clear_queue_high(self)
+            if chose_turn(self,pos,yaw) then
+                big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
+            else
+                big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
+            end
+           
+        end
+        
+    end
+        
+    
+	if mobkit.is_queue_empty_high(self) then big_aqua_roam(self,20,-1) end
+    --minetest.chat_send_all(dump(self))
+    
+end
 
 
 
 local function shark_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
+        water_life.handle_drops(self)
 		mobkit.hq_die(self)
 		return
 	end
@@ -482,18 +440,92 @@ local function shark_brain(self)
 	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,5) end
 end
 
+---------------
+-- the Entities
+---------------
+        
+minetest.register_entity("water_life:whale",{
+											-- common props
+	physical = true,
+	stepheight = 0.1,				--EVIL!
+    	weight = 250,
+	collide_with_objects = false,
+	collisionbox = {-3, -2, -3, 3, 2, 3},
+	visual = "mesh",
+	mesh = "water_life_whale.b3d",
+	textures = {"water_life_whale.png"},
+	visual_size = {x = 3.5, y = 3.5},
+    drops = {
+		{name = "default:diamond", chance = 5, min = 10, max = 50,},		
+		{name = "farming:bread", chance = 2, min = 15, max = 65,},
+	},
+	static_save = false,
+	makes_footstep_sound = true,
+	on_step = mobkit.stepfunc,	-- required
+	on_activate = mobkit.actfunc,		-- required
+	get_staticdata = mobkit.statfunc,
+											-- api props
+	springiness=0,
+	buoyancy = 0.98,					-- portion of hitbox submerged
+	max_speed = -1,                        -- no matter which number is here, whales always at same speed
+	jump_height = 1.26,
+	view_range = 32,
+--	lung_capacity = 0, 		-- seconds
+	max_hp = 500,
+	timeout=300,
+	attack={range=1.5,damage_groups={fleshy=15}},
+	sounds = {
+      random = "water_life_whale",
+      death = "water_life_whale",
+      distance = 50,
+	},
+    
+	animation = {
+		def={range={x=1,y=59},speed=5,loop=true},	
+		fast={range={x=1,y=59},speed=20,loop=true},
+		back={range={x=15,y=1},speed=7,loop=false},
+		},
+	
+	brainfunc = whale_brain,
+    
+    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if mobkit.is_alive(self) then
+            local obj = self.object
+			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
+			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
+            self.object:add_velocity({x=0,y=-5, z=0})
+            
+            if time_from_last_punch > 2 then
+                mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+            else
+                if puncher:is_player() then
+                    minetest.chat_send_player(puncher:get_player_name(),">>> Slowly, your are already exhausted <<<")
+                end
+            end
+            
+            
+			obj:set_nametag_attributes({
+                color = '#ff7373',
+                text = ">>> "..tostring(math.floor(self.hp/5)).."% <<<",
+                })
+		end
+	end,
+	
+})
+
+
 
 minetest.register_entity("water_life:shark",{
 											-- common props
 	physical = true,
 	stepheight = 0.1,				--EVIL!
-	collide_with_objects = true,
+	collide_with_objects = false,
 	collisionbox = {-0.5, -0.3, -0.5, 0.5, 0.3, 0.5},
 	visual = "mesh",
 	mesh = "water_life_shark.b3d",
 	textures = {"water_life_shark3tex.png"},
 	visual_size = {x = 1.5, y = 1.5},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -507,6 +539,10 @@ minetest.register_entity("water_life:shark",{
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
 	timeout=60,
+	drops = {
+		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
+		{name = "farming:bread", chance = 2, min = 1, max = 5,},
+	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	sounds = {
 		attack='water_life_sharkattack',
