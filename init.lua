@@ -33,8 +33,8 @@ local sign = math.sign
 
 local time = os.time
 
-local whale_spawn_rate =  0.05
-local shark_spawn_rate =  0.2
+local whale_spawn_rate =  0.005
+local shark_spawn_rate =  0.02
 
 
 
@@ -140,7 +140,6 @@ end
 
 
 
-
 local function big_aqua_roam(self,prty,speed)
 	local tyaw = 0
 	local init = true
@@ -177,8 +176,8 @@ local function big_aqua_roam(self,prty,speed)
 		end
 		
 		if mobkit.timer(self,20) then mobkit.turn2yaw(self,tyaw,-1) end
-		local yaw = self.object:get_yaw()
-		mobkit.go_forward_horizontal(self,yaw,speed)
+		--local yaw = self.object:get_yaw()
+		mobkit.go_forward_horizontal(self,speed)
 	end
 	mobkit.queue_high(self,func,prty)
 end
@@ -307,7 +306,7 @@ local function spawnstep(dtime)
             --- OLD
 				
 				if whale_spawn_rate < random() then
-					pos2.y = height+3.01
+					pos2.y = height+4.01
                     
 					mobname = 'water_life:whale'
                     local a=pos2.x
@@ -383,7 +382,7 @@ local function whale_brain(self)
         local hcheck = minetest.find_nodes_in_area(left,right, {"group:water","default:sand_with_kelp"})
         --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
         if #vcheck < 54 or #hcheck < 49 then
-            mobkit.clear_queue_high(self)
+            --mobkit.clear_queue_high(self)
             if chose_turn(self,pos,yaw) then
                 big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
             else
@@ -467,16 +466,16 @@ minetest.register_entity("water_life:whale",{
 											-- api props
 	springiness=0,
 	buoyancy = 0.98,					-- portion of hitbox submerged
-	max_speed = -1,                        -- no matter which number is here, whales always at same speed
+	max_speed = -1,                        
 	jump_height = 1.26,
 	view_range = 32,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 500,
 	timeout=300,
-	attack={range=1.5,damage_groups={fleshy=15}},
+	attack={range=4.5,damage_groups={fleshy=15}},
 	sounds = {
-      random = "water_life_whale",
-      death = "water_life_whale",
+      random = "water_life_whale.ogg",
+      death = "water_life_whale.ogg",
       distance = 50,
 	},
     
@@ -492,14 +491,17 @@ minetest.register_entity("water_life:whale",{
 		if mobkit.is_alive(self) then
             local obj = self.object
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
-			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
-            self.object:add_velocity({x=0,y=-5, z=0})
+                                             
+            
+                self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
+                self.object:add_velocity({x=0,y=-5, z=0})
+            
             
             if time_from_last_punch > 2 then
                 mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
             else
                 if puncher:is_player() then
-                    minetest.chat_send_player(puncher:get_player_name(),">>> Slowly, your are already exhausted <<<")
+                    minetest.chat_send_player(puncher:get_player_name(),">>> You missed <<<")
                 end
             end
             
