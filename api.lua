@@ -19,3 +19,14 @@ function water_life.handle_drops(self)
         
     end
 end
+
+
+function water_life.register_shark_food(name)
+    table.insert(water_life.shark_food,name)
+end
+
+
+function water_life.feed_shark()
+    local index = math.random(1,#water_life.shark_food)
+    return water_life.shark_food[index]
+end

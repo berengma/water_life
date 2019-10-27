@@ -1,4 +1,6 @@
 water_life = {}
+water_life.shark_food = {}
+
 
 math.randomseed(os.time()) --init random seed
 
@@ -6,6 +8,12 @@ math.randomseed(os.time()) --init random seed
 local path = minetest.get_modpath(minetest.get_current_modname())
 
 dofile(path.."/api.lua") -- load water_life api
+
+
+if minetest.get_modpath("wildlife") then
+    water_life.register_shark_food("wildlife:deer")
+    water_life.register_shark_food("wildlife:wolf")
+end
 
 
 minetest.register_entity(":sharks:shark", {
@@ -425,7 +433,8 @@ local function shark_brain(self)
         local prty = mobkit.get_queue_priority(self)
 		if prty < 20 then
 			local target = mobkit.get_nearby_player(self)
-			local food = mobkit.get_nearby_entity(self,"wildlife:deer")
+            local foodname = water_life.feed_shark()
+			local food = mobkit.get_nearby_entity(self,foodname)
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) then
 				mobkit.hq_aqua_attack(self,20,target,7)
 			end
