@@ -7,12 +7,13 @@ math.randomseed(os.time()) --init random seed
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
-dofile(path.."/api.lua") -- load water_life api
-
+dofile(path.."/api.lua")                -- load water_life api
+dofile(path.."/crafts.lua")             -- load crafts
 
 if minetest.get_modpath("wildlife") then
     water_life.register_shark_food("wildlife:deer")
     water_life.register_shark_food("wildlife:wolf")
+    
 end
 
 
@@ -448,6 +449,19 @@ local function shark_brain(self)
 	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,5) end
 end
 
+
+local function fish_brain(self)
+	if self.hp <= 0 then	
+		mobkit.clear_queue_high(self)
+        water_life.handle_drops(self)
+		mobkit.hq_die(self)
+		return
+	end
+	
+	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+end
+
+
 ---------------
 -- the Entities
 ---------------
@@ -465,7 +479,7 @@ minetest.register_entity("water_life:whale",{
 	visual_size = {x = 3.5, y = 3.5},
     drops = {
 		{name = "default:diamond", chance = 5, min = 10, max = 50,},		
-		{name = "farming:bread", chance = 2, min = 15, max = 65,},
+		{name = "water_life:meat_raw", chance = 1, min = 15, max = 65,},
 	},
 	static_save = false,
 	makes_footstep_sound = true,
@@ -552,7 +566,7 @@ minetest.register_entity("water_life:shark",{
 	timeout=60,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
-		{name = "farming:bread", chance = 2, min = 1, max = 5,},
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	sounds = {
@@ -580,3 +594,43 @@ minetest.register_entity("water_life:shark",{
 		end
 	end,
 })
+
+
+minetest.register_entity("water_life:fish",{
+											-- common props
+	physical = true,
+	stepheight = 0.1,				--EVIL!
+	collide_with_objects = false,
+	collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
+	visual = "mesh",
+	mesh = "water_life_fish.b3d",
+	textures = {"water_life_fish.png"},
+	visual_size = {x = 0.5, y = 0.5},
+	static_save = false,
+	makes_footstep_sound = true,
+	on_step = mobkit.stepfunc,	-- required
+	on_activate = mobkit.actfunc,		-- required
+	get_staticdata = mobkit.statfunc,
+											-- api props
+	springiness=0,
+	buoyancy = 0.98,					-- portion of hitbox submerged
+	max_speed = 1,                        -- no matter which number is here, sharks always at same speed
+	jump_height = 1.26,
+	view_range = 32,
+--	lung_capacity = 0, 		-- seconds
+	max_hp = 25,
+	timeout=60,
+	drops = {
+		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
+	},
+	brainfunc = fish_brain,
+    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if mobkit.is_alive(self) then
+						
+			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+
+		end
+	end,
+})
+
