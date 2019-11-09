@@ -24,11 +24,12 @@ minetest.register_entity(":sharks:shark", {
     })
 
 
-local abr = minetest.get_mapgen_setting('active_block_range') or 1
-local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 2
+local abr = minetest.get_mapgen_setting('active_block_range') or 2
+local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 local nodename_water = minetest.registered_aliases.mapgen_water_source
 local maxwhales = 1 
-local maxsharks = (2 ^ (abr -1)) + 1
+local maxsharks = abo * 2
+local maxmobs = 30
 
 local abs = math.abs
 local pi = math.pi
@@ -248,7 +249,12 @@ end
 local function spawnstep(dtime)
 
 	for _,plyr in ipairs(minetest.get_connected_players()) do
-        --minetest.chat_send_all(dump(dtime*0.2))
+        
+        local pos = plyr:get_pos()
+        local all_objects = minetest.get_objects_inside_radius(pos, abo * 16)
+        
+        --minetest.chat_send_all("abo = "..dump(abo).."   mobs: "..dump(#all_objects))
+        if #all_objects > maxmobs then break end
 		if random()<dtime*0.1 then	-- each player gets a spawn chance every 5s on average
 			local vel = plyr:get_player_velocity()
 			local spd = vector.length(vel)
@@ -261,8 +267,8 @@ local function spawnstep(dtime)
 				-- random yaw
 				yaw = random()*pi*2 - pi
 			end
-			local pos = plyr:get_pos()
-			local dir = vector.multiply(minetest.yaw_to_dir(yaw),abr*16)
+			
+			local dir = vector.multiply(minetest.yaw_to_dir(yaw),abo*16*0.75)
 			local pos2 = vector.add(pos,dir)
 			pos2.y=pos2.y-5
 			local height, liquidflag = mobkit.get_terrain_height(pos2,32)
@@ -277,10 +283,11 @@ local function spawnstep(dtime)
                 
                 --NEW
                 
-        
-				local objs = minetest.get_objects_inside_radius(pos,abr*16+5)
+            --[[
+				local objs = minetest.get_objects_inside_radius(pos,abo*16+5)
 				local wcnt=0
 				local dcnt=0
+                ]]
 				
 				if liquidflag then		-- sharks
 					local spnode = mobkit.nodeatpos({x=pos2.x,y=height+0.01,z=pos2.z})
@@ -304,7 +311,7 @@ local function spawnstep(dtime)
                     local water = minetest.find_nodes_in_area({x=a-4, y=b-4, z=c-4}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
                     
                     if #water < 128 then return end    -- sharks need water, much water
-                    local ms = count_sharks(pos2)
+                    local ms = count_sharks(pos)
                     --minetest.chat_send_all("Maxsharks = "..maxsharks.."  counted: "..ms.." abo="..abo.." abr="..abr)
                     if ms > (maxsharks-1) then return end  -- sharks are no sardines
 
@@ -326,9 +333,10 @@ local function spawnstep(dtime)
                     
                     if #water < 900 then return end    -- whales need water, much water
                     
-                    local mw = count_whales(pos2)
+                    local mw = count_whales(pos)
                     --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..mw.." abo="..abo.." abr="..abr)
-                    if mw > (maxwhales-1) then return end  -- whales are no sardines
+                    if mw > (maxwhales-1) then return end -- whales are no sardines
+                    
 
                     local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
 				end
@@ -356,6 +364,15 @@ local function whale_brain(self)
 		return
 	end
     
+    local stand = mobkit.get_stand_pos(self)
+    if stand then stand.y = stand.y - 1 end
+        
+    local node = mobkit.nodeatpos(stand)
+    if node then 
+        if node.name ~= "default:water_source" then
+            mobkit.hurt(self, 1)
+        end
+    end
     
     
     -- big animals need to avoid obstacles
@@ -558,9 +575,9 @@ minetest.register_entity("water_life:shark",{
 											-- api props
 	springiness=0,
 	buoyancy = 0.98,					-- portion of hitbox submerged
-	max_speed = 7,                        -- no matter which number is here, sharks always at same speed
+	max_speed = 7,                        
 	jump_height = 1.26,
-	view_range = 32,
+	view_range = sqrt(abo) * 16,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
 	timeout=60,
@@ -569,9 +586,9 @@ minetest.register_entity("water_life:shark",{
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
-	sounds = {
-		attack='water_life_sharkattack',
-		},
+	--sounds = {
+	--	attack='water_life_sharkattack',
+	--	},
 	animation = {
 		def={range={x=1,y=59},speed=40,loop=true},	
 		fast={range={x=1,y=59},speed=80,loop=true},
@@ -603,7 +620,7 @@ minetest.register_entity("water_life:fish",{
 	collide_with_objects = false,
 	collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
 	visual = "mesh",
-	mesh = "water_life_fish.b3d",
+	mesh = "water_life_fishb.b3d",
 	textures = {"water_life_fish.png"},
 	visual_size = {x = 0.5, y = 0.5},
 	static_save = false,
