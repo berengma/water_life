@@ -17,18 +17,24 @@ if minetest.get_modpath("wildlife") then
 end
 
 
+--remove old sharks
 minetest.register_entity(":sharks:shark", {
         on_activate = function(self, staticdata)
             self.object:remove()
         end,
     })
 
+minetest.register_entity(":zombiestrd:shark", {
+        on_activate = function(self, staticdata)
+            self.object:remove()
+        end,
+    })
 
 local abr = minetest.get_mapgen_setting('active_block_range') or 2
 local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 local nodename_water = minetest.registered_aliases.mapgen_water_source
 local maxwhales = 1 
-local maxsharks = abo * 2
+local maxsharks = abo/2
 local maxmobs = 30
 
 local abs = math.abs
@@ -43,8 +49,8 @@ local sign = math.sign
 
 local time = os.time
 
-local whale_spawn_rate =  0.005
-local shark_spawn_rate =  0.02
+local whale_spawn_rate =  0.01
+local shark_spawn_rate =  0.03
 
 
 
@@ -59,36 +65,25 @@ local function leftorright()
     if rnd > 0.5 then return true else return false end
 end
 
--- count sharks at position
-local function count_sharks(pos)
 
-local all_objects = minetest.get_objects_inside_radius(pos, abo * 16)
-local sharks = 0
-local _,obj
-for _,obj in ipairs(all_objects) do
-    local entity = obj:get_luaentity()
-	if entity and entity.name == "water_life:shark" then
-		sharks = sharks +1
-	end
-end
-return sharks
-end
-
-
--- count whales at position
-local function count_whales(pos)
+-- count objects at position
+local function count_objects(pos)
 
 local all_objects = minetest.get_objects_inside_radius(pos, abo * 16)
 local whales = 0
+local sharks = 0
 local _,obj
 for _,obj in ipairs(all_objects) do
     local entity = obj:get_luaentity()
 	if entity and entity.name == "water_life:whale" then
 		whales = whales +1
+    elseif entity and entity.name == "water_life:shark" then
+		sharks = sharks +1
 	end
 end
-return whales
+return whales,sharks,#all_objects
 end
+
 
 local function aqua_radar_dumb(pos,yaw,range,reverse)
 	range = range or 4
@@ -250,96 +245,70 @@ local function spawnstep(dtime)
 
 	for _,plyr in ipairs(minetest.get_connected_players()) do
         
-        local pos = plyr:get_pos()
-        local all_objects = minetest.get_objects_inside_radius(pos, abo * 16)
         
-        --minetest.chat_send_all("abo = "..dump(abo).."   mobs: "..dump(#all_objects))
-        if #all_objects > maxmobs then break end
-		if random()<dtime*0.1 then	-- each player gets a spawn chance every 5s on average
-			local vel = plyr:get_player_velocity()
-			local spd = vector.length(vel)
-			local chance = shark_spawn_rate * 1/(spd*0.75+1)  -- chance is quadrupled for speed=4
-			local yaw
-			if spd > 1 then
-				-- spawn in the front arc
-				yaw = minetest.dir_to_yaw(vel) + random()*0.35 - 0.75
-			else
-				-- random yaw
-				yaw = random()*pi*2 - pi
-			end
-			
-			local dir = vector.multiply(minetest.yaw_to_dir(yaw),abo*16*0.75)
-			local pos2 = vector.add(pos,dir)
-			pos2.y=pos2.y-5
-			local height, liquidflag = mobkit.get_terrain_height(pos2,32)
+		if plyr and random()<dtime*0.1 then	-- each player gets a spawn chance every 5s on average
+            local pos = plyr:get_pos()
+            local yaw = plyr:get_look_horizontal()
+            local chance = shark_spawn_rate
             
-            if not liquidflag then return end
+            local mw, ms, all_objects = count_objects(pos)
+        
+            --minetest.chat_send_all("yaw = "..dump(yaw).."   mobs: "..dump(all_objects).."  sharks: "..dump(ms).."  whales: "..dump(mw))
+            if all_objects > maxmobs then break end
+            
+            -- find a pos randomly in look direction of player
+            local radius = (abo * 12) - 1                                           -- 75% from 16 = 12 nodes
+            radius = math.random(7,radius)
+            local angel = math.random() * (pi/4)                                    -- look for random angel 0 - 45 degrees
+            if leftororight then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
+            
+            local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
+            
+            
+			local height, liquidflag = mobkit.get_terrain_height(pos2,32)
 	
-			if height and mobkit.nodeatpos({x=pos2.x,y=height-0.01,z=pos2.z}).is_ground_content then
+			if height and liquidflag then
+                
 
 				
-				local mobname = 'water_life:whale'
-                
-                
-                --NEW
-                
-            --[[
-				local objs = minetest.get_objects_inside_radius(pos,abo*16+5)
-				local wcnt=0
-				local dcnt=0
-                ]]
-				
-				if liquidflag then		-- sharks
-					local spnode = mobkit.nodeatpos({x=pos2.x,y=height+0.01,z=pos2.z})
-					local spnode2 = mobkit.nodeatpos({x=pos2.x,y=height+1.01,z=pos2.z}) -- node above to make sure won't spawn in shallows
-					nodename_water = nodename_water or minetest.registered_aliases.mapgen_water_source
-					if spnode and spnode2 and spnode.name == nodename_water and spnode2.name == nodename_water then
-						
-					mobname = 'water_life:shark'
-					
-					end
-					
-				
-				end
-				if chance < random() then
-					pos2.y = height+1.01
-					
-                    local a=pos2.x
-                    local b=pos2.y
-                    local c=pos2.z
                     
-                    local water = minetest.find_nodes_in_area({x=a-4, y=b-4, z=c-4}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
+                    local mobname = 'water_life:shark'
+                    if chance < random() then
+                        pos2.y = height+1.01
+                        
+                        local a=pos2.x
+                        local b=pos2.y
+                        local c=pos2.z
+                        
+                        local water = minetest.find_nodes_in_area({x=a-3, y=b-3, z=c-3}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
+                        
+                        if #water < 128 then break end    -- sharks need water, much water
                     
-                    if #water < 128 then return end    -- sharks need water, much water
-                    local ms = count_sharks(pos)
-                    --minetest.chat_send_all("Maxsharks = "..maxsharks.."  counted: "..ms.." abo="..abo.." abr="..abr)
-                    if ms > (maxsharks-1) then return end  -- sharks are no sardines
+                        if ms > (maxsharks-1) then break end  -- sharks are no sardines
 
-                    local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                        local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                        
+                    end
+                
                     
-				end
-			
-            --- OLD
-				
-				if whale_spawn_rate < random() then
-					pos2.y = height+4.01
-                    
-					mobname = 'water_life:whale'
-                    local a=pos2.x
-                    local b=pos2.y
-                    local c=pos2.z
-                    
-                    local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
-                    
-                    if #water < 900 then return end    -- whales need water, much water
-                    
-                    local mw = count_whales(pos)
-                    --minetest.chat_send_all("Maxwhales = "..maxwhales.."  counted: "..mw.." abo="..abo.." abr="..abr)
-                    if mw > (maxwhales-1) then return end -- whales are no sardines
-                    
+                    if whale_spawn_rate < random() then
+                        pos2.y = height+4.01
+                        
+                        mobname = 'water_life:whale'
+                        local a=pos2.x
+                        local b=pos2.y
+                        local c=pos2.z
+                        
+                        local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
+                        
+                        if #water < 900 then break end    -- whales need water, much water
+                        
+                        if mw > (maxwhales-1) then break end -- whales are no sardines
+                        
 
-                    local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
-				end
+                        local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                    end
+                
 			end
 		end
 	end
@@ -364,6 +333,7 @@ local function whale_brain(self)
 		return
 	end
     
+    -- check every 2 seconds what is under whale's belly
     if mobkit.timer(self,2) then
         local stand = mobkit.get_stand_pos(self)
         if stand then stand.y = stand.y - 1 end
@@ -423,7 +393,6 @@ local function whale_brain(self)
         
     
 	if mobkit.is_queue_empty_high(self) then big_aqua_roam(self,20,-1) end
-    --minetest.chat_send_all(dump(self))
     
 end
 
@@ -456,7 +425,7 @@ local function shark_brain(self)
             		local foodname = water_life.feed_shark()
 			local food = mobkit.get_nearby_entity(self,foodname)
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
-				mobkit.hq_aqua_attack(self,20,target,7)
+				mobkit.hq_aqua_attack(self,20,target,9)
 			end
 
 			if food and mobkit.is_in_deep(food) then
@@ -577,9 +546,9 @@ minetest.register_entity("water_life:shark",{
 											-- api props
 	springiness=0,
 	buoyancy = 0.98,					-- portion of hitbox submerged
-	max_speed = 7,                        
+	max_speed = 9,                        
 	jump_height = 1.26,
-	view_range = sqrt(abo) * 16,
+	view_range = abo * 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
 	timeout=60,
@@ -648,6 +617,7 @@ minetest.register_entity("water_life:fish",{
 		if mobkit.is_alive(self) then
 						
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+            mobkit.hq_runfrom(self, 50, puncherj)
 
 		end
 	end,
