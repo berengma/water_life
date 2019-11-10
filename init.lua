@@ -364,13 +364,15 @@ local function whale_brain(self)
 		return
 	end
     
-    local stand = mobkit.get_stand_pos(self)
-    if stand then stand.y = stand.y - 1 end
-        
-    local node = mobkit.nodeatpos(stand)
-    if node then 
-        if node.name ~= "default:water_source" then
-            mobkit.hurt(self, 1)
+    if mobkit.timer(self,2) then
+        local stand = mobkit.get_stand_pos(self)
+        if stand then stand.y = stand.y - 1 end
+            
+        local node = mobkit.nodeatpos(stand)
+        if node then 
+            if node.name ~= "default:water_source" then
+                mobkit.hurt(self, 20)
+            end
         end
     end
     
