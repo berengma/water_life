@@ -163,7 +163,7 @@ local function big_aqua_roam(self,prty,speed)
 			local nyaw,height = aqua_radar_dumb(pos,yaw,speed,true)
 			if height and height > pos.y then
 				local vel = self.object:get_velocity()
-				vel.y = vel.y+1
+				vel.y = vel.y+0.1
 				self.object:set_velocity(vel)
 			end	
 			if yaw ~= nyaw then
@@ -173,7 +173,7 @@ local function big_aqua_roam(self,prty,speed)
 			end
 		end
 		if mobkit.timer(self,10) then
-			if vector.distance(pos,center) > abr*16*0.5 then
+			if vector.distance(pos,center) > abo*16*0.5 then
 				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
 			else
 				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end
@@ -363,6 +363,11 @@ local function whale_brain(self)
         local pos = mobkit.get_stand_pos(self)
         
         local spos = mobkit.pos_translate2d(pos,yaw,15)
+        local hpos = mobkit.pos_translate2d(pos,yaw,6)
+        local head = mobkit.pos_shift(hpos,{y=4})
+        local node = minetest.get_node(head)
+        
+        
                 
         local left = mobkit.pos_shift(spos,{x=-3,y=3,z=-3})
         local right = mobkit.pos_shift(spos,{x=3,y=3,z=3})
@@ -374,6 +379,18 @@ local function whale_brain(self)
         
         
         yaw = yaw - pi
+        
+        
+        
+        if node then
+            local def = minetest.registered_nodes[node.name]
+            
+            --minetest.chat_send_all(dump(def.is_ground_content))
+            if def.is_ground_content and node.name ~= "air" then 
+                local hvel = vector.multiply(vector.normalize({x=head.x,y=0,z=head.z}),4)
+                self.object:set_velocity({x=hvel.x,y=-1,z=hvel.z})
+            end
+        end
         
         
         local vcheck= minetest.find_nodes_in_area(up,down, {"group:water","default:sand_with_kelp"})
