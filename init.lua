@@ -50,8 +50,8 @@ local sign = math.sign
 
 local time = os.time
 
-local whale_spawn_rate =  50
-local shark_spawn_rate =  150
+local whale_spawn_rate =  30
+local shark_spawn_rate =  100
 
 
 
@@ -390,19 +390,17 @@ local function whale_brain(self)
         
         
         
-        if node then
-            local def = minetest.registered_nodes[node.name]
+        if node then -- anything above head ? dive.
             
-            --minetest.chat_send_all(dump(def.is_ground_content))
-            if def.is_ground_content and node.name ~= "air" then 
+            if node.name ~= "default:water_source" and node.name ~= "air" then 
                 local hvel = vector.multiply(vector.normalize({x=head.x,y=0,z=head.z}),4)
                 self.object:set_velocity({x=hvel.x,y=-1,z=hvel.z})
             end
         end
         
         
-        local vcheck= minetest.find_nodes_in_area(up,down, {"group:water","default:sand_with_kelp"})
-        local hcheck = minetest.find_nodes_in_area(left,right, {"group:water","default:sand_with_kelp"})
+        local vcheck= minetest.find_nodes_in_area(up,down, {"default:water_source"})
+        local hcheck = minetest.find_nodes_in_area(left,right, {"default:water_source"})
         --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
         if #vcheck < 54 or #hcheck < 49 then
             --mobkit.clear_queue_high(self)
