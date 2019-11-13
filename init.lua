@@ -193,7 +193,7 @@ local function chose_turn(self,pos,yaw)
     
     local remember = mobkit.recall(self,"turn")
     if not remember then
-        if leftorright then
+        if leftorright() then
             remember = "1"
             mobkit.remember(self,"time", self.time_total)
             mobkit.remember(self,"turn", "1")
@@ -266,7 +266,7 @@ local function spawnstep(dtime)
                 local radius = (abo * 12) - 1                                           -- 75% from 16 = 12 nodes
                 radius = math.random(7,radius)
                 local angel = math.random() * (pi/4)                                    -- look for random angel 0 - 45 degrees
-                if leftororight then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
+                if leftorright() then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
                 
                 local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
                 
