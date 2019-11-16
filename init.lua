@@ -13,7 +13,6 @@ dofile(path.."/crafts.lua")             -- load crafts
 if minetest.get_modpath("wildlife") then
     water_life.register_shark_food("wildlife:deer")
     water_life.register_shark_food("wildlife:wolf")
-    
 end
 
 
@@ -33,9 +32,7 @@ minetest.register_entity(":zombiestrd:shark", {
 local abr = minetest.get_mapgen_setting('active_block_range') or 2
 local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 local nodename_water = minetest.registered_aliases.mapgen_water_source
-local maxwhales = 1 
-local maxsharks = abo/2
-local maxmobs = 30
+
 local timer = 0
 
 local abs = math.abs
@@ -52,9 +49,13 @@ local time = os.time
 
 local whale_spawn_rate =  30
 local shark_spawn_rate =  100
+local fish_spawn_rate = 1000
+local maxwhales = 1 
+local maxsharks = abo/2
+local maxfish = 10
+local maxmobs = 30
 
-
-
+water_life.register_shark_food("water_life:fish")
 -------------------
 -- Helper Functions
 -------------------
@@ -272,6 +273,7 @@ local function spawnstep(dtime)
                 
                 
                 local height, liquidflag = mobkit.get_terrain_height(pos2,32)
+                --minetest.chat_send_all(dump(height).."  "..dump(liquidflag))
         
                 if height and liquidflag then
                     
@@ -296,6 +298,25 @@ local function spawnstep(dtime)
                             
                         end
                     
+                        local mobname = 'water_life:fish'
+                        if fish_spawn_rate >= coin then
+                            pos2.y = height+1.01
+                            
+                            local a=pos2.x
+                            local b=pos2.y
+                            local c=pos2.z
+                            
+                            local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
+                            
+                            if water and #water < 10 then break end    -- sharks need water, much water
+                            --minetest.chat_send_all("water ="..dump(#water).."   mobs="..dump(all_objects))
+                        
+                            if all_objects > (maxmobs-5) then break end  
+
+                            local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            
+                            
+                        end
                         
                         if whale_spawn_rate >= coin  then
                             pos2.y = height+4.01
@@ -614,9 +635,9 @@ minetest.register_entity("water_life:fish",{
 	collide_with_objects = false,
 	collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
 	visual = "mesh",
-	mesh = "water_life_fishb.b3d",
+	mesh = "water_life_fish.obj",
 	textures = {"water_life_fish.png"},
-	visual_size = {x = 0.5, y = 0.5},
+	visual_size = {x = 0.3, y = 0.3},
 	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
@@ -624,15 +645,15 @@ minetest.register_entity("water_life:fish",{
 	get_staticdata = mobkit.statfunc,
 											-- api props
 	springiness=0,
-	buoyancy = 0.98,					-- portion of hitbox submerged
+	buoyancy = 1.07,					-- portion of hitbox submerged
 	max_speed = 1,                        -- no matter which number is here, sharks always at same speed
-	jump_height = 1.26,
-	view_range = 32,
+	jump_height = 0.5,
+	view_range = 7,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 25,
 	timeout=60,
 	drops = {
-		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
+		{name = "default:diamond", chance = 10, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
 	},
 	brainfunc = fish_brain,
