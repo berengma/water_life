@@ -55,7 +55,7 @@ local maxsharks = abo/2
 local maxfish = 10
 local maxmobs = 30
 
-water_life.register_shark_food("water_life:fish")
+--  water_life.register_shark_food("water_life:fish")   --fish is too small for sharks
 -------------------
 -- Helper Functions
 -------------------
@@ -87,56 +87,6 @@ return whales,sharks,#all_objects
 end
 
 
-local function aqua_radar_dumb(pos,yaw,range,reverse)
-	range = range or 4
-	
-	local function okpos(p)
-		local node = mobkit.nodeatpos(p)
-		if node then 
-			if node.drawtype == 'liquid' then 
-				local nodeu = mobkit.nodeatpos(mobkit.pos_shift(p,{y=1}))
-				local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-1}))
-				if (nodeu and nodeu.drawtype == 'liquid') or (noded and noded.drawtype == 'liquid') then
-					return true
-				else
-					return false
-				end
-			else
-				local h,l = mobkit.get_terrain_height(p)
-				if h then 
-					local node2 = mobkit.nodeatpos({x=p.x,y=h+1.99,z=p.z})
-					if node2 and node2.drawtype == 'liquid' then return true, h end
-				else
-					return false
-				end
-			end
-		else
-			return false
-		end
-	end
-	
-	local fpos = mobkit.pos_translate2d(pos,yaw,range)
-	local ok,h = okpos(fpos)
-	if not ok then
-		local ffrom, fto, fstep
-		if reverse then 
-			ffrom, fto, fstep = 3,1,-1
-		else
-			ffrom, fto, fstep = 1,3,1
-		end
-		for i=ffrom, fto, fstep  do
-			local ok,h = okpos(mobkit.pos_translate2d(pos,yaw+i,range))
-			if ok then return yaw+i,h end
-			ok,h = okpos(mobkit.pos_translate2d(pos,yaw-i,range))
-			if ok then return yaw-i,h end
-		end
-		return yaw+pi,h
-	else 
-		return yaw, h
-	end	
-end
-
-
 local function big_hq_aqua_turn(self,prty,tyaw,speed)
 	local func = function(self)
 		local finished=mobkit.turn2yaw(self,tyaw,0.4)
@@ -162,7 +112,7 @@ local function big_aqua_roam(self,prty,speed)
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
 			prvscanpos=scanpos
-			local nyaw,height = aqua_radar_dumb(pos,yaw,speed,true)
+			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,true)
 			if height and height > pos.y then
 				local vel = self.object:get_velocity()
 				vel.y = vel.y+0.1
@@ -308,7 +258,7 @@ local function spawnstep(dtime)
                             
                             local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
                             
-                            if water and #water < 10 then break end    -- sharks need water, much water
+                            if water and #water < 10 then break end    -- little fish need little water
                             --minetest.chat_send_all("water ="..dump(#water).."   mobs="..dump(all_objects))
                         
                             if all_objects > (maxmobs-5) then break end  
@@ -489,8 +439,13 @@ local function fish_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
-	
-	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+	if mobkit.timer(self,1) then 
+        local plyr = mobkit.get_nearby_player(self)
+        if plyr then
+            water_life.hq_swimfrom(self,50,plyr)
+        end
+        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+    end
 end
 
 
@@ -646,22 +601,21 @@ minetest.register_entity("water_life:fish",{
 											-- api props
 	springiness=0,
 	buoyancy = 1.07,					-- portion of hitbox submerged
-	max_speed = 1,                        -- no matter which number is here, sharks always at same speed
+	max_speed = 3,                        -- no matter which number is here, sharks always at same speed
 	jump_height = 0.5,
-	view_range = 7,
+	view_range = 3,
 --	lung_capacity = 0, 		-- seconds
-	max_hp = 25,
+	max_hp = 15,
 	timeout=60,
 	drops = {
-		{name = "default:diamond", chance = 10, min = 1, max = 5,},		
-		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
+		{name = "default:diamond", chance = 10, min = 1, max = 1,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 2,},
 	},
 	brainfunc = fish_brain,
     on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
 						
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
-            mobkit.hq_runfrom(self, 50, puncherj)
 
 		end
 	end,
