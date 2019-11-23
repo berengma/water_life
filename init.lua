@@ -442,9 +442,9 @@ local function fish_brain(self)
 	if mobkit.timer(self,1) then 
         local plyr = mobkit.get_nearby_player(self)
         if plyr then
-            water_life.hq_swimfrom(self,50,plyr)
+            water_life.hq_swimfrom(self,50,plyr,-3)
         end
-        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,-1) end
     end
 end
 
@@ -590,9 +590,9 @@ minetest.register_entity("water_life:fish",{
 	collide_with_objects = false,
 	collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
 	visual = "mesh",
-	mesh = "water_life_fish.obj",
-	textures = {"water_life_fish.png"},
-	visual_size = {x = 0.3, y = 0.3},
+	mesh = "water_life_riverfish.b3d",
+	textures = {"water_life_riverfish.png"},
+	visual_size = {x = 2.5, y = 2.5},
 	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
@@ -601,16 +601,21 @@ minetest.register_entity("water_life:fish",{
 											-- api props
 	springiness=0,
 	buoyancy = 1.07,					-- portion of hitbox submerged
-	max_speed = 3,                        -- no matter which number is here, sharks always at same speed
+	max_speed = -3,                     -- negative speed as long as model is not rotatet in head direction
 	jump_height = 0.5,
 	view_range = 3,
 --	lung_capacity = 0, 		-- seconds
-	max_hp = 15,
+	max_hp = 10,
 	timeout=60,
 	drops = {
-		{name = "default:diamond", chance = 10, min = 1, max = 1,},		
-		{name = "water_life:meat_raw", chance = 2, min = 1, max = 2,},
+		{name = "default:diamond", chance = 20, min = 1, max = 1,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
 	},
+    animation = {
+		def={range={x=1,y=35},speed=40,loop=true},	
+		fast={range={x=1,y=35},speed=80,loop=true},
+        idle={range={x=36,y=75},speed=20,loop=true},
+		},
 	brainfunc = fish_brain,
     on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
