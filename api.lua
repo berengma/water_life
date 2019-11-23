@@ -2,7 +2,7 @@
 local pi = math.pi
 
 
-function water_life.handle_drops(self)
+function water_life.handle_drops(self)    -- drop on death what is definded in the entity table
     if not self.drops then return end
     
     for _,item in ipairs(self.drops) do
@@ -94,7 +94,7 @@ function water_life.get_yaw_to_object(self,target)
     return yaw
 end
 
-function water_life.hq_swimfrom(self,prty,tgtobj)
+function water_life.hq_swimfrom(self,prty,tgtobj,speed) -- turn around 180degrees from tgtob and swim away until out of sight
 	
 	local func = function(self)
 	
@@ -116,7 +116,7 @@ function water_life.hq_swimfrom(self,prty,tgtobj)
                     vel.y = vel.y+0.1
                     self.object:set_velocity(vel)
                 end	
-                mobkit.hq_aqua_turn(self,51,swimto,3)
+                mobkit.hq_aqua_turn(self,51,swimto,speed)
                 
             else
                 return true
