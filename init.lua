@@ -61,85 +61,14 @@ local maxmobs = 30
 -------------------
         
 
-
+-- throws a coin
 local function leftorright()
     local rnd = math.random()
     if rnd > 0.5 then return true else return false end
 end
 
 
--- count objects at position
-local function count_objects(pos)
-
-local all_objects = minetest.get_objects_inside_radius(pos, abo * 16)
-local whales = 0
-local sharks = 0
-local _,obj
-for _,obj in ipairs(all_objects) do
-    local entity = obj:get_luaentity()
-	if entity and entity.name == "water_life:whale" then
-		whales = whales +1
-    elseif entity and entity.name == "water_life:shark" then
-		sharks = sharks +1
-	end
-end
-return whales,sharks,#all_objects
-end
-
-
-local function big_hq_aqua_turn(self,prty,tyaw,speed)
-	local func = function(self)
-		local finished=mobkit.turn2yaw(self,tyaw,0.4)
-		if finished then return true end
-	end
-	mobkit.queue_high(self,func,prty)
-end
-
-
-
-local function big_aqua_roam(self,prty,speed)
-	local tyaw = 0
-	local init = true
-	local prvscanpos = {x=0,y=0,z=0}
-	local center = self.object:get_pos()
-	local func = function(self)
-		if init then
-			mobkit.animate(self,'def')
-			init = false
-		end
-		local pos = mobkit.get_stand_pos(self)
-		local yaw = self.object:get_yaw()
-		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
-		if not vector.equals(prvscanpos,scanpos) then
-			prvscanpos=scanpos
-			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,true)
-			if height and height > pos.y then
-				local vel = self.object:get_velocity()
-				vel.y = vel.y+0.1
-				self.object:set_velocity(vel)
-			end	
-			if yaw ~= nyaw then
-				tyaw=nyaw
-				mobkit.hq_aqua_turn(self,prty+1,tyaw,speed)
-				return
-			end
-		end
-		if mobkit.timer(self,10) then
-			if vector.distance(pos,center) > abo*16*0.5 then
-				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
-			else
-				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end
-			end
-		end
-		
-		if mobkit.timer(self,20) then mobkit.turn2yaw(self,tyaw,-1) end
-		--local yaw = self.object:get_yaw()
-		mobkit.go_forward_horizontal(self,speed)
-	end
-	mobkit.queue_high(self,func,prty)
-end
-
-
+-- this is whale specific, so keeping it local
 local function chose_turn(self,pos,yaw)
     
     local remember = mobkit.recall(self,"turn")
@@ -208,10 +137,10 @@ local function spawnstep(dtime)
                 local yaw = plyr:get_look_horizontal()
                 local chance = shark_spawn_rate
                 
-                local mw, ms, all_objects = count_objects(pos)
+                local animal = water_life.count_objects(pos)
             
                 --minetest.chat_send_all("yaw = "..dump(yaw).."   mobs: "..dump(all_objects).."  sharks: "..dump(ms).."  whales: "..dump(mw))
-                if all_objects > maxmobs then break end
+                if animal.all > maxmobs then break end
                 
                 -- find a pos randomly in look direction of player
                 local radius = (abo * 12) - 1                                           -- 75% from 16 = 12 nodes
@@ -242,7 +171,7 @@ local function spawnstep(dtime)
                             
                             if #water < 128 then break end    -- sharks need water, much water
                         
-                            if ms > (maxsharks-1) then break end  -- sharks are no sardines
+                            if animal.sharks > (maxsharks-1) then break end  -- sharks are no sardines
 
                             local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
                             
@@ -256,15 +185,16 @@ local function spawnstep(dtime)
                             local b=pos2.y
                             local c=pos2.z
                             
+                            local nearlife = water_life.count_objects(pos2,16)
                             local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
                             
                             if water and #water < 10 then break end    -- little fish need little water
                             --minetest.chat_send_all("water ="..dump(#water).."   mobs="..dump(all_objects))
                         
-                            if all_objects > (maxmobs-5) then break end  
+                            if animal.all > (maxmobs-5) or nearlife.fish > 5 then break end  
 
                             local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
-                            
+                                
                             
                         end
                         
@@ -280,7 +210,7 @@ local function spawnstep(dtime)
                             
                             if #water < 900 then break end    -- whales need water, much water
                             
-                            if mw > (maxwhales-1) then break end -- whales are no sardines
+                            if animal.whales > (maxwhales-1) then break end -- whales are no sardines
                             
 
                             local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
@@ -308,6 +238,7 @@ local function whale_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
         water_life.handle_drops(self)
+        mobkit.make_sound(self,"death")
 		mobkit.hq_die(self)
 		return
 	end
@@ -376,9 +307,9 @@ local function whale_brain(self)
         if #vcheck < 54 or #hcheck < 49 then
             --mobkit.clear_queue_high(self)
             if chose_turn(self,pos,yaw) then
-                big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
+                water_life.big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
             else
-                big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
+                water_life.big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
             end
            
         end
@@ -386,7 +317,7 @@ local function whale_brain(self)
     end
         
     
-	if mobkit.is_queue_empty_high(self) then big_aqua_roam(self,20,-1) end
+	if mobkit.is_queue_empty_high(self) then water_life.big_aqua_roam(self,20,-1) end
     
 end
 
@@ -442,9 +373,9 @@ local function fish_brain(self)
 	if mobkit.timer(self,1) then 
         local plyr = mobkit.get_nearby_player(self)
         if plyr then
-            water_life.hq_swimfrom(self,50,plyr,-3)
+            water_life.hq_swimfrom(self,50,plyr,3)
         end
-        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,-1) end
+        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
     end
 end
 
@@ -486,7 +417,7 @@ minetest.register_entity("water_life:whale",{
 	sounds = {
       random = "water_life_whale.ogg",
       death = "water_life_whale.ogg",
-      distance = 50,
+      distance = 10,
 	},
     
 	animation = {
@@ -588,7 +519,7 @@ minetest.register_entity("water_life:fish",{
 	physical = true,
 	stepheight = 0.1,				--EVIL!
 	collide_with_objects = false,
-	collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
+	collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
 	visual = "mesh",
 	mesh = "water_life_riverfish.b3d",
 	textures = {"water_life_riverfish.png"},
@@ -601,9 +532,9 @@ minetest.register_entity("water_life:fish",{
 											-- api props
 	springiness=0,
 	buoyancy = 1.07,					-- portion of hitbox submerged
-	max_speed = -3,                     -- negative speed as long as model is not rotatet in head direction
+	max_speed = 3,                     -- negative speed as long as model is not rotatet in head direction
 	jump_height = 0.5,
-	view_range = 3,
+	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
 	timeout=60,

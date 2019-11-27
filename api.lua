@@ -1,5 +1,18 @@
- 
+
+local abs = math.abs
 local pi = math.pi
+local floor = math.floor
+local random = math.random
+local sqrt = math.sqrt
+local max = math.max
+local min = math.min
+local pow = math.pow
+local sign = math.sign
+
+local time = os.time
+
+local abr = minetest.get_mapgen_setting('active_block_range') or 2
+local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 
 
 function water_life.handle_drops(self)    -- drop on death what is definded in the entity table
@@ -81,10 +94,39 @@ function water_life.aqua_radar_dumb(pos,yaw,range,reverse)
 end
 
 
+
+-- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
+function water_life.count_objects(pos,radius)
+
+if not radius then radius = abo * 16 end
+
+local all_objects = minetest.get_objects_inside_radius(pos, radius)
+local hasil = {}
+hasil.whales = 0
+hasil.sharks = 0
+hasil.fish = 0
+hasil.all = #all_objects or 0
+
+local _,obj
+for _,obj in ipairs(all_objects) do
+    local entity = obj:get_luaentity()
+	if entity and entity.name == "water_life:whale" then
+		hasil.whales = hasil.whales +1
+    elseif entity and entity.name == "water_life:shark" then
+		hasil.sharks = hasil.sharks +1
+    elseif entity and entity.name == "water_life:fish" then
+        hasil.fish = hasil.fish +1
+	end
+end
+return hasil
+end
+
+
+
+
 -- returns angle from self to target in radians
 function water_life.get_yaw_to_object(self,target)
-    if not self or target then return nil end
-    
+
     local pos = mobkit.get_stand_pos(self)
     local opos = target:get_pos()
     local ankat = pos.x - opos.x
@@ -94,21 +136,20 @@ function water_life.get_yaw_to_object(self,target)
     return yaw
 end
 
-function water_life.hq_swimfrom(self,prty,tgtobj,speed) -- turn around 180degrees from tgtob and swim away until out of sight
+
+-- turn around 90degrees from tgtob and swim away until out of sight
+function water_life.hq_swimfrom(self,prty,tgtobj,speed) 
 	
 	local func = function(self)
 	
 		if not mobkit.is_alive(tgtobj) then return true end
         
-		
-			local pos = mobkit.get_stand_pos(self)
-			local opos = tgtobj:get_pos()
-			local ankat = pos.x - opos.x
-            local gegkat = pos.z - opos.z
-            local yaw = math.atan2(ankat, gegkat) - math.pi   -- turn around from target direction
+            local pos = mobkit.get_stand_pos(self)
+            local opos = tgtobj:get_pos()
+			local yaw = water_life.get_yaw_to_object(self,tgtobj) - (pi/2) -- pi/2 = 90 degree
             local distance = vector.distance(pos,opos)
             
-            if distance < self.view_range then
+            if (distance/1.5) < self.view_range then
                 
                 local swimto, height = water_life.aqua_radar_dumb(pos,yaw,3)
                 if height and height > pos.y then
@@ -129,3 +170,65 @@ function water_life.hq_swimfrom(self,prty,tgtobj,speed) -- turn around 180degree
 	end
 	mobkit.queue_high(self,func,prty)
 end
+
+
+
+-- same as mobkit.hq_aqua_turn but for large mobs
+function water_life.big_hq_aqua_turn(self,prty,tyaw,speed)
+    
+	local func = function(self)
+    if not speed then speed = 0.4 end
+    if speed < 0 then speed = speed * -1 end
+        
+        local finished=mobkit.turn2yaw(self,tyaw,speed)
+        if finished then return true end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+
+-- same as mobkit.hq_aqua_roam but for large mobs
+function water_life.big_aqua_roam(self,prty,speed)
+	local tyaw = 0
+	local init = true
+	local prvscanpos = {x=0,y=0,z=0}
+	local center = self.object:get_pos()
+	local func = function(self)
+		if init then
+			mobkit.animate(self,'def')
+			init = false
+		end
+		local pos = mobkit.get_stand_pos(self)
+		local yaw = self.object:get_yaw()
+		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
+		if not vector.equals(prvscanpos,scanpos) then
+			prvscanpos=scanpos
+			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,true)
+			if height and height > pos.y then
+				local vel = self.object:get_velocity()
+				vel.y = vel.y+0.1
+				self.object:set_velocity(vel)
+			end	
+			if yaw ~= nyaw then
+				tyaw=nyaw
+				mobkit.hq_aqua_turn(self,prty+1,tyaw,speed)
+				return
+			end
+		end
+		if mobkit.timer(self,10) then
+			if vector.distance(pos,center) > abo*16*0.5 then
+				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
+			else
+				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end
+			end
+		end
+		
+		if mobkit.timer(self,20) then mobkit.turn2yaw(self,tyaw,-1) end
+		--local yaw = self.object:get_yaw()
+		mobkit.go_forward_horizontal(self,speed)
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
