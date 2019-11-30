@@ -42,6 +42,8 @@ minetest.register_craftitem("water_life:riverfish", {
         if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
                                                     
         local name = placer:get_player_name()
+        if minetest.is_protected(pos,name) then return itemstack end
+
         local obj = minetest.add_entity(pos, "water_life:fish_tamed")
         obj = obj:get_luaentity()
         itemstack:take_item()

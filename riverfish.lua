@@ -9,6 +9,7 @@ local function fish_brain(self)
 		return
 	end
 	if mobkit.timer(self,1) then 
+        if not self.isinliquid	then mobkit.hurt(self,1) end
         local plyr = mobkit.get_nearby_player(self)
         if plyr and self.wild then
             water_life.hq_swimfrom(self,50,plyr,3)
