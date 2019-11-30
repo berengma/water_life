@@ -40,6 +40,7 @@ minetest.register_entity(":zombiestrd:shark", {
 
 -- register shark food
 water_life.register_shark_food("water_life:fish")   --fish is too small for sharks
+water_life.register_shark_food("water_life:fish_tamed")
 if minetest.get_modpath("wildlife") then
     water_life.register_shark_food("wildlife:deer")
     water_life.register_shark_food("wildlife:wolf")
