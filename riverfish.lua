@@ -1,0 +1,145 @@
+
+
+
+local function fish_brain(self)
+	if self.hp <= 0 then	
+		mobkit.clear_queue_high(self)
+        water_life.handle_drops(self)
+		mobkit.hq_die(self)
+		return
+	end
+	if mobkit.timer(self,1) then 
+        local plyr = mobkit.get_nearby_player(self)
+        if plyr and self.wild then
+            water_life.hq_swimfrom(self,50,plyr,3)
+        end
+        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+    end
+end
+
+
+---------------
+-- the Entities
+---------------
+
+
+
+minetest.register_entity("water_life:fish",{
+											-- common props
+	physical = true,
+	stepheight = 0.3,				
+	collide_with_objects = false,
+	collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
+	visual = "mesh",
+	mesh = "water_life_riverfish.b3d",
+	textures = {"water_life_riverfish.png"},
+	visual_size = {x = 2.5, y = 2.5},
+	static_save = false,
+	makes_footstep_sound = true,
+	on_step = mobkit.stepfunc,	-- required
+	on_activate = mobkit.actfunc,		-- required
+	get_staticdata = mobkit.statfunc,
+											-- api props
+	springiness=0,
+	buoyancy = 1.07,					-- portion of hitbox submerged
+	max_speed = 3,                     
+	jump_height = 0.5,
+	view_range = 4,
+--	lung_capacity = 0, 		-- seconds
+	max_hp = 10,
+	timeout=60,
+    wild = true,
+	drops = {
+		{name = "default:diamond", chance = 20, min = 1, max = 1,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
+	},
+    animation = {
+		def={range={x=1,y=35},speed=40,loop=true},	
+		fast={range={x=1,y=35},speed=80,loop=true},
+        idle={range={x=36,y=75},speed=20,loop=true},
+		},
+	brainfunc = fish_brain,
+    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if mobkit.is_alive(self) then
+						
+			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+
+		end
+	end,
+    on_rightclick = function(self, clicker)
+        if not clicker or not clicker:is_player() then return end
+        local inv = clicker:get_inventory()
+        local item = clicker:get_wielded_item()
+        
+        if not item or item:get_name() ~= "fireflies:bug_net" then return end
+        if not inv:room_for_item("main", "water_life:fish") then return end
+                                            
+        inv:add_item("main", "water_life:riverfish")
+        self.object:remove()
+    end,
+})
+
+
+
+minetest.register_entity("water_life:fish_tamed",{
+											-- common props
+	physical = true,
+	stepheight = 0.3,				
+	collide_with_objects = false,
+	collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
+	visual = "mesh",
+	mesh = "water_life_riverfish.b3d",
+	textures = {"water_life_riverfish_tamed.png"},
+	visual_size = {x = 2.5, y = 2.5},
+	static_save = true,
+	makes_footstep_sound = true,
+	on_step = mobkit.stepfunc,	-- required
+	on_activate = mobkit.actfunc,		-- required
+	get_staticdata = mobkit.statfunc,
+											-- api props
+	springiness=0,
+	buoyancy = 1.07,					-- portion of hitbox submerged
+	max_speed = 3,                     
+	jump_height = 0.5,
+	view_range = 4,
+--	lung_capacity = 0, 		-- seconds
+	max_hp = 10,
+	timeout=60,
+    wild = false,
+    owner = "",
+	drops = {
+		{name = "default:diamond", chance = 20, min = 1, max = 1,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
+	},
+    animation = {
+		def={range={x=1,y=35},speed=40,loop=true},	
+		fast={range={x=1,y=35},speed=80,loop=true},
+        idle={range={x=36,y=75},speed=20,loop=true},
+		},
+	brainfunc = fish_brain,
+    on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if mobkit.is_alive(self) then
+            
+            
+            if self.owner and self.owner ~= puncher:get_player_name() and self.owner ~= "" then return end
+            if not puncher or not puncher:is_player() then return end
+            
+                mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+
+		end
+	end,
+                                                
+    on_rightclick = function(self, clicker)
+        if not clicker or not clicker:is_player() then return end
+        local inv = clicker:get_inventory()
+        local item = clicker:get_wielded_item()
+        
+        if not item or item:get_name() ~= "fireflies:bug_net" then return end
+        if not inv:room_for_item("main", "water_life:fish") then return end
+        if self.owner and self.owner ~= clicker:get_player_name() and self.owner ~= "" then return end
+                                            
+        inv:add_item("main", "water_life:riverfish")
+        self.object:remove()
+    end,
+})
+
