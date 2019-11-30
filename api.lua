@@ -11,11 +11,18 @@ local sign = math.sign
 
 local time = os.time
 
-local abr = minetest.get_mapgen_setting('active_block_range') or 2
-local abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 
 
-function water_life.handle_drops(self)    -- drop on death what is definded in the entity table
+-- throws a coin
+function water_life.leftorright()
+    local rnd = math.random()
+    if rnd > 0.5 then return true else return false end
+end
+
+
+
+ -- drop on death what is definded in the entity table
+function water_life.handle_drops(self)   
     if not self.drops then return end
     
     for _,item in ipairs(self.drops) do
@@ -34,6 +41,7 @@ function water_life.handle_drops(self)    -- drop on death what is definded in t
 end
 
 
+
 function water_life.register_shark_food(name)
     table.insert(water_life.shark_food,name)
 end
@@ -43,6 +51,7 @@ function water_life.feed_shark()
     local index = math.random(1,#water_life.shark_food)
     return water_life.shark_food[index]
 end
+
 
 function water_life.aqua_radar_dumb(pos,yaw,range,reverse)
 	range = range or 4
@@ -98,7 +107,7 @@ end
 -- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
 function water_life.count_objects(pos,radius)
 
-if not radius then radius = abo * 16 end
+if not radius then radius = water_life.abo * 16 end
 
 local all_objects = minetest.get_objects_inside_radius(pos, radius)
 local hasil = {}
@@ -114,7 +123,7 @@ for _,obj in ipairs(all_objects) do
 		hasil.whales = hasil.whales +1
     elseif entity and entity.name == "water_life:shark" then
 		hasil.sharks = hasil.sharks +1
-    elseif entity and entity.name == "water_life:fish" then
+    elseif entity and (entity.name == "water_life:fish" or entity.name == "water_life:fish_tamed") then
         hasil.fish = hasil.fish +1
 	end
 end
@@ -217,7 +226,7 @@ function water_life.big_aqua_roam(self,prty,speed)
 			end
 		end
 		if mobkit.timer(self,10) then
-			if vector.distance(pos,center) > abo*16*0.5 then
+			if vector.distance(pos,center) > water_life.abo*16*0.5 then
 				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
 			else
 				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end
