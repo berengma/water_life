@@ -1,0 +1,94 @@
+
+
+---------------
+Water_life Api:
+---------------
+
+
+
+useful constants:
+------------------
+
+water_life.abr = minetest.get_mapgen_setting('active_block_range') or 2
+water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
+water_life.maxwhales = 1 
+water_life.maxsharks = water_life.abo/2
+water_life.maxmobs = 30
+
+
+
+helper functions:
+-----------------
+
+
+
+water_life.leftorright()
+
+returns true with a possibility of 50% else returns false
+
+
+
+
+water_life.register_shark_food(name)
+
+register enitiy "name" as shark food. Will be attacked by sharks if in water and in sight
+
+
+
+
+water_life.count_objects(pos,radius)
+
+counts objects around pos with radius in nodes and returns a table:
+table.all       -   total number of all objects
+table.sharks    -   total number of sharks
+table.whales    -   total number of whales
+table.fish      -   total number of fish wild/tamed
+
+
+
+
+water_life.handle_drops(self)
+
+call this on death of an entity and define drops in entity definition like this:
+chances are in 100/x. So chance =1 means 100%, 2 = 50%, 3 = 33 1/3 %, ...
+
+drops = {
+		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
+	},
+	
+
+
+	
+water_life.get_yaw_to_object(self,tgtobj)
+
+returns 2D angle in rad tgtobj seen from self
+
+
+
+
+
+
+HQ Behaviors:
+-----------
+
+
+
+water_life.hq_swimfrom(self,prty,tgtobj,speed)
+
+mob will turn 90 degrees away from target and try to escape until target is out of viewrange + 50%
+
+
+
+
+water_life.big_hq_aqua_turn(self,prty,tyaw,speed)
+
+will turn mob with large collisionbox to tyaw with speed
+
+
+
+
+water_life.big_aqua_roam(self,prty,speed)
+
+mob with large collisionbox will roam the waters with given speed.
+A bit like mobkit.hq_aqua_roam with less turns
