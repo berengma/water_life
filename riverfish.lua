@@ -12,9 +12,13 @@ local function fish_brain(self)
         if not self.isinliquid	then mobkit.hurt(self,1) end
         local plyr = mobkit.get_nearby_player(self)
         if plyr and self.wild then
+            mobkit.animate(self,fast)
             water_life.hq_swimfrom(self,50,plyr,3)
         end
-        if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,1) end
+        if mobkit.is_queue_empty_high(self) then
+            mobkit.animate(self,def)
+            mobkit.hq_aqua_roam(self,10,1) 
+        end
     end
 end
 
