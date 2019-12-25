@@ -73,6 +73,11 @@ HQ Behaviors:
 -----------
 
 
+water_life.hq_swimto(self,prty,speed,node)
+
+mob will swim to given node which must be in his view_range
+
+
 
 water_life.hq_swimfrom(self,prty,tgtobj,speed)
 

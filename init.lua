@@ -45,4 +45,6 @@ if minetest.get_modpath("wildlife") then
     water_life.register_shark_food("wildlife:deer")
     water_life.register_shark_food("wildlife:wolf")
 end
-
+if minetest.get_modpath("aerotest") then
+    water_life.register_shark_food("aerotest:eagle")
+end

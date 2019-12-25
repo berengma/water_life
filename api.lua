@@ -133,7 +133,7 @@ end
 
 
 
--- returns angle from self to target in radians
+-- returns 2D angle from self to target in radians
 function water_life.get_yaw_to_object(self,target)
 
     local pos = mobkit.get_stand_pos(self)
@@ -145,6 +145,17 @@ function water_life.get_yaw_to_object(self,target)
     return yaw
 end
 
+-- returns 2D angle from self to pos in radians
+function water_life.get_yaw_to_pos(self,target)
+
+    local pos = mobkit.get_stand_pos(self)
+    local opos = target
+    local ankat = pos.x - opos.x
+    local gegkat = pos.z - opos.z
+    local yaw = math.atan2(ankat, gegkat)
+    
+    return yaw - pi
+end
 
 -- turn around 90degrees from tgtob and swim away until out of sight
 function water_life.hq_swimfrom(self,prty,tgtobj,speed) 
@@ -155,7 +166,7 @@ function water_life.hq_swimfrom(self,prty,tgtobj,speed)
         
             local pos = mobkit.get_stand_pos(self)
             local opos = tgtobj:get_pos()
-			local yaw = water_life.get_yaw_to_object(self,tgtobj) - (pi/2) -- pi/2 = 90 degree
+			local yaw = water_life.get_yaw_to_object(self,tgtobj) - (pi/2) -- pi/2 = 90 degrees
             local distance = vector.distance(pos,opos)
             
             if (distance/1.5) < self.view_range then
@@ -241,3 +252,36 @@ function water_life.big_aqua_roam(self,prty,speed)
 end
 
 
+
+-- swim to the next "node" which is inside viewrange or quit
+function water_life.hq_swimto(self,prty,speed,node)
+    
+	local func = function(self)
+    
+    if not mobkit.is_alive(self) then return true end
+    local r = self.view_range
+    local pos = self.object:get_pos()
+    local endpos = minetest.find_node_near(pos, r, {node})
+    if not endpos then return true end
+    local yaw = water_life.get_yaw_to_pos(self,endpos)
+    
+    if vector.distance(pos,endpos) > 1 then
+                
+                --minetest.chat_send_all(vector.distance(pos,endpos))
+                if endpos.y > pos.y then
+                    local vel = self.object:get_velocity()
+                    vel.y = vel.y+0.1
+                    self.object:set_velocity(vel)
+                end	
+                mobkit.hq_aqua_turn(self,51,yaw,speed)
+                pos = self.object:get_pos() --mobkit.get_stand_pos(self)
+                yaw = water_life.get_yaw_to_pos(self,endpos)
+               
+    else
+         return true
+    end
+    
+end
+	mobkit.queue_high(self,func,prty)
+    
+end
