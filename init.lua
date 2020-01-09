@@ -2,11 +2,11 @@ water_life = {}
 water_life.shark_food = {}
 water_life.abr = minetest.get_mapgen_setting('active_block_range') or 2
 water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
-water_life.whale_spawn_rate =  30           -- chances in promille 30 promille = 3%
+water_life.whale_spawn_rate =  100           -- chances in promille 30 promille = 3%
 water_life.shark_spawn_rate =  100
 water_life.fish_spawn_rate = 1000
 water_life.maxwhales = 1 
-water_life.maxsharks = water_life.abo/2
+water_life.maxsharks = 5
 water_life.maxmobs = 30
 
 math.randomseed(os.time()) --init random seed

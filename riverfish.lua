@@ -9,7 +9,10 @@ local function fish_brain(self)
 		return
 	end
 	if mobkit.timer(self,1) then 
-        if not self.isinliquid	then mobkit.hurt(self,1) end
+        if not self.isinliquid	then 
+            --minetest.chat_send_all(dump(self.isinliquid))
+            mobkit.hurt(self,1)
+        end
         local plyr = mobkit.get_nearby_player(self)
         if plyr and self.wild then
             mobkit.animate(self,fast)

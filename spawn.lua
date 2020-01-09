@@ -18,67 +18,75 @@ local function spawnstep(dtime)
                 
                 local animal = water_life.count_objects(pos)
             
-                --minetest.chat_send_all("yaw = "..dump(yaw).."   mobs: "..dump(all_objects).."  sharks: "..dump(ms).."  whales: "..dump(mw))
+                --minetest.chat_send_all("yaw = "..dump(yaw).."   mobs: "..dump(animal.all).."  sharks: "..dump(animal.sharks).."  whales: "..dump(animal.whales))
                 if animal.all > water_life.maxmobs then break end
                 
                 -- find a pos randomly in look direction of player
-                local radius = (water_life.abo * 12) - 1                                           -- 75% from 16 = 12 nodes
+                local radius = (water_life.abr * 12) - 1                                           -- 75% from 16 = 12 nodes
                 radius = math.random(7,radius)
-                local angel = math.random() * (pi/4)                                    -- look for random angel 0 - 45 degrees
+                local angel = math.random() * 1.1781                                                -- look for random angel 0 - 75 degrees
                 if water_life.leftorright() then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
                 
                 local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
                 
+                pos2.y = pos2.y - math.random(water_life.abr * 5)
+                local node = minetest.get_node(pos2)
+                --minetest.chat_send_all(dump(node.name))
+                local liquidflag = nil
                 
-                local height, liquidflag = mobkit.get_terrain_height(pos2,32)
-                --minetest.chat_send_all(dump(height).."  "..dump(liquidflag))
+                if node.name == "default:water_source" then 
+                    
+                    liquidflag = "sea"
+                    
+                elseif node.name == "default:river_water_source" then
+                    
+                    liquidflag = "river"
+                    
+                end
         
-                if height and liquidflag then
-                    
-
-                    
+                if liquidflag then
                         
                         local mobname = 'water_life:shark'
                         if water_life.shark_spawn_rate >= coin then
-                            pos2.y = height+1.01
+                            if animal.sharks < (water_life.maxsharks) and liquidflag == "sea" then
+                                
+                                
+                                local a=pos2.x
+                                local b=pos2.y
+                                local c=pos2.z
+                                
+                                local water = minetest.find_nodes_in_area({x=a-3, y=b-3, z=c-3}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
+                                
+                                if #water > 128 then     -- sharks need water, much water
                             
-                            local a=pos2.x
-                            local b=pos2.y
-                            local c=pos2.z
-                            
-                            local water = minetest.find_nodes_in_area({x=a-3, y=b-3, z=c-3}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
-                            
-                            if #water < 128 then break end    -- sharks need water, much water
-                        
-                            if animal.sharks > (water_life.maxsharks-1) then break end  -- sharks are no sardines
-
-                            local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                                    
+                                    local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                                end
+                            end
                             
                         end
                     
                         local mobname = 'water_life:fish'
-                        if water_life.fish_spawn_rate >= coin then
-                            pos2.y = height+1.01
+                        local nearlife = water_life.count_objects(pos2,16)
+                        if water_life.fish_spawn_rate >= coin and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish > 5) and liquidflag == "river" then
+                            --pos2.y = height+1.01
                             
                             local a=pos2.x
                             local b=pos2.y
                             local c=pos2.z
                             
-                            local nearlife = water_life.count_objects(pos2,16)
+                            
                             local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
                             
-                            if water and #water < 10 then break end    -- little fish need little water
-                            --minetest.chat_send_all("water ="..dump(#water).."   mobs="..dump(all_objects))
-                        
-                            if animal.all > (water_life.maxmobs-5) or nearlife.fish > 5 then break end  
-
-                            local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            if water and #water > 10 then     -- little fish need little water
+                                local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            end
                                 
                             
                         end
                         
-                        if water_life.whale_spawn_rate >= coin  then
-                            pos2.y = height+4.01
+                        if water_life.whale_spawn_rate >= coin and animal.whales < (water_life.maxwhales) and liquidflag == "sea" then
+                            pos2.y = pos2.y -4
                             
                             mobname = 'water_life:whale'
                             local a=pos2.x
@@ -86,13 +94,10 @@ local function spawnstep(dtime)
                             local c=pos2.z
                             
                             local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
-                            
-                            if #water < 900 then break end    -- whales need water, much water
-                            
-                            if animal.whales > (water_life.maxwhales-1) then break end -- whales are no sardines
-                            
-
-                            local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            minetest.chat_send_all(dump(#water))
+                            if #water > 900 then    -- whales need water, much water
+                                local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            end
                         end
                     
                 end
