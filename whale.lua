@@ -10,7 +10,7 @@ local pow = math.pow
 local sign = math.sign
 
 -- this is whale specific, so keeping it local
-local function chose_turn(self,pos,yaw)
+local function chose_turn(self,a,b)
     
     local remember = mobkit.recall(self,"turn")
     if not remember then
@@ -24,19 +24,6 @@ local function chose_turn(self,pos,yaw)
             mobkit.remember(self,"turn", "0")
         end
     end
-            
-    local clockpos = mobkit.pos_translate2d(pos,yaw+(pi/4),10)
-    local clockpos1 = mobkit.pos_shift(clockpos,{x=-3,y=-2,z=-3})
-    clockpos = mobkit.pos_shift(clockpos,{x=3,y=3,z=3})
-    local revpos = mobkit.pos_translate2d(pos,yaw-(pi/4),10)
-    local revpos1 = mobkit.pos_shift(revpos,{x=-3,y=-2,z=-3})
-    revpos = mobkit.pos_shift(revpos,{x=3,y=3,z=3})
-    
-    local ccheck= minetest.find_nodes_in_area(clockpos,clockpos1, {"group:water","default:sand_with_kelp"})
-    local rcheck = minetest.find_nodes_in_area(revpos,revpos1, {"group:water","default:sand_with_kelp"})
-    --minetest.chat_send_all(dump(#rcheck).." : "..dump(#ccheck).."    "..dump(remember).."     --> "..dump(self.isonground))
-    local a = #ccheck
-    local b = #rcheck
     
     if a > b+15 then 
         mobkit.remember(self,"turn", "1")
@@ -97,25 +84,14 @@ local function whale_brain(self)
         local yaw =  self.object:get_yaw() + pi
         local pos = mobkit.get_stand_pos(self)
         
+        local kiri, kanan = water_life.radar(pos,yaw,25,true)
+        
         local spos = mobkit.pos_translate2d(pos,yaw,15)
         local hpos = mobkit.pos_translate2d(pos,yaw,6)
         local head = mobkit.pos_shift(hpos,{y=4})
         local node = minetest.get_node(head)
         
-        
-                
-        local left = mobkit.pos_shift(spos,{x=-3,y=3,z=-3})
-        local right = mobkit.pos_shift(spos,{x=3,y=3,z=3})
-        
-        
-        local up = mobkit.pos_shift(spos,{x=-1,y=3,z=-1})
-        local down = mobkit.pos_shift(spos,{x=1,y=-2,z=1})
-        
-        
-        
         yaw = yaw - pi
-        
-        
         
         if node then -- anything above head ? dive.
             
@@ -125,18 +101,13 @@ local function whale_brain(self)
             end
         end
         
-        
-        local vcheck= minetest.find_nodes_in_area(up,down, {"default:water_source"})
-        local hcheck = minetest.find_nodes_in_area(left,right, {"default:water_source"})
-        --minetest.chat_send_all(dump(#vcheck).." - "..dump(#hcheck))
-        if #vcheck < 54 or #hcheck < 49 then
-            --mobkit.clear_queue_high(self)
-            if chose_turn(self,pos,yaw) then
+        if kiri > 3 or kanan > 3 then
+            mobkit.clear_queue_high(self)
+            if chose_turn(self,kiri,kanan) then
                 water_life.big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
             else
                 water_life.big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
             end
-           
         end
         
     end

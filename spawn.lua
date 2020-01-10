@@ -94,7 +94,7 @@ local function spawnstep(dtime)
                             local c=pos2.z
                             
                             local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
-                            minetest.chat_send_all(dump(#water))
+                            --minetest.chat_send_all(dump(#water))
                             if #water > 900 then    -- whales need water, much water
                                 local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
                             end

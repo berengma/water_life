@@ -285,3 +285,45 @@ end
 	mobkit.queue_high(self,func,prty)
     
 end
+
+
+
+-- find if there is a node between pos1 and pos2
+function water_life.find_collision(pos1,pos2,water)
+    local ray = minetest.raycast(pos1, pos2, false, water)
+            for pointed_thing in ray do
+                --minetest.chat_send_all(dump(pointed_thing))
+                if pointed_thing.type == "node" then
+                    --minetest.chat_send_all(dump(vector.distance(pos,pointed_thing.above)))
+                    return true
+                end
+            end
+            return false
+end
+
+-- radar function for obstacles lying in front of an entity 
+-- use water = true for sonar
+
+function water_life.radar(pos, yaw, radius, water)
+    
+    local left = 0
+    local right = 0
+    water = not water
+    for j = 0,3,1 do
+        for i = 0,4,1 do
+            local pos2 = mobkit.pos_translate2d(pos,yaw+(i*pi/16),radius)
+            local pos3 = mobkit.pos_translate2d(pos,yaw-(i*pi/16),radius)
+            --minetest.set_node(pos2,{name="default:stone"})
+            if water_life.find_collision(pos,{x=pos2.x, y=pos2.y + j*2, z=pos2.z}, water) then
+                left = left + 5 - i
+            end
+            if water_life.find_collision(pos,{x=pos3.x, y=pos3.y + j*2, z=pos3.z},water) then
+                right = right + 5 - i
+            end
+        end
+    end
+    --minetest.chat_send_all("HIT!   left = "..left.."   right = "..right)
+    return left, right
+end
+    
+    
