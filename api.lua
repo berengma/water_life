@@ -289,26 +289,31 @@ end
 
 
 -- find if there is a node between pos1 and pos2
+-- water = true means water = obstacle
+-- returns distance to obstacle in nodes or nil
+
 function water_life.find_collision(pos1,pos2,water)
     local ray = minetest.raycast(pos1, pos2, false, water)
             for pointed_thing in ray do
                 --minetest.chat_send_all(dump(pointed_thing))
                 if pointed_thing.type == "node" then
-                    --minetest.chat_send_all(dump(vector.distance(pos,pointed_thing.above)))
-                    return true
+                    local dist = math.floor(vector.distance(pos1,pointed_thing.under))
+                    return dist
                 end
             end
-            return false
+            return nil
 end
 
+
 -- radar function for obstacles lying in front of an entity 
--- use water = true for sonar
+-- use water = true if water should be an obstacle
 
 function water_life.radar(pos, yaw, radius, water)
     
+    if not radius or radius < 1 then radius = 16 end
     local left = 0
     local right = 0
-    water = not water
+    if not water then water = false end
     for j = 0,3,1 do
         for i = 0,4,1 do
             local pos2 = mobkit.pos_translate2d(pos,yaw+(i*pi/16),radius)
@@ -322,8 +327,29 @@ function water_life.radar(pos, yaw, radius, water)
             end
         end
     end
-    --minetest.chat_send_all("HIT!   left = "..left.."   right = "..right)
-    return left, right
+    local up =0
+    local down = 0
+    for j = -4,4,1 do
+        for i = -3,3,1 do
+            local k = i
+            local pos2 = mobkit.pos_translate2d(pos,yaw+(i*pi/16),radius)
+            local collide = water_life.find_collision(pos,{x=pos2.x, y=pos2.y + j, z=pos2.z}, water)
+            if k < 0 then k = k * -1 end
+            if collide and j <= 0 then 
+                down = down + math.floor((7+j-k)*collide/radius*2)
+            elseif collide and j >= 0 then
+                up = up + math.floor((7-j-k)*collide/radius*2)
+            end
+        end
+    end
+    local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - radius, z=pos.z}, water)
+    if not under then under = radius end
+    local above = water_life.find_collision(pos,{x=pos.x, y=pos.y + radius, z=pos.z}, water)
+    if not above then above = radius end
+    if water_life.radar_debug then
+        minetest.chat_send_all("left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
+    end
+    return left, right, up, down, under, above
 end
     
     

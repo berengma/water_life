@@ -21,22 +21,25 @@ helper functions:
 -----------------
 
 
-
+########################
 water_life.leftorright()
+########################
 
 returns true with a possibility of 50% else returns false
 
 
 
-
+####################################
 water_life.register_shark_food(name)
+####################################
 
 register enitiy "name" as shark food. Will be attacked by sharks if in water and in sight
 
 
 
-
+####################################
 water_life.count_objects(pos,radius)
+####################################
 
 counts objects around pos with radius in nodes and returns a table:
 table.all       -   total number of all objects
@@ -46,8 +49,9 @@ table.fish      -   total number of fish wild/tamed
 
 
 
-
+#############################
 water_life.handle_drops(self)
+#############################
 
 call this on death of an entity and define drops in entity definition like this:
 chances are in 100/x. So chance =1 means 100%, 2 = 50%, 3 = 33 1/3 %, ...
@@ -59,41 +63,125 @@ drops = {
 	
 
 
-	
+#########################################	
 water_life.get_yaw_to_object(self,tgtobj)
+#########################################
 
 returns 2D angle in rad tgtobj seen from self
 
 
 
+#########################################
+water_life.radar(pos, yaw, radius, water)
+#########################################
+
+radar function which will give you back 6 integers:
+    left, right, up, down, under, above
+
+    pos:        this should be the pos of the entity
+    yaw:        yaw of the entity 
+    radius:     radius from pos to scan for obstacles
+    water:      if true waternodes are obstacles
+    
+    
+(in general higher values mean more and nearer obstacles)
+
+
+calculation for left and right value:
+
+
+                            left                                right
+
+                +44     +33     +22     +11     0       -11     -22     -33     -44       yaw add/subtract in degrees
+    
+    pos.y+6     1       2       3       4       5       4       3       2       1
+    
+    pos.y+4     1       2       3       4       5       4       3       2       1
+    
+    pos.y+2     1       2       3       4       5       4       3       2       1
+    
+    pos.y       1       2       3       4       5       4       3       2       1
+    
+    
+    if found an obstacle at a position the value of above table is added to right or
+    left value. Position at 0 is added to left and right value
+    
+    pos is the position in yaw +/- degrees in distance of radius in front of the entiy
+    
+    that means, the higher values of left and/or right, the more obstacles found near to
+    center position in distance of radius in front of the entity.
+
+    
+    
+    
+calculation of up and down value:
+
+
+                    +33     +22     +11     0       -11     -22     -33
+      
+        pos.y+-4    0       1       2       3       2       1       0
+        
+        pos.y+-3    1       2       3       4       3       2       1
+        
+        pos.y+-2    2       3       4       5       4       3       2   
+        
+        pos.y+-1    3       4       5       6       5       4       3
+        
+        pos.y+-0    4       5       6       7       6       5       4
+        
+        if found an obstacle at a position the value from above table is
+        multiplied by (distance to obstacle/radius) *2. That means if an
+        obstacle is right in front the table value is doubled.
+        
+        
+        
+calculation of under value:
+
+    this is the distance between entity pos.y value and the ground
+    
+    
+calculation of above value:
+
+    this is the distance between entity pos.y value and ceiling above
+    
+    
+    
+    
+    
+    
 
 
 
 HQ Behaviors:
 -----------
 
-
+##########################################
 water_life.hq_swimto(self,prty,speed,node)
+##########################################
 
 mob will swim to given node which must be in his view_range
 
 
 
+##############################################
 water_life.hq_swimfrom(self,prty,tgtobj,speed)
+##############################################
 
 mob will turn 90 degrees away from target and try to escape until target is out of viewrange + 50%
 
 
 
-
+#################################################
 water_life.big_hq_aqua_turn(self,prty,tyaw,speed)
+#################################################
 
 will turn mob with large collisionbox to tyaw with speed
 
 
 
-
+#########################################
 water_life.big_aqua_roam(self,prty,speed)
+#########################################
 
 mob with large collisionbox will roam the waters with given speed.
 A bit like mobkit.hq_aqua_roam with less turns

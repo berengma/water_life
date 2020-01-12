@@ -84,7 +84,7 @@ local function whale_brain(self)
         local yaw =  self.object:get_yaw() + pi
         local pos = mobkit.get_stand_pos(self)
         
-        local kiri, kanan = water_life.radar(pos,yaw,25,true)
+        local kiri, kanan = water_life.radar(pos,yaw,25)
         
         local spos = mobkit.pos_translate2d(pos,yaw,15)
         local hpos = mobkit.pos_translate2d(pos,yaw,6)
