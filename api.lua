@@ -105,7 +105,7 @@ end
 
 
 -- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
-function water_life.count_objects(pos,radius)
+function water_life.count_objects(pos,radius,name)
 
 if not radius then radius = water_life.abo * 16 end
 
@@ -114,11 +114,17 @@ local hasil = {}
 hasil.whales = 0
 hasil.sharks = 0
 hasil.fish = 0
+hasil.name = 0
 hasil.all = #all_objects or 0
 
 local _,obj
 for _,obj in ipairs(all_objects) do
     local entity = obj:get_luaentity()
+	if name then
+		if entity and entity.name == name then
+			hasil.name = hasil.name +1
+		end
+	end
 	if entity and entity.name == "water_life:whale" then
 		hasil.whales = hasil.whales +1
     elseif entity and entity.name == "water_life:shark" then
@@ -347,7 +353,7 @@ function water_life.radar(pos, yaw, radius, water)
     local above = water_life.find_collision(pos,{x=pos.x, y=pos.y + radius, z=pos.z}, water)
     if not above then above = radius end
     if water_life.radar_debug then
-        minetest.chat_send_all("left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
+        minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
     end
     return left, right, up, down, under, above
 end

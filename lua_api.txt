@@ -37,16 +37,19 @@ register enitiy "name" as shark food. Will be attacked by sharks if in water and
 
 
 
-####################################
-water_life.count_objects(pos,radius)
-####################################
+##########################################
+water_life.count_objects(pos,radius,name)
+##########################################
 
 counts objects around pos with radius in nodes and returns a table:
 table.all       -   total number of all objects
 table.sharks    -   total number of sharks
 table.whales    -   total number of whales
 table.fish      -   total number of fish wild/tamed
+table.name      -   total number of mob "name"
 
+if radius is nil radius will be the active_object_send_range_blocks * 16
+if name is nil table.name is 0
 
 
 #############################
@@ -68,6 +71,17 @@ water_life.get_yaw_to_object(self,tgtobj)
 #########################################
 
 returns 2D angle in rad tgtobj seen from self
+
+
+
+##########################################
+water_life.find_collision(pos1,pos2,water)
+##########################################
+
+throws a raycast from pos1 to pos2
+
+if water is true then water is handled as obstacle
+returns true if there was a collision found
 
 
 

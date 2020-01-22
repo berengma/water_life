@@ -86,7 +86,6 @@ local function whale_brain(self)
         
         local kiri, kanan = water_life.radar(pos,yaw,25)
         
-        local spos = mobkit.pos_translate2d(pos,yaw,15)
         local hpos = mobkit.pos_translate2d(pos,yaw,6)
         local head = mobkit.pos_shift(hpos,{y=4})
         local node = minetest.get_node(head)
@@ -125,7 +124,7 @@ minetest.register_entity("water_life:whale",{
 	stepheight = 0.1,				--EVIL!
     	weight = 250,
 	collide_with_objects = false,
-	collisionbox = {-3, -2, -3, 3, 2, 3},
+	collisionbox = {-2, -2, -2, 2, 2, 2},
 	visual = "mesh",
 	mesh = "water_life_whale.b3d",
 	textures = {"water_life_whale.png"},
@@ -169,8 +168,8 @@ minetest.register_entity("water_life:whale",{
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
                                              
             
-                self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
-                self.object:add_velocity({x=0,y=-5, z=0})
+                self.object:set_velocity({x=hvel.x,y=-2,z=hvel.z})
+                self.object:add_velocity({x=0,y=-3, z=0})
             
             
             if time_from_last_punch > 2 then
