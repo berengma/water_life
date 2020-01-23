@@ -81,7 +81,8 @@ water_life.find_collision(pos1,pos2,water)
 throws a raycast from pos1 to pos2
 
 if water is true then water is handled as obstacle
-returns true if there was a collision found
+returns distance to obstacle in integer or nil
+if nothing found
 
 
 
