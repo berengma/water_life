@@ -22,6 +22,19 @@ if vector and not vector.cross then
 	end
 end
 
+
+
+-- show temp marker
+function water_life.temp_show(pos,time)
+	if not pos then return end
+	if not time then time = 5 end
+	
+	local obj = minetest.add_entity(pos, "water_life:pos")
+	minetest.after(time, function(obj) obj:remove() end, obj)
+	
+end
+
+
 -- throws a coin
 function water_life.leftorright()
     local rnd = math.random()
@@ -366,5 +379,22 @@ function water_life.radar(pos, yaw, radius, water)
     end
     return left, right, up, down, under, above
 end
-    
+
+
+-- Entity definitions
+
+-- entity for showing positions in debug
+minetest.register_entity("water_life:pos", {
+	initial_properties = {
+		visual = "cube",
+        collide_with_objects = false,                  
+		visual_size = {x=1.1, y=1.1},
+		textures = {"water_life_pos.png", "water_life_pos.png",
+			"water_life_pos.png", "water_life_pos.png",
+			"water_life_pos.png", "water_life_pos.png"},
+		collisionbox = {-0.55, -0.55, -0.55, 0.55, 0.55, 0.55},
+		physical = false,
+	}
+})
+
     
