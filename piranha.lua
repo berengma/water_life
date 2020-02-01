@@ -65,7 +65,7 @@ minetest.register_entity("water_life:piranha",{
 	view_range = 16,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
-	timeout=60,
+	timeout=360,
     wild = true,
 	attack={range=0.4,damage_groups={fleshy=5}},
 	drops = {

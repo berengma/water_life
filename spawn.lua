@@ -67,7 +67,7 @@ local function spawnstep(dtime)
                         end
                     
                         local mobname = 'water_life:fish'
-                        local nearlife = water_life.count_objects(pos2,16)
+                        local nearlife = water_life.count_objects(pos2,16,"water_life:piranha")
                         if water_life.fish_spawn_rate >= coin and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish > 5) and liquidflag == "river" then
                             --pos2.y = height+1.01
                             
@@ -83,8 +83,10 @@ local function spawnstep(dtime)
 								if mobname == "water_life:fish" then
 									local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
 								else
-									for i = 1,3,1 do
-											local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+									if nearlife.name < 10 then
+										for i = 1,3,1 do
+												local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+										end
 									end
 								end
                             end
