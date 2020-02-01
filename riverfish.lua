@@ -44,7 +44,7 @@ minetest.register_entity("water_life:fish",{
 	visual = "mesh",
 	mesh = "water_life_riverfish.b3d",
 	textures = {"water_life_riverfish.png"},
-	visual_size = {x = 2.5, y = 2.5},
+	visual_size = {x = 2.5, y = 2.5}, --2.5
 	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
@@ -65,7 +65,7 @@ minetest.register_entity("water_life:fish",{
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
 	},
     animation = {
-		def={range={x=1,y=35},speed=40,loop=true},	
+		def={range={x=1,y=35},speed=40,loop=true},	--35
 		fast={range={x=1,y=35},speed=80,loop=true},
         idle={range={x=36,y=75},speed=20,loop=true},
 		},

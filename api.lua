@@ -165,39 +165,34 @@ end
 function water_life.get_yaw_to_object(self,target)
 
     local pos = mobkit.get_stand_pos(self)
-    local opos = target:get_pos()
-    local ankat = pos.x - opos.x
-    local gegkat = pos.z - opos.z
-    local yaw = math.atan2(ankat, gegkat)
-    
-    return yaw
+    local tpos = target:get_pos()
+	local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
+    return tyaw
 end
 
 -- returns 2D angle from self to pos in radians
-function water_life.get_yaw_to_pos(self,target)
+function water_life.get_yaw_to_pos(self,tpos)
 
     local pos = mobkit.get_stand_pos(self)
-    local opos = target
-    local ankat = pos.x - opos.x
-    local gegkat = pos.z - opos.z
-    local yaw = math.atan2(ankat, gegkat)
+    local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
     
-    return yaw - pi
+    return tyaw
 end
 
 -- turn around 90degrees from tgtob and swim away until out of sight
-function water_life.hq_swimfrom(self,prty,tgtobj,speed) 
+function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight) 
 	
 	local func = function(self)
-	
+		if not outofsight then outofsight = self.view_range * 1.5 end
+		
 		if not mobkit.is_alive(tgtobj) then return true end
         
             local pos = mobkit.get_stand_pos(self)
             local opos = tgtobj:get_pos()
-			local yaw = water_life.get_yaw_to_object(self,tgtobj) - (pi/2) -- pi/2 = 90 degrees
+			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(math.random(-30,30))+math.rad(180)
             local distance = vector.distance(pos,opos)
             
-            if (distance/1.5) < self.view_range then
+            if distance < outofsight then
                 
                 local swimto, height = water_life.aqua_radar_dumb(pos,yaw,3)
                 if height and height > pos.y then
@@ -397,4 +392,17 @@ minetest.register_entity("water_life:pos", {
 	}
 })
 
-    
+ --chatcommands
+
+minetest.register_chatcommand("showbdata", {
+	params = "",
+	description = "biome id,name,heat and humidity",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false end
+		local pos = player:get_pos()
+		local table = minetest.get_biome_data(pos)
+		minetest.chat_send_player(name,"//"..dump(table.biome).."/"..dump(minetest.get_biome_name(table.biome)).."///   "..dump(table.heat).."   "..dump(table.humidity))
+	end
+})

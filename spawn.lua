@@ -74,12 +74,19 @@ local function spawnstep(dtime)
                             local a=pos2.x
                             local b=pos2.y
                             local c=pos2.z
-                            
+                            local table = minetest.get_biome_data(pos)
+							if table and minetest.get_biome_name(table.biome) == "rainforest" then mobname = "water_life:piranha" end
                             
                             local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
                             
-                            if water and #water > 10 then     -- little fish need little water
-                                local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+                            if water and #water > 10 then -- little fish need little water
+								if mobname == "water_life:fish" then
+									local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+								else
+									for i = 1,3,1 do
+											local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+									end
+								end
                             end
                                 
                             
