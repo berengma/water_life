@@ -403,6 +403,6 @@ minetest.register_chatcommand("showbdata", {
 		if not player then return false end
 		local pos = player:get_pos()
 		local table = minetest.get_biome_data(pos)
-		minetest.chat_send_player(name,"//"..dump(table.biome).."/"..dump(minetest.get_biome_name(table.biome)).."///   "..dump(table.heat).."   "..dump(table.humidity))
+		minetest.chat_send_player(name,"//"..dump(table.biome).."/"..dump(minetest.get_biome_name(table.biome)).."///   "..dump(math.floor((table.heat-32)*5/9)).."   "..dump(table.humidity))
 	end
 })

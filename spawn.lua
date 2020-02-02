@@ -11,7 +11,7 @@ local function spawnstep(dtime)
             
             local coin = math.random(1000)
             --minetest.chat_send_all(dump(coin))
-            if plyr  then	-- each player gets a spawn chance every 5s on average
+            if plyr and plyr:is_player() then	-- each player gets a spawn chance every 5s on average
         
                 local pos = plyr:get_pos()
                 local yaw = plyr:get_look_horizontal()
