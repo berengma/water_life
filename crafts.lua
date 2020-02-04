@@ -23,6 +23,26 @@ minetest.register_craft({
 	cooktime = 5
 })
 
+-- lasso
+minetest.register_tool("water_life:lasso", {
+	description = ("Lasso (right-click animal to capture it)"),
+	inventory_image = "water_life_lasso.png",
+	groups = {flammable = 2}
+})
+
+if minetest.get_modpath("farming") then
+	minetest.register_craft({
+		output = "water_life:lasso",
+		recipe = {
+			{"farming:string", "", "farming:string"},
+			{"", "default:diamond", ""},
+			{"farming:string", "", "farming:string"}
+		}
+	})
+end
+
+minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
+
 minetest.register_craftitem("water_life:riverfish", {
 	description = ("Riverfish"),
 	inventory_image = "water_life_riverfish_item.png",
