@@ -1,5 +1,7 @@
 local timer = 0
 local pi = math.pi
+local random = water_life.random
+
 
 
 local function spawnstep(dtime)
@@ -9,7 +11,7 @@ local function spawnstep(dtime)
         
         for _,plyr in ipairs(minetest.get_connected_players()) do
             
-            local coin = math.random(1000)
+            local coin = random(1000)
             --minetest.chat_send_all(dump(coin))
             if plyr and plyr:is_player() then	-- each player gets a spawn chance every 5s on average
         
@@ -23,13 +25,13 @@ local function spawnstep(dtime)
                 
                 -- find a pos randomly in look direction of player
                 local radius = (water_life.abr * 12) - 1                                           -- 75% from 16 = 12 nodes
-                radius = math.random(7,radius)
-                local angel = math.random() * 1.1781                                                -- look for random angel 0 - 75 degrees
+                radius = random(7,radius)
+                local angel = random() * 1.1781                                                -- look for random angel 0 - 75 degrees
                 if water_life.leftorright() then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
                 
                 local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
                 
-                pos2.y = pos2.y - math.random(water_life.abr * 5)
+                pos2.y = pos2.y - random(water_life.abr * 5)
                 local node = minetest.get_node(pos2)
                 --minetest.chat_send_all(dump(node.name))
                 local liquidflag = nil
@@ -41,6 +43,10 @@ local function spawnstep(dtime)
                 elseif node.name == "default:river_water_source" then
                     
                     liquidflag = "river"
+					
+				elseif node.name == "water_life:muddy_river_water_source" then
+					
+					liquidflag = "muddy"
                     
                 end
         
@@ -68,16 +74,16 @@ local function spawnstep(dtime)
                     
                         local mobname = 'water_life:fish'
                         local nearlife = water_life.count_objects(pos2,16,"water_life:piranha")
-                        if water_life.fish_spawn_rate >= coin and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish > 5) and liquidflag == "river" then
+                        if water_life.fish_spawn_rate >= coin and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish < 5) and (liquidflag == "river" or liquidflag == "muddy") then
                             --pos2.y = height+1.01
                             
                             local a=pos2.x
                             local b=pos2.y
                             local c=pos2.z
                             local table = minetest.get_biome_data(pos)
-							if table and minetest.get_biome_name(table.biome) == "rainforest" then mobname = "water_life:piranha" end
-                            
-                            local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source"})
+							if table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)] then mobname = "water_life:piranha" end
+                            --minetest.chat_send_all(dump(minetest.get_biome_name(table.biome)))
+                            local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source","water_life:muddy_river_water_source"})
                             
                             if water and #water > 10 then -- little fish need little water
 								if mobname == "water_life:fish" then

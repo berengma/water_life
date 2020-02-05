@@ -10,22 +10,24 @@ water_life.maxsharks = minetest.settings:get("water_life_maxsharks") or 5
 water_life.maxmobs = minetest.settings:get("water_life_maxmobs") or 30
 water_life.apionly = minetest.settings:get("water_life_apionly") or false
 water_life.radar_debug = minetest.settings:get("water_life_radar_debug") or false
-
-
-math.randomseed(os.time()) --init random seed
-
+water_life.muddy_water = minetest.settings:get("water_life_muddy_water") or false
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
-dofile(path.."/api.lua")                -- load water_life api
+dofile(path.."/api.lua")               										-- load water_life api
+if water_life.muddy_water then dofile(path.."/mapgen.lua") end				-- load muddy_water
+dofile(path.."/crafts.lua")				 									-- load crafts
 if not water_life.apionly then
-    dofile(path.."/crafts.lua")             -- load crafts
-    dofile(path.."/spawn.lua")              -- load spawn function
-    dofile(path.."/whale.lua")              -- load whales
-    dofile(path.."/shark.lua")              -- load sharks
-    dofile(path.."/riverfish.lua")          -- load riverfish
-	dofile(path.."/piranha.lua")			-- load piranha
+    dofile(path.."/spawn.lua")												-- load spawn function
+    dofile(path.."/whale.lua")												-- load whales
+    dofile(path.."/shark.lua")												-- load sharks
+    dofile(path.."/riverfish.lua")											-- load riverfish
+	dofile(path.."/piranha.lua")											-- load piranha
 end
+
+
+
+math.randomseed(os.time()) --init random seed
 
 
 

@@ -58,7 +58,7 @@ minetest.register_entity("water_life:fish",{
 	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
-	timeout=60,
+	timeout=180,
     wild = true,
 	drops = {
 		{name = "default:diamond", chance = 20, min = 1, max = 1,},		
@@ -115,7 +115,7 @@ minetest.register_entity("water_life:fish_tamed",{
 	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
-	timeout=60,
+--	timeout=60,
     wild = false,
     owner = "",
 	drops = {

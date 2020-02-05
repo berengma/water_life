@@ -1,34 +1,40 @@
 # all settings for client menu or in minetest.conf on servers
 
-#
+# -
 # controls spawn chance of whales 10 promille = 1 %
 water_life_whale_spawn_rate (Whales spawn chance in promille) int 100
 
-#
+# -
 # controls spawn chance of sharks 10 promille = 1 %
 water_life_shark_spawn_rate (Shark spawn chance in promille) int  100
 
-#
+# -
 # controls spawn chance of Riverfish 10 promille = 1 %
 water_life_fish_spawn_rate (Riverfish spawn chance in promille) int 1000
 
-#
+# -
 # total max number of whales spawning in aktive area
 water_life_maxwhales (Max possible whales in aktive area)  int 1
 
-#
+# -
 # total max number of sharks spawning in aktive area
 water_life_maxsharks (Max possible sharks in aktive area) int 5
 
-#
+# -
 # total max number of animals in an aktive area
 # other mods might not care about this setting
 water_life_maxmobs (Max possible animals in aktive area) int 30
 
-#
+# -
 # turn this to true if you only need the api but do
 # not want to have the animals
 water_life_apionly (no animals please, I just need the api) bool false
 
+# -
+#replace riverwater with muddywater
+#in rainforest and savanna biome
+water_life_muddy_water (muddy water in rainforest and savanna biome) bool false
+
+#-
 # turn this value to true to see radar function debug
 water_life_radar_debug (radar function debug shown in chat) bool false
