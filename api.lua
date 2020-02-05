@@ -2,16 +2,31 @@
 local abs = math.abs
 local pi = math.pi
 local floor = math.floor
-local random = math.random
 local sqrt = math.sqrt
 local max = math.max
 local min = math.min
 local pow = math.pow
 local sign = math.sign
-
 local time = os.time
 
 
+-- pseudo random generator, init and call function
+water_life.randomtable = PcgRandom(math.random(2^31))
+
+function water_life.random(min,max)
+	if not min and not max then return water_life.randomtable:next() / 2^31 end
+	if not max then
+		max = min
+		min = 1
+	end
+	if max and not min then min = 1 end
+	return water_life.randomtable:next(min,max)
+end
+
+local random = water_life.random
+
+
+-- add vector cross function for flying behavior if not yet there
 if vector and not vector.cross then	
 	function vector.cross(a, b)
 		return {
@@ -37,7 +52,7 @@ end
 
 -- throws a coin
 function water_life.leftorright()
-    local rnd = math.random()
+    local rnd = random()
     if rnd > 0.5 then return true else return false end
 end
 
@@ -49,14 +64,13 @@ function water_life.handle_drops(self)
     
     for _,item in ipairs(self.drops) do
         
-        local amount = math.random (item.min, item.max)
-        local chance = math.random(1,100) 
+        local amount = random (item.min, item.max)
+        local chance = random(1,100) 
         local pos = self.object:get_pos()
-        pos.x = pos.x + math.random(-1,1)
-        pos.z = pos.z + math.random(-1,1)
+		pos.y = pos.y + self.collisionbox[5] +1
         
         if chance < (100/item.chance) then
-            minetest.add_item(pos, item.name.." "..tostring(amount))
+            local obj = minetest.add_item(pos, item.name.." "..tostring(amount))
         end
         
     end
@@ -70,7 +84,7 @@ end
 
 
 function water_life.feed_shark()
-    local index = math.random(1,#water_life.shark_food)
+    local index = random(1,#water_life.shark_food)
     return water_life.shark_food[index]
 end
 
@@ -189,7 +203,7 @@ function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight)
         
             local pos = mobkit.get_stand_pos(self)
             local opos = tgtobj:get_pos()
-			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(math.random(-30,30))+math.rad(180)
+			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
             local distance = vector.distance(pos,opos)
             
             if distance < outofsight then
@@ -403,6 +417,11 @@ minetest.register_chatcommand("showbdata", {
 		if not player then return false end
 		local pos = player:get_pos()
 		local table = minetest.get_biome_data(pos)
-		minetest.chat_send_player(name,"//"..dump(table.biome).."/"..dump(minetest.get_biome_name(table.biome)).."///   "..dump(math.floor((table.heat-32)*5/9)).."   "..dump(table.humidity))
+		
+		minetest.chat_send_player(name,dump(minetest.registered_biomes[minetest.get_biome_name(table.biome)]))
+                                           
+		minetest.chat_send_player(name,"ID :"..dump(table.biome).."  /Name :"..dump(minetest.get_biome_name(table.biome)).."  /Temp. in C :"..dump(math.floor((table.heat-32)*5/9)).."  /Humidity in % :"..dump(math.floor(table.humidity*100)/100))
+		
+		
 	end
 })

@@ -1,4 +1,10 @@
-
+water_life.piranha_biomes= {["rainforest"]=1,
+							["rainforest_ocean"]=1,
+							["rainforest_swamp"]=1,
+							["savanna"]=1,
+							["savanna_shore"]=1,
+                            ["savanna_ocean"]=1,
+}
 
 
 local function piranha_brain(self)
@@ -15,7 +21,7 @@ local function piranha_brain(self)
         end
         local target = mobkit.get_nearby_player(self)
 		
-        if target and self.wild then
+        if target then
             mobkit.animate(self,fast)
             if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
 				mobkit.clear_queue_high(self)

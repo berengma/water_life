@@ -43,60 +43,173 @@ end
 
 minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
 
-minetest.register_craftitem("water_life:riverfish", {
-	description = ("Riverfish"),
-	inventory_image = "water_life_riverfish_item.png",
-    wield_scale = {x = 0.5, y = 0.5, z = 0.5},
-    stack_max = 10,
-    liquids_pointable = false,
-    range = 10,
-    on_use = minetest.item_eat(3),                                    
-	groups = {food_meat = 1, flammable = 2},
-    on_place = function(itemstack, placer, pointed_thing)
-        if placer and not placer:is_player() then return itemstack end
-        if not pointed_thing then return itemstack end
-        if not pointed_thing.type == "node" then return itemstack end
-        
-        local pos = pointed_thing.above
-        local number = water_life.count_objects(pos)
-        if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
-                                                    
-        local name = placer:get_player_name()
-        if minetest.is_protected(pos,name) then return itemstack end
 
-        local obj = minetest.add_entity(pos, "water_life:fish_tamed")
-        obj = obj:get_luaentity()
-        itemstack:take_item()
-        obj.owner = name
-        return itemstack
-    end,
-})
+if not water_life.apionly then
+	
+		minetest.register_craftitem("water_life:riverfish", {
+			description = ("Riverfish"),
+			inventory_image = "water_life_riverfish_item.png",
+			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
+			stack_max = 10,
+			liquids_pointable = false,
+			range = 10,
+			on_use = minetest.item_eat(3),                                    
+			groups = {food_meat = 1, flammable = 2},
+			on_place = function(itemstack, placer, pointed_thing)
+				if placer and not placer:is_player() then return itemstack end
+				if not pointed_thing then return itemstack end
+				if not pointed_thing.type == "node" then return itemstack end
+				
+				local pos = pointed_thing.above
+				local number = water_life.count_objects(pos)
+				if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
+															
+				local name = placer:get_player_name()
+				if minetest.is_protected(pos,name) then return itemstack end
 
-minetest.register_craftitem("water_life:piranha", {
-	description = ("Piranha"),
-	inventory_image = "water_life_piranha_item.png",
-    wield_scale = {x = 0.5, y = 0.5, z = 0.5},
-    stack_max = 10,
-    liquids_pointable = false,
-    range = 10,
-    on_use = minetest.item_eat(5),                                    
-	groups = {food_meat = 1, flammable = 2},
-    on_place = function(itemstack, placer, pointed_thing)
-        if placer and not placer:is_player() then return itemstack end
-        if not pointed_thing then return itemstack end
-        if not pointed_thing.type == "node" then return itemstack end
-        
-        local pos = pointed_thing.above
-        local number = water_life.count_objects(pos)
-        if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
-                                                    
-        local name = placer:get_player_name()
-        if minetest.is_protected(pos,name) then return itemstack end
+				local obj = minetest.add_entity(pos, "water_life:fish_tamed")
+				obj = obj:get_luaentity()
+				itemstack:take_item()
+				obj.owner = name
+				return itemstack
+			end,
+		})
 
-        local obj = minetest.add_entity(pos, "water_life:piranha")
-        obj = obj:get_luaentity()
-        itemstack:take_item()
-        --obj.owner = name
-        return itemstack
-    end,
-})
+		minetest.register_craftitem("water_life:piranha", {
+			description = ("Piranha"),
+			inventory_image = "water_life_piranha_item.png",
+			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
+			stack_max = 10,
+			liquids_pointable = false,
+			range = 10,
+			on_use = minetest.item_eat(5),                                    
+			groups = {food_meat = 1, flammable = 2},
+			on_place = function(itemstack, placer, pointed_thing)
+				if placer and not placer:is_player() then return itemstack end
+				if not pointed_thing then return itemstack end
+				if not pointed_thing.type == "node" then return itemstack end
+				
+				local pos = pointed_thing.above
+				local number = water_life.count_objects(pos)
+				if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
+															
+				local name = placer:get_player_name()
+				if minetest.is_protected(pos,name) then return itemstack end
+
+				local obj = minetest.add_entity(pos, "water_life:piranha")
+				obj = obj:get_luaentity()
+				itemstack:take_item()
+				--obj.owner = name
+				return itemstack
+			end,
+		})
+end
+
+
+--muddy water
+
+if water_life.muddy_water then
+
+		minetest.register_node("water_life:muddy_river_water_source", {
+			description = "Muddy river water source",
+			drawtype = "liquid",
+			tiles = {
+				{
+					name="water_life_muddy_river_water_flowing.png",
+					animation = {
+						type = "vertical_frames",
+						aspect_w = 16,
+						aspect_h = 16,
+						length = 2.0,
+					},
+				},
+			},
+			special_tiles = {
+				{
+					name="water_life_muddy_river_water_flowing.png",
+					animation = {
+						type = "vertical_frames",
+						aspect_w = 16,
+						aspect_h = 16,
+						length = 2.0,
+					},
+					backface_culling = false,
+				},
+			},
+			alpha = 224,
+			paramtype = "light",
+			walkable = false,
+			pointable = false,
+			diggable = false,
+			buildable_to = true,
+			is_ground_content = false,
+			drop = "",
+			drowning = 1,
+			liquidtype = "source",
+			liquid_alternative_flowing = "water_life:muddy_river_water_flowing",
+			liquid_alternative_source = "water_life:muddy_river_water_source",
+			liquid_viscosity = 1,
+			liquid_renewable = true,
+			liquid_range = 3,
+			post_effect_color = {a = 232, r = 92, g = 80, b = 48},
+			groups = {water = 3, liquid = 3, puts_out_fire = 1},
+		})
+
+		minetest.register_node("water_life:muddy_river_water_flowing", {
+			description = "Flowing muddy river water",
+			drawtype = "flowingliquid",
+			tiles = {"water_life_muddy_river_water_source.png"},
+			special_tiles = {
+				{
+					image="water_life_muddy_river_water_flowing.png",
+					backface_culling = false,
+					animation = {
+						type = "vertical_frames",
+						aspect_w = 16,
+						aspect_h = 16,
+						length = 0.8,
+					},
+				},
+				{
+					image="water_life_muddy_river_water_flowing.png",
+					backface_culling = true,
+					animation = {
+						type = "vertical_frames",
+						aspect_w = 16,
+						aspect_h = 16,
+						length = 0.8,
+					},
+				},
+			},
+			alpha = 224,
+			paramtype = "light",
+			paramtype2 = "flowingliquid",
+			walkable = false,
+			pointable = false,
+			diggable = false,
+			buildable_to = true,
+			is_ground_content = false,
+			drop = "",
+			drowning = 1,
+			liquidtype = "flowing",
+			liquid_alternative_flowing = "water_life:muddy_river_water_flowing",
+			liquid_alternative_source = "water_life:muddy_river_water_source",
+			liquid_viscosity = 1,
+			liquid_renewable = true,
+			liquid_range = 3,
+			post_effect_color = {a = 232, r = 92, g = 80, b = 48},
+			groups = {water = 3, liquid = 3, puts_out_fire = 1,
+				not_in_creative_inventory = 1},
+		})
+
+		if minetest.get_modpath("bucket") then
+			bucket.register_liquid(
+				"water_life:muddy_river_water_source",
+				"water_life:muddy_river_water_flowing",
+				"water_life:bucket_muddy_river_water",
+				"water_life_bucket_muddy_water.png",
+				"Muddy Water Bucket",
+				{water_bucket = 1}
+			)
+		end
+end
