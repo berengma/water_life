@@ -11,7 +11,7 @@ local time = os.time
 
 
 -- pseudo random generator, init and call function
-water_life.randomtable = PcgRandom(math.random(2^31))
+water_life.randomtable = PcgRandom(math.random(2^31),1)
 
 function water_life.random(min,max)
 	if not min and not max then return water_life.randomtable:next() / 2^31 end
