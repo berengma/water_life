@@ -11,10 +11,10 @@ local time = os.time
 
 
 -- pseudo random generator, init and call function
-water_life.randomtable = PcgRandom(math.random(2^31),1)
+water_life.randomtable = PcgRandom(math.random(2^23)+1)
 
 function water_life.random(min,max)
-	if not min and not max then return water_life.randomtable:next() / 2^31 end
+	if not min and not max then return math.abs(water_life.randomtable:next() / 2^31) end
 	if not max then
 		max = min
 		min = 1
@@ -40,12 +40,18 @@ end
 
 
 -- show temp marker
-function water_life.temp_show(pos,time)
+function water_life.temp_show(pos,time,pillar)
 	if not pos then return end
 	if not time then time = 5 end
+	local step = 1
+	if not pillar then pillar = 1 end
+	if pillar < 0 then step = -1 end
 	
-	local obj = minetest.add_entity(pos, "water_life:pos")
-	minetest.after(time, function(obj) obj:remove() end, obj)
+	for i = 1,pillar,step do
+		
+		local obj = minetest.add_entity({x=pos.x, y=pos.y+i, z=pos.z}, "water_life:pos")
+		minetest.after(time, function(obj) obj:remove() end, obj)
+	end
 	
 end
 
@@ -389,6 +395,75 @@ function water_life.radar(pos, yaw, radius, water)
     return left, right, up, down, under, above
 end
 
+
+-- function to find liquid surface and depth at that position
+function water_life.water_depth(pos,max)
+	
+	local depth = {}
+	depth.surface = {}
+	depth.depth = 0
+	if not max then max = 10 end
+	if not pos then return depth end
+	local tempos = {}
+	local node = minetest.get_node(pos)
+	local type = minetest.registered_nodes[node.name]["liquidtype"]
+	local found = false
+	
+	if type == "none" or type == "flowing" then 									-- start in none liquid try to find surface
+		for i = 1,max,1 do
+			tempos = {x=pos.x, y=pos.y-i, z= pos.z}
+			node = minetest.get_node(tempos)
+			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
+
+			if ctype == "source" then
+				depth.surface = tempos
+				found = true
+				break
+			end
+		end
+		
+		if not found then
+			return depth
+		end
+	end
+	
+	if found then
+		pos = depth.surface
+		type = "source"
+	end
+
+	if type == "source" then															-- start in liquid, try to find surface
+		node = minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z})
+		type = minetest.registered_nodes[node.name]["liquidtype"]
+		if type == "none" then 
+			depth.surface = pos
+			
+		elseif type == "source" then
+			for i = 1,max,1 do
+				tempos = {x=pos.x, y=pos.y+i, z= pos.z}
+				node = minetest.get_node({x=tempos.x, y=tempos.y+1, z=tempos.z})
+				type = minetest.registered_nodes[node.name]["liquidtype"]
+				if type ~= "source" then break end
+			end
+			depth.surface = tempos
+		end
+		
+		pos = depth.surface																-- surface found, now check depth
+		for i = 1,max,1 do
+			tempos = {x=pos.x, y=pos.y-i, z= pos.z}
+			node = minetest.get_node({x=tempos.x, y=tempos.y-1, z=tempos.z})
+			type = minetest.registered_nodes[node.name]["liquidtype"]
+			if type ~= "source" then break end
+		end
+		
+		depth.depth = depth.surface.y - tempos.y
+		return depth
+		
+	end
+	return depth
+end
+	
+	
 
 -- Entity definitions
 

@@ -23,6 +23,7 @@ if not water_life.apionly then
     dofile(path.."/shark.lua")												-- load sharks
     dofile(path.."/riverfish.lua")											-- load riverfish
 	dofile(path.."/piranha.lua")											-- load piranha
+	dofile(path.."/sea_urchin.lua")											-- load sea urchin
 end
 
 

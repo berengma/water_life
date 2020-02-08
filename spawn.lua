@@ -11,29 +11,39 @@ local function spawnstep(dtime)
         
         for _,plyr in ipairs(minetest.get_connected_players()) do
             
+			local toomuch = false
             local coin = random(1000)
             --minetest.chat_send_all(dump(coin))
-            if plyr and plyr:is_player() then	-- each player gets a spawn chance every 5s on average
+            if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 100 then	-- each player gets a spawn chance every 5s on average
         
                 local pos = plyr:get_pos()
                 local yaw = plyr:get_look_horizontal()
                 
                 local animal = water_life.count_objects(pos)
             
-                --minetest.chat_send_all("yaw = "..dump(yaw).."   mobs: "..dump(animal.all).."  sharks: "..dump(animal.sharks).."  whales: "..dump(animal.whales))
-                if animal.all > water_life.maxmobs then break end
+                if animal.all > water_life.maxmobs then toomuch = true end
                 
-                -- find a pos randomly in look direction of player
-                local radius = (water_life.abr * 12) - 1                                           -- 75% from 16 = 12 nodes
-                radius = random(7,radius)
-                local angel = random() * 1.1781                                                -- look for random angel 0 - 75 degrees
-                if water_life.leftorright() then yaw = yaw + angel else yaw = yaw - angel end       -- add or substract to/from yaw
+																									-- find a pos randomly in look direction of player
+                local radius = (water_life.abr * 12)												-- 75% from 16 = 12 nodes
+                radius = random(7,radius)															-- not nearer than 7 nodes in front of player
+                local angel = math.rad(random(75))                                       				-- look for random angel 0 - 75 degrees
+                if water_life.leftorright() then yaw = yaw + angel else yaw = yaw - angel end   	-- add or substract to/from yaw
                 
-                local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
-                
-                pos2.y = pos2.y - random(water_life.abr * 5)
+                local pos2 = mobkit.pos_translate2d(pos,yaw,radius)									-- calculate position
+				
+                local depth = water_life.water_depth(pos2,25)										-- get surface pos and water depth
+				if depth.depth > 0 then									
+					if water_life.radar_debug then
+						water_life.temp_show(depth.surface,1,5)
+						minetest.chat_send_all(">>> Depth ="..dump(depth.depth).." <<<")
+					end
+					pos2 = depth.surface
+					--pos2.y = pos2.y - depth.depth+4													-- spawn 4 nodes above ground
+				else 
+					pos2.y = pos2.y - random(water_life.abr * 5)
+				end
                 local node = minetest.get_node(pos2)
-                --minetest.chat_send_all(dump(node.name))
+                
                 local liquidflag = nil
                 
                 if node.name == "default:water_source" then 
@@ -50,21 +60,13 @@ local function spawnstep(dtime)
                     
                 end
         
-                if liquidflag then
+                if liquidflag and not toomuch then
                         
                         local mobname = 'water_life:shark'
                         if water_life.shark_spawn_rate >= coin then
                             if animal.sharks < (water_life.maxsharks) and liquidflag == "sea" then
                                 
-                                
-                                local a=pos2.x
-                                local b=pos2.y
-                                local c=pos2.z
-                                
-                                local water = minetest.find_nodes_in_area({x=a-3, y=b-3, z=c-3}, {x=a+4, y=b+4, z=c+4}, {"default:water_source"})
-                                
-                                if #water > 128 then     -- sharks need water, much water
-                            
+								if depth.depth > 4 then      --shark min water depth
                                     
                                     local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
                                 end
@@ -72,20 +74,30 @@ local function spawnstep(dtime)
                             
                         end
                     
-                        local mobname = 'water_life:fish'
+						mobname = "water_life:urchin"
+						local ground = depth.surface
+						ground.y = ground.y - depth.depth
+						local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, water_life.urchinspawn)
+						local nearlife = water_life.count_objects(ground,5,"water_life:urchin")
+						if coraltable and #coraltable > 0 and nearlife.name < 10 and liquidflag == "sea" then
+							local coralpos = coraltable[random(#coraltable)]
+							coralpos.y = coralpos.y +1
+							local node = minetest.get_node(coralpos)
+							
+							if node.name == "default:water_source" then
+								local obj=minetest.add_entity(coralpos,mobname)
+							end
+						end
+						
+                        mobname = 'water_life:fish'
                         local nearlife = water_life.count_objects(pos2,16,"water_life:piranha")
                         if water_life.fish_spawn_rate >= coin and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish < 5) and (liquidflag == "river" or liquidflag == "muddy") then
-                            --pos2.y = height+1.01
                             
-                            local a=pos2.x
-                            local b=pos2.y
-                            local c=pos2.z
+                            
                             local table = minetest.get_biome_data(pos)
 							if table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)] then mobname = "water_life:piranha" end
-                            --minetest.chat_send_all(dump(minetest.get_biome_name(table.biome)))
-                            local water = minetest.find_nodes_in_area({x=a-2, y=b-2, z=c-2}, {x=a+2, y=b+2, z=c+2}, {"default:river_water_source","water_life:muddy_river_water_source"})
                             
-                            if water and #water > 10 then -- little fish need little water
+							if depth.depth > 2 then										-- min water depth for piranha and riverfish
 								if mobname == "water_life:fish" then
 									local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
 								else
@@ -101,17 +113,11 @@ local function spawnstep(dtime)
                         end
                         
                         if water_life.whale_spawn_rate >= coin and animal.whales < (water_life.maxwhales) and liquidflag == "sea" then
-                            pos2.y = pos2.y -4
                             
                             mobname = 'water_life:whale'
-                            local a=pos2.x
-                            local b=pos2.y
-                            local c=pos2.z
                             
-                            local water = minetest.find_nodes_in_area({x=a-5, y=b-5, z=c-5}, {x=a+5, y=b+5, z=c+5}, {"default:water_source"})
-                            --minetest.chat_send_all(dump(#water))
-                            if #water > 900 then    -- whales need water, much water
-                                local obj=minetest.add_entity(pos2,mobname)			-- ok spawn it already damnit
+							if depth.depth > 8 then									-- min water depth for whales
+                                local obj=minetest.add_entity({x=pos2.x, y=pos2.y+4,z=pos2.z},mobname)			-- ok spawn it already damnit
                             end
                         end
                     
