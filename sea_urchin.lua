@@ -39,7 +39,7 @@ local function urchin_brain(self)
 	if mobkit.timer(self,1) then 
 		local nature = water_life_get_biome_data(mobkit.get_stand_pos(self))
 		
-		if not self.isinliquid or self.isinliquid ~= "default:water_source" or nature.temp < 25 then mobkit.hurt(self,1) end
+		if not self.isinliquid or self.isinliquid ~= "default:water_source" or nature.temp < 20 then mobkit.hurt(self,1) end
 		
 		local target = mobkit.get_nearby_player(self)
 		if target and target:is_player() then
