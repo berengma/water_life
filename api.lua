@@ -26,6 +26,31 @@ end
 local random = water_life.random
 
 
+
+function water_life_get_biome_data(pos)
+	if not pos then return nil end
+	local table = minetest.get_biome_data(pos)
+	if not table then return nil end
+	local biome = {}
+	biome.id = table.biome
+	biome.name = minetest.get_biome_name(table.biome)
+	biome.temp = math.floor((table.heat-32)*5/9)
+	biome.humid = math.floor(table.humidity*100)/100
+	return biome
+end
+
+
+--sets an urchin somewhere but not in the center of a node
+function water_life.set_urchin(pos)
+	if not pos then return end
+	local x = random()/2
+	local z = random()/2
+	if water_life.leftorright() then pos.x = pos.x +x else pos.x=pos.x - x end
+	if water_life.leftorright() then pos.z = pos.z +z else pos.z=pos.z - z end
+	local obj = minetest.add_entity(pos, "water_life:urchin")
+	return obj
+end
+	
 -- add vector cross function for flying behavior if not yet there
 if vector and not vector.cross then	
 	function vector.cross(a, b)
@@ -199,7 +224,7 @@ function water_life.get_yaw_to_pos(self,tpos)
     return tyaw
 end
 
--- turn around 90degrees from tgtob and swim away until out of sight
+-- turn around 180degrees from tgtob and swim away until out of sight
 function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight) 
 	
 	local func = function(self)
@@ -294,6 +319,42 @@ function water_life.big_aqua_roam(self,prty,speed)
 	mobkit.queue_high(self,func,prty)
 end
 
+
+
+function water_life.hq_snail_move(self,prty)
+	local ground = mobkit.get_stand_pos(self)
+	local coraltable = minetest.find_nodes_in_area({x=ground.x-3, y=ground.y-1, z=ground.z-3}, {x=ground.x+3, y=ground.y, z=ground.z+3}, water_life.urchinspawn)
+	if not coraltable or #coraltable < 1 then return end
+	local tgpos = coraltable[random(#coraltable)]
+	
+	local func = function(self)
+		if not mobkit.is_alive(self) then return true end
+		local pos = mobkit.get_stand_pos(self)
+		local dist = vector.distance(pos,tgpos)
+		
+		mobkit.drive_to_pos(self,tgpos,0.02,0.5,1)
+		--minetest.chat_send_all(dump(dist))
+		if dist <= 1.8 then return true end
+	end
+	
+	mobkit.queue_high(self,func,prty)
+end
+	
+
+function water_life.hq_idle(self,prty,duration,anim)
+	anim = anim or 'stand'
+	local init = true
+	
+	local func=function(self)
+		if init then 
+			mobkit.animate(self,anim) 
+			init=false
+		end
+		duration = duration-self.dtime
+		if duration <= 0 then return true end
+	end
+	mobkit.queue_high(self,func,prty)
+end
 
 
 -- swim to the next "node" which is inside viewrange or quit
@@ -481,9 +542,21 @@ minetest.register_entity("water_life:pos", {
 	}
 })
 
+if water_life.radar_debug then
+minetest.register_on_player_hpchange(function(player, hp_change, reason)
+        if not player or hp_change >= 0 then return hp_change end
+        local name = player:get_player_name()
+        local privs = minetest.get_player_privs(name)
+        if not privs.god then return hp_change end
+        return 0
+        end, true)
+        
+minetest.register_privilege("god", {description ="omg"})
+end
+
  --chatcommands
 
-minetest.register_chatcommand("showbdata", {
+minetest.register_chatcommand("wl_bdata", {
 	params = "",
 	description = "biome id,name,heat and humidity",
 	privs = {server = true},
@@ -500,3 +573,5 @@ minetest.register_chatcommand("showbdata", {
 		
 	end
 })
+
+

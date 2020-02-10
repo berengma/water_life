@@ -44,6 +44,39 @@ end
 minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
 
 
+
+-- revive corals if a living one is around
+minetest.register_abm({
+	nodenames = {"default:coral_skeleton","water_life:artificial_skeleton"},
+	neighbors = {"default:water_source"},
+	interval = 30,  --30
+	chance = 5,	--10
+	catch_up = false,
+	action = function(pos, node)
+		local table = minetest.find_nodes_in_area({x=pos.x-1, y=pos.y-1, z=pos.z-1}, {x=pos.x+1, y=pos.y+1, z=pos.z+1}, water_life.urchinspawn)
+		local nname = "default:coral_skeleton"
+		if table and #table > 0 then nname = minetest.get_node(table[water_life.random(#table)]).name end
+		minetest.set_node(pos, {name = nname})
+	end,
+})
+
+
+minetest.register_node("water_life:artificial_skeleton", {
+	description = "artificial coral skeleton",
+	tiles = {"default_coral_skeleton.png"},
+	groups = {cracky = 3},
+	sounds = default.node_sound_stone_defaults(),
+})
+
+minetest.register_craft({
+		
+		output = "water_life:artificial_skeleton 4",
+		type   = "shapeless",
+		recipe = {"default:silver_sandstone","default:silver_sandstone","default:silver_sandstone","default:coral_skeleton"}
+	})
+
+
+
 if not water_life.apionly then
 	
 		minetest.register_craftitem("water_life:riverfish", {
@@ -90,8 +123,8 @@ if not water_life.apionly then
 				if not pointed_thing.type == "node" then return itemstack end
 				
 				local pos = pointed_thing.above
-				local number = water_life.count_objects(pos)
-				if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
+				local number = water_life.count_objects(pos,nil,"water_life:piranha")
+				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
 															
 				local name = placer:get_player_name()
 				if minetest.is_protected(pos,name) then return itemstack end
@@ -103,9 +136,40 @@ if not water_life.apionly then
 				return itemstack
 			end,
 		})
+
+
+
+		minetest.register_craftitem("water_life:urchin_item", {
+			description = ("Sea urchin"),
+			inventory_image = "water_life_urchin_item.png",
+			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
+			stack_max = 10,
+			liquids_pointable = false,
+			range = 10,
+			on_use = minetest.item_eat(2),                                    
+			groups = {food_meat = 1, flammable = 2},
+			on_place = function(itemstack, placer, pointed_thing)
+				if placer and not placer:is_player() then return itemstack end
+				if not pointed_thing then return itemstack end
+				if not pointed_thing.type == "node" then return itemstack end
+				
+				local pos = pointed_thing.above
+				local number = water_life.count_objects(pos,10,"water_life:urchin")
+				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
+															
+				local name = placer:get_player_name()
+				if minetest.is_protected(pos,name) then return itemstack end
+
+				local obj = water_life.set_urchin(pos)
+				obj = obj:get_luaentity()
+				itemstack:take_item()
+				--obj.owner = name
+				return itemstack
+			end,
+		})
+		
+		
 end
-
-
 --muddy water
 
 if water_life.muddy_water then

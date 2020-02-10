@@ -21,6 +21,53 @@ helper functions:
 -----------------
 
 
+
+##########################
+water_life.random(min,max)
+##########################
+uses minetest PcgRandom generator for better random numbers
+https://en.wikipedia.org/wiki/Permuted_congruential_generator
+a bit slower, but better numbers than math.random
+
+water_life.random() 			will return a float between 0 and 1
+water_life.random(10)			will return integer number between 1 and 10
+water_life.random(50,100)		will return integer number betwwen 50 and 100
+
+
+
+###############################
+ water_life_get_biome_data(pos)
+###############################
+gets biome data at >pos< and return a table or nil
+
+biome.id	= biome id number
+biome.name	= biome name
+biome.temp	= temperature in celsius (integer rounded)
+biome.humid	= humidity in % (float rounded, two decimal places)
+	
+
+################################
+ water_life.water_depth(pos,max)
+ ###############################
+ 
+ will try to find a liquid surface at position pos
+ 
+ returns a table:
+ table.surface 		= position of water surface node
+ table.water_depth	= liquid depth at that position
+ 
+ 
+ 
+#####################################
+water_life.temp_show(pos,time,pillar)
+#####################################
+(convenience function for older people like me :D )
+
+shows a marker entity at >pos< for >time< seconds.
+if pillar set, >pillar< nodes high
+
+
+
 ########################
 water_life.leftorright()
 ########################
@@ -41,7 +88,9 @@ register enitiy "name" as shark food. Will be attacked by sharks if in water and
 water_life.count_objects(pos,radius,name)
 ##########################################
 
-counts objects around pos with radius in nodes and returns a table:
+counts objects around >pos< with >radius< in nodes and returns a table:
+(>name< is a string or nil)
+
 table.all       -   total number of all objects
 table.sharks    -   total number of sharks
 table.whales    -   total number of whales
@@ -178,11 +227,11 @@ mob will swim to given node which must be in his view_range
 
 
 
-##############################################
-water_life.hq_swimfrom(self,prty,tgtobj,speed)
-##############################################
+#########################################################
+water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight)
+#########################################################
 
-mob will turn 90 degrees away from target and try to escape until target is out of viewrange + 50%
+mob will turn 180 degrees away from target and try to escape until target is out of sight (if nil viewrange + 50%)
 
 
 
@@ -200,3 +249,15 @@ water_life.big_aqua_roam(self,prty,speed)
 
 mob with large collisionbox will roam the waters with given speed.
 A bit like mobkit.hq_aqua_roam with less turns
+
+
+
+Chat commands:
+----------------
+
+
+########
+wl_bdata
+########
+
+needs server privs, shows biome id,name,temperture in celsius and humidity at player position

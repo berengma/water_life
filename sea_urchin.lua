@@ -18,13 +18,45 @@ local function urchin_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
+	
+	if mobkit.timer(self,30) then
+		local ground = mobkit.get_stand_pos(self)
+		local coraltable = minetest.find_nodes_in_area({x=ground.x-2, y=ground.y-2, z=ground.z-2}, {x=ground.x+2, y=ground.y+2, z=ground.z+2}, water_life.urchinspawn)
+		if not coraltable or #coraltable < 1 then mobkit.hurt(self,1) end
+	end
+	
+	if mobkit.timer(self,60) then
+		local obj = mobkit.get_closest_entity(self,"water_life:urchin")
+		if obj then
+			local friend = vector.distance(mobkit.get_stand_pos(self), mobkit.get_stand_pos(obj))
+			if friend < 1 then
+				local eaten = mobkit.pos_shift(mobkit.get_stand_pos(self),{y=-1})
+				minetest.set_node(eaten, {name="default:coral_skeleton"})
+			end
+		end
+	end
+		
 	if mobkit.timer(self,1) then 
+		local nature = water_life_get_biome_data(mobkit.get_stand_pos(self))
+		
+		if not self.isinliquid or self.isinliquid ~= "default:water_source" or nature.temp < 25 then mobkit.hurt(self,1) end
+		
 		local target = mobkit.get_nearby_player(self)
 		if target and target:is_player() then
 			local distance = vector.distance(mobkit.get_stand_pos(self),target:get_pos())
 			if distance < 1 then
 				target:punch(self.object,1,self.attack)
 			end
+	   end
+	   
+	   if water_life.random(100) < 30 then
+			if mobkit.get_queue_priority(self) < 99 then
+				water_life.hq_idle(self,99,water_life.random(30,120))
+			end
+	   end
+	   
+	   if mobkit.is_queue_empty_high(self) then
+			water_life.hq_snail_move(self,10)
 	   end
 	   
     end
@@ -82,19 +114,19 @@ minetest.register_entity("water_life:urchin",{
 
 		end
 	end,
-                                            --[[
+                                            
     on_rightclick = function(self, clicker)
         if not clicker or not clicker:is_player() then return end
         local inv = clicker:get_inventory()
         local item = clicker:get_wielded_item()
         
         if not item or item:get_name() ~= "fireflies:bug_net" then return end
-        if not inv:room_for_item("main", "water_life:fish") then return end
+        if not inv:room_for_item("main", "water_life:urchin_item") then return end
                                             
-        inv:add_item("main", "water_life:riverfish")
+        inv:add_item("main", "water_life:urchin_item")
         self.object:remove()
     end,
-                                            ]]
+                                            
 })
 
 

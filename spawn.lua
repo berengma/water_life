@@ -85,7 +85,7 @@ local function spawnstep(dtime)
 							local node = minetest.get_node(coralpos)
 							
 							if node.name == "default:water_source" then
-								local obj=minetest.add_entity(coralpos,mobname)
+								local obj= water_life.set_urchin(coralpos)  --minetest.add_entity(coralpos,mobname)
 							end
 						end
 						
