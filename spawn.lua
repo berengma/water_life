@@ -75,17 +75,19 @@ local function spawnstep(dtime)
                         end
                     
 						mobname = "water_life:urchin"
-						local ground = depth.surface
-						ground.y = ground.y - depth.depth
-						local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, water_life.urchinspawn)
-						local nearlife = water_life.count_objects(ground,5,"water_life:urchin")
-						if coraltable and #coraltable > 0 and nearlife.name < 10 and liquidflag == "sea" then
-							local coralpos = coraltable[random(#coraltable)]
-							coralpos.y = coralpos.y +1
-							local node = minetest.get_node(coralpos)
-							
-							if node.name == "default:water_source" then
-								local obj= water_life.set_urchin(coralpos)  --minetest.add_entity(coralpos,mobname)
+						if water_life.urchin_spawn_rate >= coin then
+							local ground = depth.surface
+							ground.y = ground.y - depth.depth
+							local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, water_life.urchinspawn)
+							local nearlife = water_life.count_objects(ground,5,"water_life:urchin")
+							if coraltable and #coraltable > 0 and nearlife.name < 5 and liquidflag == "sea" then
+								local coralpos = coraltable[random(#coraltable)]
+								coralpos.y = coralpos.y +1
+								local node = minetest.get_node(coralpos)
+								
+								if node.name == "default:water_source" then
+									local obj= water_life.set_urchin(coralpos)  --minetest.add_entity(coralpos,mobname)
+								end
 							end
 						end
 						

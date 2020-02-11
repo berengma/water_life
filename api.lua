@@ -332,7 +332,7 @@ function water_life.hq_snail_move(self,prty)
 		local pos = mobkit.get_stand_pos(self)
 		local dist = vector.distance(pos,tgpos)
 		
-		mobkit.drive_to_pos(self,tgpos,0.02,0.5,1)
+		mobkit.drive_to_pos(self,tgpos,0.01,0.1,1.5)
 		--minetest.chat_send_all(dump(dist))
 		if dist <= 1.8 then return true end
 	end

@@ -4,6 +4,7 @@ water_life.abr = minetest.get_mapgen_setting('active_block_range') or 2
 water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 water_life.whale_spawn_rate =  minetest.settings:get("water_life_whale_spawn_rate") or 100     
 water_life.shark_spawn_rate =  minetest.settings:get("water_life_shark_spawn_rate") or 100
+water_life.urchin_spawn_rate =  minetest.settings:get("water_life_urchin_spawn_rate") or 300
 water_life.fish_spawn_rate = minetest.settings:get("water_life_fish_spawn_rate") or 1000
 water_life.maxwhales = minetest.settings:get("water_life_maxwhales") or 1
 water_life.maxsharks = minetest.settings:get("water_life_maxsharks") or 5

@@ -4,8 +4,7 @@ water_life.urchinspawn = {
 							"default:coral_cyan",
 							"default:coral_green",
 							"default:coral_pink",
-							"default:coral_orange",
-							"default:coral_skeleton"
+							"default:coral_orange"
 }
 
 
@@ -31,7 +30,15 @@ local function urchin_brain(self)
 			local friend = vector.distance(mobkit.get_stand_pos(self), mobkit.get_stand_pos(obj))
 			if friend < 1 then
 				local eaten = mobkit.pos_shift(mobkit.get_stand_pos(self),{y=-1})
-				minetest.set_node(eaten, {name="default:coral_skeleton"})
+				local check = minetest.get_node(eaten).name
+				local makanlah = false
+				for i=1,#water_life.urchinspawn,1 do
+					if water_life.urchinspawn[i] == check then
+						makanlah = true
+						break
+					end
+				end
+				if makanlah then minetest.set_node(eaten, {name="default:coral_skeleton"}) end
 			end
 		end
 	end
@@ -87,7 +94,7 @@ minetest.register_entity("water_life:urchin",{
 											-- api props
 	springiness=0,
 	buoyancy = 1.07,					-- portion of hitbox submerged
-	max_speed = 1,                     
+	max_speed = 0.2,                     
 	jump_height = 0.5,
 	view_range = 2,
 --	lung_capacity = 0, 		-- seconds

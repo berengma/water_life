@@ -13,6 +13,10 @@ water_life_shark_spawn_rate (Shark spawn chance in promille) int  100
 water_life_fish_spawn_rate (Riverfish spawn chance in promille) int 1000
 
 # -
+# controls spawn chance of sea urchins 10 promille = 1 %
+water_life_urchin_spawn_rate (Sea urchin spawn chance in promille) int  300
+
+# -
 # total max number of whales spawning in aktive area
 water_life_maxwhales (Max possible whales in aktive area)  int 1
 
@@ -36,5 +40,5 @@ water_life_apionly (no animals please, I just need the api) bool false
 water_life_muddy_water (muddy water in rainforest and savanna biome) bool false
 
 #-
-# turn this value to true to see radar function debug
-water_life_radar_debug (radar function debug shown in chat) bool false
+# turn this value to true to see api function debug
+water_life_radar_debug (api function debug shown in chat) bool false

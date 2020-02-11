@@ -44,6 +44,72 @@ end
 minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
 
 
+--[[
+minetest.register_node("water_life:sharknet", {
+	description = "Sharknet",
+	drawtype = "plantlike_rooted",
+	waving = 1,
+	tiles = {"water_life_shark_net_top.png","default_tinblock.png","default_tinblock.png","default_tinblock.png","default_tinblock.png","default_tinblock.png"},
+	special_tiles = {{name = "water_life_sharknet.png", tileable_vertical = true}},
+	inventory_image = "water_life_sharknet_item.png",
+	paramtype = "light",
+	paramtype2 = "leveled",
+	groups = {snappy = 3},
+	walkable = true,                                          
+	selection_box = {
+		type = "fixed",
+		fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+				{-2/16, 0.5, -2/16, 2/16, 3.5, 2/16},
+		},
+	},
+	node_dig_prediction = "air",
+	node_placement_prediction = "",
+	sounds = default.node_sound_sand_defaults({
+		dig = {name = "default_dig_snappy", gain = 0.2},
+		dug = {name = "default_grass_footstep", gain = 0.25},
+	}),
+
+	
+	on_place = function(itemstack, placer, pointed_thing)
+
+		local pos = pointed_thing.above
+		local depth = water_life.water_depth(pos,8)
+		local height = depth.depth -1
+		local pos_top = {x = pos.x, y = pos.y + height, z = pos.z}
+		local node_top = minetest.get_node(pos_top)
+		local def_top = minetest.registered_nodes[node_top.name]
+		local player_name = placer:get_player_name()
+		minetest.chat_send_all(dump(height))
+
+		if def_top and def_top.liquidtype == "source" and
+				minetest.get_item_group(node_top.name, "water") > 0 then
+			if not minetest.is_protected(pos, player_name) and
+					not minetest.is_protected(pos_top, player_name) then
+				minetest.set_node(pos, {name = "water_life:sharknet",
+					param2 = height * 16 })
+				if not (creative and creative.is_enabled_for
+						and creative.is_enabled_for(player_name)) then
+					itemstack:take_item()
+				end
+			else
+				minetest.chat_send_player(player_name, "Node is protected")
+				minetest.record_protection_violation(pos, player_name)
+			end
+		end
+
+		return itemstack
+	end,
+
+
+	after_destruct  = function(pos, oldnode)
+		minetest.set_node(pos, {name = "default:sand"})
+	end
+	
+})
+]]
+
+
 
 -- revive corals if a living one is around
 minetest.register_abm({
@@ -53,7 +119,7 @@ minetest.register_abm({
 	chance = 5,	--10
 	catch_up = false,
 	action = function(pos, node)
-		local table = minetest.find_nodes_in_area({x=pos.x-1, y=pos.y-1, z=pos.z-1}, {x=pos.x+1, y=pos.y+1, z=pos.z+1}, water_life.urchinspawn)
+		local table = minetest.find_nodes_in_area({x=pos.x-2, y=pos.y-2, z=pos.z-2}, {x=pos.x+2, y=pos.y+2, z=pos.z+2}, water_life.urchinspawn)
 		local nname = "default:coral_skeleton"
 		if table and #table > 0 then nname = minetest.get_node(table[water_life.random(#table)]).name end
 		minetest.set_node(pos, {name = nname})
@@ -177,6 +243,7 @@ if water_life.muddy_water then
 		minetest.register_node("water_life:muddy_river_water_source", {
 			description = "Muddy river water source",
 			drawtype = "liquid",
+			waving = 3,
 			tiles = {
 				{
 					name="water_life_muddy_river_water_flowing.png",
@@ -222,6 +289,7 @@ if water_life.muddy_water then
 		minetest.register_node("water_life:muddy_river_water_flowing", {
 			description = "Flowing muddy river water",
 			drawtype = "flowingliquid",
+			waving = 3,
 			tiles = {"water_life_muddy_river_water_source.png"},
 			special_tiles = {
 				{
