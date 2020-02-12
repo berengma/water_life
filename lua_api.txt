@@ -50,11 +50,12 @@ biome.humid	= humidity in % (float rounded, two decimal places)
  water_life.water_depth(pos,max)
  ###############################
  
- will try to find a liquid surface at position pos
+ will try to find a liquid surface at position pos, give up after #max nodes
  
  returns a table:
  table.surface 		= position of water surface node
  table.water_depth	= liquid depth at that position
+ table.type			= string of liquid source node found
  
  
  
@@ -260,4 +261,4 @@ Chat commands:
 wl_bdata
 ########
 
-needs server privs, shows biome id,name,temperture in celsius and humidity at player position
+needs server privs, shows biome id,name,temperature in celsius and humidity at player position

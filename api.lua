@@ -399,7 +399,6 @@ end
 function water_life.find_collision(pos1,pos2,water)
     local ray = minetest.raycast(pos1, pos2, false, water)
             for pointed_thing in ray do
-                --minetest.chat_send_all(dump(pointed_thing))
                 if pointed_thing.type == "node" then
                     local dist = math.floor(vector.distance(pos1,pointed_thing.under))
                     return dist
@@ -463,6 +462,7 @@ function water_life.water_depth(pos,max)
 	local depth = {}
 	depth.surface = {}
 	depth.depth = 0
+	depth.type = ""
 	if not max then max = 10 end
 	if not pos then return depth end
 	local tempos = {}
@@ -470,57 +470,43 @@ function water_life.water_depth(pos,max)
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
 	
-	if type == "none" or type == "flowing" then 									-- start in none liquid try to find surface
-		for i = 1,max,1 do
-			tempos = {x=pos.x, y=pos.y-i, z= pos.z}
-			node = minetest.get_node(tempos)
-			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
-
-			if ctype == "source" then
-				depth.surface = tempos
+	if type ~= "source" then 									-- start in none liquid try to find surface
+		
+		local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, true)
+		if under then
+			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
+			if minetest.registered_nodes[minetest.get_node(check).name]["liquidtype"] == "source" then
+				depth.surface = check
 				found = true
-				break
 			end
 		end
-		
 		if not found then
 			return depth
 		end
+	
+	else														-- start in liquid find way up first
+		
+		local lastpos = pos
+		for i = 1,max,1 do
+			tempos = {x=pos.x, y=pos.y+i, z= pos.z}
+			node = minetest.get_node(tempos)
+			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
+
+			if ctype ~= "source" then
+				depth.surface = lastpos
+				found = true
+				break
+			end
+			lastpos = tempos
+		end
+		if not found then depth.surface = lastpos end
 	end
 	
-	if found then
-		pos = depth.surface
-		type = "source"
-	end
+	pos = depth.surface
+	depth.type = minetest.get_node(pos).name or ""
+	under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
+	depth.depth = under or max
 
-	if type == "source" then															-- start in liquid, try to find surface
-		node = minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z})
-		type = minetest.registered_nodes[node.name]["liquidtype"]
-		if type == "none" then 
-			depth.surface = pos
-			
-		elseif type == "source" then
-			for i = 1,max,1 do
-				tempos = {x=pos.x, y=pos.y+i, z= pos.z}
-				node = minetest.get_node({x=tempos.x, y=tempos.y+1, z=tempos.z})
-				type = minetest.registered_nodes[node.name]["liquidtype"]
-				if type ~= "source" then break end
-			end
-			depth.surface = tempos
-		end
-		
-		pos = depth.surface																-- surface found, now check depth
-		for i = 1,max,1 do
-			tempos = {x=pos.x, y=pos.y-i, z= pos.z}
-			node = minetest.get_node({x=tempos.x, y=tempos.y-1, z=tempos.z})
-			type = minetest.registered_nodes[node.name]["liquidtype"]
-			if type ~= "source" then break end
-		end
-		
-		depth.depth = depth.surface.y - tempos.y
-		return depth
-		
-	end
 	return depth
 end
 	
@@ -569,7 +555,6 @@ minetest.register_chatcommand("wl_bdata", {
 		minetest.chat_send_player(name,dump(minetest.registered_biomes[minetest.get_biome_name(table.biome)]))
                                            
 		minetest.chat_send_player(name,"ID :"..dump(table.biome).."  /Name :"..dump(minetest.get_biome_name(table.biome)).."  /Temp. in C :"..dump(math.floor((table.heat-32)*5/9)).."  /Humidity in % :"..dump(math.floor(table.humidity*100)/100))
-		
 		
 	end
 })
