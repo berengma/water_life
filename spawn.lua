@@ -13,7 +13,7 @@ local function spawnstep(dtime)
             
 			local toomuch = false
             
-            if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 100 then	-- each player gets a spawn chance every 5s on average
+            if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 150 then	-- each player gets a spawn chance every 5s on average
         
                 local pos = plyr:get_pos()
                 local yaw = plyr:get_look_horizontal()

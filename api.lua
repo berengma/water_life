@@ -357,40 +357,84 @@ function water_life.hq_idle(self,prty,duration,anim)
 end
 
 
--- swim to the next "node" which is inside viewrange or quit
-function water_life.hq_swimto(self,prty,speed,node)
-    
-	local func = function(self)
-    
-    if not mobkit.is_alive(self) then return true end
-    local r = self.view_range
-    local pos = self.object:get_pos()
-    local endpos = minetest.find_node_near(pos, r, {node})
+-- swim to the next "node" which is inside viewrange or quit -- node can be string or table of string
+-- if tgtpos is given node will be ignored
+function water_life.hq_swimto(self,prty,speed,node,tgtpos)
+	
+	local pos = self.object:get_pos()
+	local r = self.view_range
+	if not tgtpos then
+		local endpos = minetest.find_node_near(pos, r, node)
+	else
+		endpos = tgtpos
+	end
     if not endpos then return true end
     local yaw = water_life.get_yaw_to_pos(self,endpos)
     
-    if vector.distance(pos,endpos) > 1 then
-                
-                --minetest.chat_send_all(vector.distance(pos,endpos))
-                if endpos.y > pos.y then
-                    local vel = self.object:get_velocity()
-                    vel.y = vel.y+0.1
-                    self.object:set_velocity(vel)
-                end	
-                mobkit.hq_aqua_turn(self,51,yaw,speed)
-                pos = self.object:get_pos() --mobkit.get_stand_pos(self)
-                yaw = water_life.get_yaw_to_pos(self,endpos)
-               
-    else
-         return true
-    end
+	local func = function(self)
+    
+		if not mobkit.is_alive(self) then return true end
+		local pos = self.object:get_pos()
+		
+		
+		if vector.distance(pos,endpos) > 1 then
+					
+					--minetest.chat_send_all(vector.distance(pos,endpos))
+					if endpos.y > pos.y then
+						local vel = self.object:get_velocity()
+						vel.y = vel.y+math.sqrt(speed)--0.1
+						self.object:set_velocity(vel)
+					end	
+					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
+					pos = self.object:get_pos() --mobkit.get_stand_pos(self)
+					yaw = water_life.get_yaw_to_pos(self,endpos)
+				
+		else			
+			return true
+		end
     
 end
 	mobkit.queue_high(self,func,prty)
     
 end
 
-
+function water_life.hq_water_attack(self,tgtobj,prty,speed)
+	
+	local pos = self.object:get_pos()
+	local selfbox = self.object:get_properties().collisionbox
+	local tgtbox = tgtobj:get_properties().collisionbox
+    
+	local func = function(self)
+    
+		if not mobkit.is_alive(self) or not mobkit.is_alive(tgtobj) or tgtobj:get_attach() ~= nil then return true end
+		local pos = self.object:get_pos()
+		local endpos = tgtobj:get_pos()
+		if not mobkit.is_in_deep(tgtobj) and vector.distance (pos,endpos) > 2 then return true end
+		yaw = water_life.get_yaw_to_pos(self,endpos)
+		
+		
+		if vector.distance(pos,endpos) > selfbox[5]+tgtbox[5] then
+					
+					if endpos.y > pos.y +tgtbox[5] then
+						local vel = self.object:get_velocity()
+						vel.y = vel.y+math.sqrt(speed)
+						self.object:set_velocity(vel)
+					end	
+					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
+					
+		else
+			if mobkit.is_alive(tgtobj) then
+				tgtobj:punch(self.object,1,self.attack)
+				return true
+			else
+				return true
+			end
+		end
+    
+end
+	mobkit.queue_high(self,func,prty)
+    
+end
 
 -- find if there is a node between pos1 and pos2
 -- water = true means water = obstacle
@@ -467,6 +511,7 @@ function water_life.water_depth(pos,max)
 	if not pos then return depth end
 	local tempos = {}
 	local node = minetest.get_node(pos)
+	if node.name == “ignore” then return depth end
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
 	
@@ -537,7 +582,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
         return 0
         end, true)
         
-minetest.register_privilege("god", {description ="omg"})
+minetest.register_privilege("god", {description ="unvulnerable"})
 end
 
  --chatcommands
@@ -559,4 +604,15 @@ minetest.register_chatcommand("wl_bdata", {
 	end
 })
 
-
+minetest.register_chatcommand("wl_version", {
+	params = "",
+	description = "shows water_life version number",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false end
+		
+		minetest.chat_send_player(name,core.colorize("#14ee00","Your water_life version # is: "..water_life.version))
+        
+	end
+})

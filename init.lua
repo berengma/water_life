@@ -1,10 +1,11 @@
 water_life = {}
+water_life.version = "140220"
 water_life.shark_food = {}
 water_life.abr = minetest.get_mapgen_setting('active_block_range') or 2
 water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
 water_life.whale_spawn_rate =  minetest.settings:get("water_life_whale_spawn_rate") or 100     
 water_life.shark_spawn_rate =  minetest.settings:get("water_life_shark_spawn_rate") or 100
-water_life.urchin_spawn_rate =  minetest.settings:get("water_life_urchin_spawn_rate") or 300
+water_life.urchin_spawn_rate =  minetest.settings:get("water_life_urchin_spawn_rate") or 700
 water_life.fish_spawn_rate = minetest.settings:get("water_life_fish_spawn_rate") or 1000
 water_life.maxwhales = minetest.settings:get("water_life_maxwhales") or 1
 water_life.maxsharks = minetest.settings:get("water_life_maxsharks") or 5
@@ -49,12 +50,41 @@ minetest.register_entity(":zombiestrd:shark", {
 
 
 -- register shark food
+--[[
 water_life.register_shark_food("water_life:fish")   --fish is too small for sharks
 water_life.register_shark_food("water_life:fish_tamed")
+]]
+
 if minetest.get_modpath("wildlife") then
     water_life.register_shark_food("wildlife:deer")
+	water_life.register_shark_food("wildlife:deer_tamed")
     water_life.register_shark_food("wildlife:wolf")
 end
+
 if minetest.get_modpath("aerotest") then
     water_life.register_shark_food("aerotest:eagle")
+end
+
+if minetest.get_modpath("petz") then
+	water_life.register_shark_food("petz:kitty")
+	water_life.register_shark_food("petz:puppy")
+	water_life.register_shark_food("petz:ducky")
+	water_life.register_shark_food("petz:lamb")
+	water_life.register_shark_food("petz:calf")
+	water_life.register_shark_food("petz:chicken")
+	water_life.register_shark_food("petz:piggy")
+	water_life.register_shark_food("petz:hamster")
+	water_life.register_shark_food("petz:chimp")
+	water_life.register_shark_food("petz:beaver")
+	water_life.register_shark_food("petz:turtle")
+	water_life.register_shark_food("petz:penguin")
+	water_life.register_shark_food("petz:lion")
+	water_life.register_shark_food("petz:grizzly")
+	water_life.register_shark_food("petz:pony")
+	water_life.register_shark_food("petz:wolf")
+	water_life.register_shark_food("petz:elephant")
+	water_life.register_shark_food("petz:elephant_female")
+	water_life.register_shark_food("petz:foxy")
+	water_life.register_shark_food("petz:polar_bear")
+	water_life.register_shark_food("petz:tarantula")
 end

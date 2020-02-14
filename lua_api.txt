@@ -220,11 +220,15 @@ calculation of above value:
 HQ Behaviors:
 -----------
 
-##########################################
-water_life.hq_swimto(self,prty,speed,node)
-##########################################
+#################################################
+water_life.hq_swimto(self,prty,speed,node,tgtpos)
+#################################################
 
-mob will swim to given node which must be in his view_range
+mob will swim to given node which must be in its view_range
+node can be a string or a table of string
+OR
+if tgtpos is set it will swim there, node will be ignored then
+returns if distance <= 1 node
 
 
 
@@ -262,3 +266,10 @@ wl_bdata
 ########
 
 needs server privs, shows biome id,name,temperature in celsius and humidity at player position
+
+
+##########
+wl_version
+##########
+
+will print out water_life version number, needs server priv

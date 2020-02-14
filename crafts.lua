@@ -56,11 +56,10 @@ minetest.register_node("water_life:sharknet", {
 	paramtype2 = "leveled",
 	groups = {snappy = 3},
 	walkable = true,                                          
-	selection_box = {
+	collision_box = {
 		type = "fixed",
 		fixed = {
-				{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-				{-2/16, 0.5, -2/16, 2/16, 3.5, 2/16},
+				{-0.5, 0.5, -0.5, 0.5, 5.5, 0.5}
 		},
 	},
 	node_dig_prediction = "air",
@@ -99,16 +98,10 @@ minetest.register_node("water_life:sharknet", {
 		end
 
 		return itemstack
-	end,
-
-
-	after_destruct  = function(pos, oldnode)
-		minetest.set_node(pos, {name = "default:sand"})
 	end
-	
 })
-]]
 
+]]
 
 
 -- revive corals if a living one is around

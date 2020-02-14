@@ -7,6 +7,19 @@ water_life.piranha_biomes= {["rainforest"]=1,
 }
 
 
+local function piranha_ff(self)
+	for i = 1,#water_life.shark_food,1 do
+		if water_life.shark_food[i] ~= "water_life:fish" and water_life.shark_food[i] ~= "water_life:fish_tamed" then
+			local target = mobkit.get_closest_entity(self,water_life.shark_food[i])
+			if target then
+				return target
+			end
+		end
+	end
+	return nil
+end
+
+
 local function piranha_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
@@ -25,14 +38,25 @@ local function piranha_brain(self)
             mobkit.animate(self,fast)
             if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
 				mobkit.clear_queue_high(self)
-				mobkit.hq_aqua_attack(self,20,target,6)
+				water_life.hq_water_attack(self,target,50,6)
 			elseif target and mobkit.is_alive(target) and ((not mobkit.is_in_deep(target)) or (target:get_attach() ~= nil)) then
 				water_life.hq_swimfrom(self,30,target,4,6)
 			end
         end
+		local prio = mobkit.get_queue_priority(self)
+		if prio < 50 then
+			local food = piranha_ff(self)
+			if food and mobkit.is_alive(food) and mobkit.is_in_deep(food) then
+				mobkit.clear_queue_high(self)
+				water_life.hq_water_attack(self,food,40,6)
+			end
+		end
+		
 	
-        if self.isinliquid and self.isinliquid =="default:water_source" then
-            water_life.hq_swimto(self,30,2,"default:river_water_source")
+        if self.isinliquid and self.isinliquid == "default:water_source" then
+			
+			water_life.hq_swimto(self,20,2,{"water_life:muddy_river_water_source","default:river_water_source"})
+			
         end
         if mobkit.is_queue_empty_high(self) then
             mobkit.animate(self,def)
@@ -58,7 +82,7 @@ minetest.register_entity("water_life:piranha",{
 	mesh = "water_life_piranha.b3d",
 	textures = {"water_life_piranha.png"},
 	visual_size = {x = 0.3, y = 0.3}, --2.5
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
