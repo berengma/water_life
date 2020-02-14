@@ -511,7 +511,7 @@ function water_life.water_depth(pos,max)
 	if not pos then return depth end
 	local tempos = {}
 	local node = minetest.get_node(pos)
-	if node.name == “ignore” then return depth end
+	if node.name == 'ignore' then return depth end
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
 	
