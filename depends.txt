@@ -2,3 +2,5 @@ default
 mobkit
 bucket?
 fireflies?
+petz?
+wildlife?

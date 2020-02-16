@@ -70,6 +70,7 @@ if minetest.get_modpath("petz") then
 	water_life.register_shark_food("petz:puppy")
 	water_life.register_shark_food("petz:ducky")
 	water_life.register_shark_food("petz:lamb")
+	water_life.register_shark_food("petz:camel")
 	water_life.register_shark_food("petz:calf")
 	water_life.register_shark_food("petz:chicken")
 	water_life.register_shark_food("petz:piggy")

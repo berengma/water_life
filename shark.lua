@@ -36,15 +36,16 @@ local function shark_brain(self)
         local prty = mobkit.get_queue_priority(self)
 		if prty < 20 then
 			local target = mobkit.get_nearby_player(self)
-            		local foodname = water_life.feed_shark()
-			local food = mobkit.get_nearby_entity(self,foodname)
+			local food = water_life.feed_shark(self)
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
-				mobkit.hq_aqua_attack(self,20,target,9)
+				--mobkit.hq_aqua_attack(self,20,target,9)
+				water_life.hq_water_attack(self,target,20,9)
 			end
 
-			if food and mobkit.is_in_deep(food) then
+			if food and mobkit.is_in_deep(food) and not target then
                                 mobkit.clear_queue_high(self)
-                                mobkit.hq_aqua_attack(self,30,food,7)
+                                --mobkit.hq_aqua_attack(self,30,food,7)
+								water_life.hq_water_attack(self,food,20,9)
                         end
 		end
 	end
@@ -102,7 +103,8 @@ minetest.register_entity("water_life:shark",{
 
 			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
 				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
-				mobkit.hq_aqua_attack(self,20,puncher,6)				-- get revenge
+				--mobkit.hq_aqua_attack(self,20,puncher,6)				-- get revenge
+				water_life.hq_water_attack(self,puncher,20,6)
 			end
 		end
 	end,

@@ -44,7 +44,7 @@ end
 minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
 
 
---[[
+
 minetest.register_node("water_life:sharknet", {
 	description = "Sharknet",
 	drawtype = "plantlike_rooted",
@@ -59,7 +59,7 @@ minetest.register_node("water_life:sharknet", {
 	collision_box = {
 		type = "fixed",
 		fixed = {
-				{-0.5, 0.5, -0.5, 0.5, 5.5, 0.5}
+				{-0.5, -0.5, -0.5, 0.5, 5.5, 0.5}
 		},
 	},
 	node_dig_prediction = "air",
@@ -101,7 +101,7 @@ minetest.register_node("water_life:sharknet", {
 	end
 })
 
-]]
+
 
 
 -- revive corals if a living one is around

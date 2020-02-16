@@ -114,9 +114,16 @@ function water_life.register_shark_food(name)
 end
 
 
-function water_life.feed_shark()
-    local index = random(1,#water_life.shark_food)
-    return water_life.shark_food[index]
+function water_life.feed_shark(self)
+	for i = 1,#water_life.shark_food,1 do
+		if water_life.shark_food[i] ~= "water_life:fish" and water_life.shark_food[i] ~= "water_life:fish_tamed" then
+			local target = mobkit.get_closest_entity(self,water_life.shark_food[i])
+			if target then
+				return target
+			end
+		end
+	end
+	return nil
 end
 
 
@@ -361,12 +368,11 @@ end
 -- if tgtpos is given node will be ignored
 function water_life.hq_swimto(self,prty,speed,node,tgtpos)
 	
+	local endpos = tgtpos
 	local pos = self.object:get_pos()
 	local r = self.view_range
 	if not tgtpos then
-		local endpos = minetest.find_node_near(pos, r, node)
-	else
-		endpos = tgtpos
+		endpos = minetest.find_node_near(pos, r, node)
 	end
     if not endpos then return true end
     local yaw = water_life.get_yaw_to_pos(self,endpos)
@@ -382,7 +388,7 @@ function water_life.hq_swimto(self,prty,speed,node,tgtpos)
 					--minetest.chat_send_all(vector.distance(pos,endpos))
 					if endpos.y > pos.y then
 						local vel = self.object:get_velocity()
-						vel.y = vel.y+math.sqrt(speed)--0.1
+						vel.y = vel.y+0.5
 						self.object:set_velocity(vel)
 					end	
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
@@ -411,21 +417,34 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 		local endpos = tgtobj:get_pos()
 		if not mobkit.is_in_deep(tgtobj) and vector.distance (pos,endpos) > 2 then return true end
 		yaw = water_life.get_yaw_to_pos(self,endpos)
-		
+		local entity = nil
+		if not tgtobj:is_player() then entity = tgtobj:get_luaentity() end
 		
 		if vector.distance(pos,endpos) > selfbox[5]+tgtbox[5] then
-					
+					--minetest.chat_send_all(dump(vector.distance(pos,endpos)).."   "..dump(selfbox[5]+tgtbox[5]))
 					if endpos.y > pos.y +tgtbox[5] then
 						local vel = self.object:get_velocity()
-						vel.y = vel.y+math.sqrt(speed)
+						vel.y = vel.y+0.5
 						self.object:set_velocity(vel)
 					end	
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
 					
 		else
 			if mobkit.is_alive(tgtobj) then
+				
+				--minetest.chat_send_all("<<<HIT>>>")
 				tgtobj:punch(self.object,1,self.attack)
+				
+				
+			else
 				return true
+			end
+		end
+		if entity and string.match(entity.name,"petz") and vector.distance(pos,endpos) < 2 then
+			if mobkit.is_alive(tgtobj) then
+				--minetest.chat_send_all("<<<HIT>>>")
+				mobkit.hurt(entity,self.attack.damage_groups.fleshy or 1)
+				
 			else
 				return true
 			end
