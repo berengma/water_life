@@ -97,7 +97,7 @@ minetest.register_entity("water_life:piranha",{
 	max_hp = 10,
 	timeout=360,
     wild = true,
-	attack={range=0.4,damage_groups={fleshy=1}},
+	attack={range=0.4,damage_groups={fleshy=5}},
 	drops = {
 		{name = "default:diamond", chance = 30, min = 1, max = 1,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},

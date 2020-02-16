@@ -443,7 +443,7 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 		if entity and string.match(entity.name,"petz") and vector.distance(pos,endpos) < 2 then
 			if mobkit.is_alive(tgtobj) then
 				--minetest.chat_send_all("<<<HIT>>>")
-				mobkit.hurt(entity,self.attack.damage_groups.fleshy or 1)
+				mobkit.hurt(entity,self.attack.damage_groups.fleshy or 4)
 				
 			else
 				return true
