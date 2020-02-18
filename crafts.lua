@@ -24,27 +24,30 @@ minetest.register_craft({
 })
 
 -- lasso
-minetest.register_tool("water_life:lasso", {
-	description = ("Lasso (right-click animal to capture it)"),
-	inventory_image = "water_life_lasso.png",
-	groups = {flammable = 2}
-})
 
-if minetest.get_modpath("farming") then
-	minetest.register_craft({
-		output = "water_life:lasso",
-		recipe = {
-			{"farming:string", "", "farming:string"},
-			{"", "default:diamond", ""},
-			{"farming:string", "", "farming:string"}
-		}
+	minetest.register_tool("water_life:lasso", {
+		description = ("Lasso (right-click animal to capture it)"),
+		inventory_image = "water_life_lasso.png",
+		groups = {flammable = 2}
 	})
-end
 
+	if minetest.get_modpath("farming") then
+		minetest.register_craft({
+			output = "water_life:lasso",
+			recipe = {
+				{"farming:string", "", "farming:string"},
+				{"", "default:diamond", ""},
+				{"farming:string", "", "farming:string"}
+			}
+		})
+	end
+
+	
 minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
+--minetest.register_alias("petz:lasso", "water_life:lasso")
+	
 
-
-
+--[[
 minetest.register_node("water_life:sharknet", {
 	description = "Sharknet",
 	drawtype = "plantlike_rooted",
@@ -55,12 +58,18 @@ minetest.register_node("water_life:sharknet", {
 	paramtype = "light",
 	paramtype2 = "leveled",
 	groups = {snappy = 3},
-	walkable = true,                                          
+	walkable = true,
+	selection_box = {
+		type = "fixed",
+		fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 5.5, 0.5}
+		}
+	},          
 	collision_box = {
 		type = "fixed",
 		fixed = {
 				{-0.5, -0.5, -0.5, 0.5, 5.5, 0.5}
-		},
+		}
 	},
 	node_dig_prediction = "air",
 	node_placement_prediction = "",
@@ -100,7 +109,7 @@ minetest.register_node("water_life:sharknet", {
 		return itemstack
 	end
 })
-
+]]
 
 
 

@@ -2,7 +2,7 @@
 
 
 local function fish_brain(self)
-	if self.hp <= 0 then	
+	if not mobkit.is_alive(self) then	
 		mobkit.clear_queue_high(self)
         water_life.handle_drops(self)
 		mobkit.hq_die(self)
@@ -19,7 +19,7 @@ local function fish_brain(self)
             water_life.hq_swimfrom(self,50,plyr,3)
         end
         if self.isinliquid and self.isinliquid =="default:water_source" then
-            water_life.hq_swimto(self,30,2,"default:river_water_source")
+            water_life.hq_swimto(self,30,1,"default:river_water_source")
         end
         if mobkit.is_queue_empty_high(self) then
             mobkit.animate(self,def)

@@ -1,8 +1,9 @@
 water_life = {}
-water_life.version = "140220"
+water_life.version = "180220"
 water_life.shark_food = {}
-water_life.abr = minetest.get_mapgen_setting('active_block_range') or 2
-water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') or 3
+water_life.petz = minetest.get_modpath("petz")
+water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
+water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
 water_life.whale_spawn_rate =  minetest.settings:get("water_life_whale_spawn_rate") or 100     
 water_life.shark_spawn_rate =  minetest.settings:get("water_life_shark_spawn_rate") or 100
 water_life.urchin_spawn_rate =  minetest.settings:get("water_life_urchin_spawn_rate") or 700
@@ -15,6 +16,7 @@ water_life.radar_debug = minetest.settings:get("water_life_radar_debug") or fals
 water_life.muddy_water = minetest.settings:get("water_life_muddy_water") or false
 
 local path = minetest.get_modpath(minetest.get_current_modname())
+
 
 dofile(path.."/api.lua")               										-- load water_life api
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end				-- load muddy_water

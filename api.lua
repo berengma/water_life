@@ -388,7 +388,7 @@ function water_life.hq_swimto(self,prty,speed,node,tgtpos)
 					--minetest.chat_send_all(vector.distance(pos,endpos))
 					if endpos.y > pos.y then
 						local vel = self.object:get_velocity()
-						vel.y = vel.y+0.5
+						vel.y = vel.y+0.3
 						self.object:set_velocity(vel)
 					end	
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)

@@ -36,13 +36,14 @@ local function shark_brain(self)
         local prty = mobkit.get_queue_priority(self)
 		if prty < 20 then
 			local target = mobkit.get_nearby_player(self)
+			local aliveinwater = target and mobkit.is_alive(target) and mobkit.is_in_deep(target)
 			local food = water_life.feed_shark(self)
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
 				--mobkit.hq_aqua_attack(self,20,target,9)
 				water_life.hq_water_attack(self,target,20,9)
 			end
 
-			if food and mobkit.is_in_deep(food) and not target then
+			if food and mobkit.is_in_deep(food) and not aliveinwater then
                                 mobkit.clear_queue_high(self)
                                 --mobkit.hq_aqua_attack(self,30,food,7)
 								water_life.hq_water_attack(self,food,20,9)

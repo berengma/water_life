@@ -55,7 +55,7 @@ local function piranha_brain(self)
 	
         if self.isinliquid and self.isinliquid == "default:water_source" then
 			
-			water_life.hq_swimto(self,20,2,{"water_life:muddy_river_water_source","default:river_water_source"})
+			water_life.hq_swimto(self,20,1,{"water_life:muddy_river_water_source","default:river_water_source"})
 			
         end
         if mobkit.is_queue_empty_high(self) then
