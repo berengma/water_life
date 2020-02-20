@@ -11,7 +11,7 @@ water_life.urchinspawn = {
 
 local function urchin_brain(self)
 	
-	if self.hp <= 0 then	
+	if not mobkit.is_alive(self) then	
 		mobkit.clear_queue_high(self)
         water_life.handle_drops(self)
 		mobkit.hq_die(self)

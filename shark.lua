@@ -23,6 +23,8 @@ local function shark_brain(self)
 	if mobkit.timer(self,1) then
 		
         local whale =  mobkit.get_closest_entity(self,"water_life:whale")
+		local buoy = mobkit.get_closest_entity(self,"water_life:buoy")
+		
         if whale then
             local spos = self.object:get_pos()
             local wpos = whale:get_pos()
@@ -33,6 +35,18 @@ local function shark_brain(self)
                 mobkit.hq_aqua_turn(self,40,yaw+(pi/2),5)
             end
         end
+		
+		if buoy then
+            local spos = self.object:get_pos()
+            local wpos = buoy:get_pos()
+            local distance =  math.floor(vector.distance(spos,wpos))
+            if distance < 10 then
+                local yaw = self.object:get_yaw()
+                mobkit.clear_queue_high(self)
+                mobkit.hq_aqua_turn(self,45,yaw+(pi/2),5)
+            end
+        end
+		
         local prty = mobkit.get_queue_priority(self)
 		if prty < 20 then
 			local target = mobkit.get_nearby_player(self)

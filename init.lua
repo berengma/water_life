@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "180220"
+water_life.version = "200220"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2

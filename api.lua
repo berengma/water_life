@@ -534,9 +534,10 @@ function water_life.water_depth(pos,max)
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
 	
-	if type ~= "source" then 									-- start in none liquid try to find surface
+	if type == "none" then 									-- start in none liquid try to find surface
 		
 		local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, true)
+		--minetest.chat_send_all(dump(under).."  "..dump(node.name))
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
 			if minetest.registered_nodes[minetest.get_node(check).name]["liquidtype"] == "source" then
