@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "200220"
+water_life.version = "220220"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
@@ -21,6 +21,7 @@ local path = minetest.get_modpath(minetest.get_current_modname())
 dofile(path.."/api.lua")               										-- load water_life api
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end				-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
+dofile(path.."/buoy.lua")													-- load buoy
 if not water_life.apionly then
     dofile(path.."/spawn.lua")												-- load spawn function
     dofile(path.."/whale.lua")												-- load whales
