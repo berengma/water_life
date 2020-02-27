@@ -533,10 +533,12 @@ function water_life.water_depth(pos,max)
 	if not node or node.name == 'ignore' then return depth end
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
+    local under
+    
 	--minetest.chat_send_all(">>>"..dump(node.name).." <<<")
 	if type == "none" then 									-- start in none liquid try to find surface
 		
-		local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, true)
+		under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, true)
 		--minetest.chat_send_all(dump(under).."  "..dump(node.name))
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
