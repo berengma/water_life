@@ -22,7 +22,7 @@ local function fish_brain(self)
             water_life.hq_swimto(self,30,1,"default:river_water_source")
         end
         if mobkit.is_queue_empty_high(self) then
-            mobkit.animate(self,def)
+            mobkit.animate(self,"def")
             mobkit.hq_aqua_roam(self,10,1) 
         end
     end

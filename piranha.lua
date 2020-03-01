@@ -35,20 +35,24 @@ local function piranha_brain(self)
         local target = mobkit.get_nearby_player(self)
 		
         if target then
-            mobkit.animate(self,fast)
-            if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
+			local dist = water_life.dist2tgt(self,target)
+            mobkit.animate(self,"fast")
+            if dist > 2 and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
 				mobkit.clear_queue_high(self)
-				water_life.hq_water_attack(self,target,50,6)
+				water_life.hq_water_attack(self,target,50,5)
 			elseif target and mobkit.is_alive(target) and ((not mobkit.is_in_deep(target)) or (target:get_attach() ~= nil)) then
-				water_life.hq_swimfrom(self,30,target,4,6)
+				water_life.hq_swimfrom(self,30,target,4,5)
 			end
         end
 		local prio = mobkit.get_queue_priority(self)
 		if prio < 50 then
 			local food = piranha_ff(self)
 			if food and mobkit.is_alive(food) and mobkit.is_in_deep(food) then
-				mobkit.clear_queue_high(self)
-				water_life.hq_water_attack(self,food,40,6)
+				local dist = water_life.dist2tgt(self,food)
+				if dist > 2 then 
+					mobkit.clear_queue_high(self)
+					water_life.hq_water_attack(self,food,40,5)
+				end
 			end
 		end
 		
@@ -59,7 +63,7 @@ local function piranha_brain(self)
 			
         end
         if mobkit.is_queue_empty_high(self) then
-            mobkit.animate(self,def)
+            mobkit.animate(self,"def")
             mobkit.hq_aqua_roam(self,10,1) 
         end
     end

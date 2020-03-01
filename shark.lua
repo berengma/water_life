@@ -8,6 +8,7 @@ local max = math.max
 local min = math.min
 local pow = math.pow
 local sign = math.sign
+local rad = math.rad
 
 
 
@@ -43,7 +44,7 @@ local function shark_brain(self)
             if distance < 10 then
                 local yaw = self.object:get_yaw()
                 mobkit.clear_queue_high(self)
-                mobkit.hq_aqua_turn(self,45,yaw+(pi/2),5)
+                mobkit.hq_aqua_turn(self,45,yaw+rad(30),5)
             end
         end
 		
@@ -52,15 +53,24 @@ local function shark_brain(self)
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and mobkit.is_in_deep(target)
 			local food = water_life.feed_shark(self)
+			
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
 				--mobkit.hq_aqua_attack(self,20,target,9)
-				water_life.hq_water_attack(self,target,20,9)
+				local ppos = target:get_pos()
+				local tbuoy = water_life.count_objects(ppos,10,"water_life:buoy")
+				local dist = water_life.dist2tgt(self,target)
+				if dist > 3 and tbuoy.name == 0 then
+					water_life.hq_water_attack(self,target,20,9)
+				end
 			end
 
 			if food and mobkit.is_in_deep(food) and not aliveinwater then
-                                mobkit.clear_queue_high(self)
-                                --mobkit.hq_aqua_attack(self,30,food,7)
-								water_life.hq_water_attack(self,food,20,9)
+								local dist = water_life.dist2tgt(self,food)
+								if dist > 3 then
+									mobkit.clear_queue_high(self)
+									--mobkit.hq_aqua_attack(self,30,food,7)
+									water_life.hq_water_attack(self,food,20,9)
+								end
                         end
 		end
 	end

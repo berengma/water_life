@@ -88,6 +88,14 @@ function water_life.leftorright()
 end
 
 
+-- distance from self to target
+function water_life.dist2tgt(self,tgt)
+	local pos = mobkit.get_stand_pos(self)
+	local tpos = tgt:get_pos()
+	return vector.distance(pos,tpos)
+end
+
+
 
  -- drop on death what is definded in the entity table
 function water_life.handle_drops(self)   
@@ -375,10 +383,12 @@ function water_life.hq_swimto(self,prty,speed,node,tgtpos)
 		endpos = minetest.find_node_near(pos, r, node)
 	end
     if not endpos then return true end
-    local yaw = water_life.get_yaw_to_pos(self,endpos)
+    
     
 	local func = function(self)
-    
+	
+	
+		local yaw = water_life.get_yaw_to_pos(self,endpos)
 		if not mobkit.is_alive(self) then return true end
 		local pos = self.object:get_pos()
 		
@@ -404,11 +414,13 @@ end
     
 end
 
+
 function water_life.hq_water_attack(self,tgtobj,prty,speed)
 	
 	local pos = self.object:get_pos()
 	local selfbox = self.object:get_properties().collisionbox
 	local tgtbox = tgtobj:get_properties().collisionbox
+	if not speed then speed = 1 end
     
 	local func = function(self)
     
@@ -416,7 +428,7 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 		local pos = self.object:get_pos()
 		local endpos = tgtobj:get_pos()
 		if not mobkit.is_in_deep(tgtobj) and vector.distance (pos,endpos) > 2 then return true end
-		yaw = water_life.get_yaw_to_pos(self,endpos)
+		local yaw = water_life.get_yaw_to_pos(self,endpos)
 		local entity = nil
 		if not tgtobj:is_player() then entity = tgtobj:get_luaentity() end
 		
@@ -424,7 +436,7 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 					--minetest.chat_send_all(dump(vector.distance(pos,endpos)).."   "..dump(selfbox[5]+tgtbox[5]))
 					if endpos.y > pos.y +tgtbox[5] then
 						local vel = self.object:get_velocity()
-						vel.y = vel.y+0.5
+						vel.y = vel.y+0.4
 						self.object:set_velocity(vel)
 					end	
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
@@ -434,6 +446,7 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 				
 				--minetest.chat_send_all("<<<HIT>>>")
 				tgtobj:punch(self.object,1,self.attack)
+				return true
 				
 				
 			else
@@ -569,7 +582,7 @@ function water_life.water_depth(pos,max)
 	
 	pos = depth.surface
 	depth.type = minetest.get_node(pos).name or ""
-	under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
+	local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
 	depth.depth = under or max
 
 	return depth
