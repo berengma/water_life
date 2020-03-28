@@ -12,34 +12,34 @@ local sign = math.sign
 -- this is whale specific, so keeping it local
 local function chose_turn(self,a,b)
     
-    local remember = mobkit.recall(self,"turn")
-    if not remember then
-        if water_life.leftorright() then
-            remember = "1"
-            mobkit.remember(self,"time", self.time_total)
-            mobkit.remember(self,"turn", "1")
-        else
-            remember = "0"
-            mobkit.remember(self,"time", self.time_total)
-            mobkit.remember(self,"turn", "0")
-        end
-    end
+	local remember = mobkit.recall(self,"turn")
+	if not remember then
+		if water_life.leftorright() then
+			remember = "1"
+			mobkit.remember(self,"time", self.time_total)
+			mobkit.remember(self,"turn", "1")
+		else
+			remember = "0"
+			mobkit.remember(self,"time", self.time_total)
+			mobkit.remember(self,"turn", "0")
+		end
+	end
     
-    if a > b+15 then 
-        mobkit.remember(self,"turn", "1")
-        mobkit.remember(self,"time", self.time_total)
-        return false
+	if a > b+15 then 
+		mobkit.remember(self,"turn", "1")
+		mobkit.remember(self,"time", self.time_total)
+		return false
         
-    elseif a < b-15 then
-        mobkit.remember(self,"turn","0")
-        mobkit.remember(self,"time", self.time_total)
-        return true
+	elseif a < b-15 then
+		mobkit.remember(self,"turn","0")
+		mobkit.remember(self,"time", self.time_total)
+		return true
         
-    else 
+	else 
         
-        if remember == "0" then return true else return false end
+		if remember == "0" then return true else return false end
     
-    end
+	end
 end
     
 
@@ -49,67 +49,67 @@ local function whale_brain(self)
     
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
-        water_life.handle_drops(self)
-        mobkit.make_sound(self,"death")
+		water_life.handle_drops(self)
+		mobkit.make_sound(self,"death")
 		mobkit.hq_die(self)
 		return
 	end
     
     -- check every 2 seconds what is under whale's belly
-    if mobkit.timer(self,2) then
-        local stand = mobkit.get_stand_pos(self)
-        if stand then stand.y = stand.y - 1 end
+	if mobkit.timer(self,2) then
+		local stand = mobkit.get_stand_pos(self)
+		if stand then stand.y = stand.y - 1 end
             
-        local node = mobkit.nodeatpos(stand)
-        if node then 
-            if node.name ~= "default:water_source" then
-                mobkit.hurt(self, 20)
-            end
-        end
-    end
+		local node = mobkit.nodeatpos(stand)
+		if node then 
+			if minetest.registered_nodes[node.name]["liquidtype"] == "none" then
+				mobkit.hurt(self, 20)
+			end
+		end
+	end
     
     
     -- big animals need to avoid obstacles
     
     
-    if mobkit.timer(self,1) then
-        local remember = mobkit.recall(self,"time")
-        if remember then
-            if self.time_total - remember > 59 then
-                mobkit.forget(self,"turn")
-                mobkit.forget(self,"time")
+	if mobkit.timer(self,1) then
+		local remember = mobkit.recall(self,"time")
+		if remember then
+			if self.time_total - remember > 59 then
+				mobkit.forget(self,"turn")
+				mobkit.forget(self,"time")
                 
-            end
-        end
-        local yaw =  self.object:get_yaw() + pi
-        local pos = mobkit.get_stand_pos(self)
+			end
+		end
+		local yaw =  self.object:get_yaw() + pi
+		local pos = mobkit.get_stand_pos(self)
         
-        local kiri, kanan = water_life.radar(pos,yaw,25)
+		local kiri, kanan = water_life.radar(pos,yaw,25)
         
-        local hpos = mobkit.pos_translate2d(pos,yaw,6)
-        local head = mobkit.pos_shift(hpos,{y=4})
-        local node = minetest.get_node(head)
+		local hpos = mobkit.pos_translate2d(pos,yaw,6)
+		local head = mobkit.pos_shift(hpos,{y=4})
+		local node = minetest.get_node(head)
         
-        yaw = yaw - pi
+		yaw = yaw - pi
         
-        if node then -- anything above head ? dive.
+		if node then -- anything above head ? dive.
             
-            if node.name ~= "default:water_source" and node.name ~= "air" then 
-                local hvel = vector.multiply(vector.normalize({x=head.x,y=0,z=head.z}),4)
-                self.object:set_velocity({x=hvel.x,y=-1,z=hvel.z})
-            end
-        end
+			if minetest.registered_nodes[node.name]["liquidtype"] == "none" and node.name  ~= "air" then
+				local hvel = vector.multiply(vector.normalize({x=head.x,y=0,z=head.z}),4)
+				self.object:set_velocity({x=hvel.x,y=-1,z=hvel.z})
+			end
+		end
         
-        if kiri > 3 or kanan > 3 then
-            mobkit.clear_queue_high(self)
-            if chose_turn(self,kiri,kanan) then
-                water_life.big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
-            else
-                water_life.big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
-            end
-        end
+		if kiri > 3 or kanan > 3 then
+			mobkit.clear_queue_high(self)
+			if chose_turn(self,kiri,kanan) then
+				water_life.big_hq_aqua_turn(self,30,yaw+(pi/24),-0.5)
+			else
+				water_life.big_hq_aqua_turn(self,30,yaw-(pi/24),-0.5)
+			end
+		end
         
-    end
+	end
         
     
 	if mobkit.is_queue_empty_high(self) then water_life.big_aqua_roam(self,20,-1) end

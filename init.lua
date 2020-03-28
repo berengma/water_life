@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "010320"
+water_life.version = "280320"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
@@ -23,11 +23,11 @@ if water_life.muddy_water then dofile(path.."/mapgen.lua") end				-- load muddy_
 dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
 if not water_life.apionly then
-    dofile(path.."/spawn.lua")												-- load spawn function
-    dofile(path.."/whale.lua")												-- load whales
-    dofile(path.."/shark.lua")												-- load sharks
-    dofile(path.."/riverfish.lua")											-- load riverfish
-	dofile(path.."/piranha.lua")											-- load piranha
+	dofile(path.."/spawn.lua")												-- load spawn function
+	dofile(path.."/whale.lua")												-- load whales
+	dofile(path.."/shark.lua")												-- load sharks
+	dofile(path.."/riverfish.lua")											-- load riverfish
+	dofile(path.."/piranha.lua")												-- load piranha
 	dofile(path.."/sea_urchin.lua")											-- load sea urchin
 end
 
@@ -39,16 +39,16 @@ math.randomseed(os.time()) --init random seed
 
 --remove old sharks
 minetest.register_entity(":sharks:shark", {
-        on_activate = function(self, staticdata)
-            self.object:remove()
-        end,
-    })
+	on_activate = function(self, staticdata)
+		self.object:remove()
+	end,
+})
 
 minetest.register_entity(":zombiestrd:shark", {
-        on_activate = function(self, staticdata)
-            self.object:remove()
-        end,
-    })
+	on_activate = function(self, staticdata)
+		self.object:remove()
+	end,
+})
 
 
 
@@ -59,13 +59,13 @@ water_life.register_shark_food("water_life:fish_tamed")
 ]]
 
 if minetest.get_modpath("wildlife") then
-    water_life.register_shark_food("wildlife:deer")
+	water_life.register_shark_food("wildlife:deer")
 	water_life.register_shark_food("wildlife:deer_tamed")
-    water_life.register_shark_food("wildlife:wolf")
+	water_life.register_shark_food("wildlife:wolf")
 end
 
 if minetest.get_modpath("aerotest") then
-    water_life.register_shark_food("aerotest:eagle")
+	water_life.register_shark_food("aerotest:eagle")
 end
 
 if minetest.get_modpath("petz") then

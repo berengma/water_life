@@ -189,7 +189,7 @@ end
 -- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
 function water_life.count_objects(pos,radius,name)
 
-if not radius then radius = water_life.abo * 16 end
+if not radius then radius = water_life.abr * 16 end
 
 local all_objects = minetest.get_objects_inside_radius(pos, radius)
 local hasil = {}
@@ -320,7 +320,7 @@ function water_life.big_aqua_roam(self,prty,speed)
 			end
 		end
 		if mobkit.timer(self,10) then
-			if vector.distance(pos,center) > water_life.abo*16*0.5 then
+			if vector.distance(pos,center) > water_life.abr*16*0.5 then
 				tyaw = minetest.dir_to_yaw(vector.direction(pos,{x=center.x+random()*10-5,y=center.y,z=center.z+random()*10-5}))
 			else
 				if random(10)>=9 then tyaw=tyaw+random()*pi - pi*0.5 end

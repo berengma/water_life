@@ -27,7 +27,7 @@ minetest.register_node("water_life:shark_buoy", {
 	on_place = function(itemstack, placer, pointed_thing)
                                                 
 		local pos = pointed_thing.above
-		local depth = water_life.water_depth(pos,10)
+		local depth = water_life.water_depth(pos,20)					-- max must be specified and >12 or buoys will always be set
 		if depth and depth.type ~= "" and depth.surface ~= {} then
 													
 			local height = depth.depth-1 
