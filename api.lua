@@ -189,7 +189,7 @@ end
 -- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
 function water_life.count_objects(pos,radius,name)
 
-if not radius then radius = water_life.abr * 16 end
+if not radius then radius = water_life.abo * 16 end
 
 local all_objects = minetest.get_objects_inside_radius(pos, radius)
 local hasil = {}

@@ -7,7 +7,7 @@ local random = water_life.random
 local function spawnstep(dtime)
 
 	timer = timer + dtime
-	if timer > 5 then
+	if timer > 10 then
         
 	for _,plyr in ipairs(minetest.get_connected_players()) do
             
@@ -84,7 +84,7 @@ local function spawnstep(dtime)
 					end
 						
 					mobname = 'water_life:fish'
-					local nearlife = water_life.count_objects(pos2,16,"water_life:piranha")
+					local nearlife = water_life.count_objects(pos2,24,"water_life:piranha")
 					if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish < 5) and (liquidflag == "river" or liquidflag == "muddy") then
                             
 						local table = minetest.get_biome_data(pos)
