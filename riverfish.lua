@@ -4,7 +4,7 @@
 local function fish_brain(self)
 	if not mobkit.is_alive(self) then	
 		mobkit.clear_queue_high(self)
-        water_life.handle_drops(self)
+		water_life.handle_drops(self)
 		mobkit.hq_die(self)
 		return
 	end
@@ -18,7 +18,7 @@ local function fish_brain(self)
             mobkit.animate(self,fast)
             water_life.hq_swimfrom(self,50,plyr,3)
         end
-        if self.isinliquid and self.isinliquid =="default:water_source" then
+        if self.isinliquid and self.isinliquid ~="default:river_water_source" then
             water_life.hq_swimto(self,30,1,"default:river_water_source")
         end
         if mobkit.is_queue_empty_high(self) then
@@ -52,7 +52,7 @@ minetest.register_entity("water_life:fish",{
 	get_staticdata = mobkit.statfunc,
 											-- api props
 	springiness=0,
-	buoyancy = 1.07,					-- portion of hitbox submerged
+	buoyancy = 1.0,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 0.5,
 	view_range = 4,
@@ -109,7 +109,7 @@ minetest.register_entity("water_life:fish_tamed",{
 	get_staticdata = mobkit.statfunc,
 											-- api props
 	springiness=0,
-	buoyancy = 1.07,					-- portion of hitbox submerged
+	buoyancy = 1.0,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 0.5,
 	view_range = 4,

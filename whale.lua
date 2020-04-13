@@ -123,7 +123,7 @@ minetest.register_entity("water_life:whale",{
 	physical = true,
 	stepheight = 0.1,				--EVIL!
     	weight = 250,
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-2, -2, -2, 2, 2, 2},
 	visual = "mesh",
 	mesh = "water_life_whale.b3d",

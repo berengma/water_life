@@ -132,7 +132,7 @@ if not water_life.apionly then
 				local name = placer:get_player_name()
 				if minetest.is_protected(pos,name) then return itemstack end
 
-				local obj = minetest.add_entity(pos, "water_life:piranha")
+				local obj = minetest.add_entity(pos, "water_life:piranha_tamed")
 				obj = obj:get_luaentity()
 				itemstack:take_item()
 				--obj.owner = name
