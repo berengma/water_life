@@ -16,7 +16,7 @@ local rad = math.rad
 local function shark_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
-        water_life.handle_drops(self)
+		water_life.handle_drops(self)
 		mobkit.hq_die(self)
 		return
 	end

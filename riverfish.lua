@@ -15,7 +15,7 @@ local function fish_brain(self)
         end
         local plyr = mobkit.get_nearby_player(self)
         if plyr and self.wild then
-            mobkit.animate(self,fast)
+            mobkit.animate(self,"fast")
             water_life.hq_swimfrom(self,50,plyr,3)
         end
         if self.isinliquid and self.isinliquid ~="default:river_water_source" then
