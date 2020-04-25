@@ -544,16 +544,20 @@ function water_life.water_depth(pos,max)
 	local tempos = {}
 	local node = minetest.get_node(pos)
 	if not node or node.name == 'ignore' then return depth end
+	if not minetest.registered_nodes[node.name] then return depth end						-- handle unknown nodes
+		
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
 	--minetest.chat_send_all(">>>"..dump(node.name).." <<<")
-	if type == "none" then 									-- start in none liquid try to find surface
+	if type == "none" then 															-- start in none liquid try to find surface
 		
 		local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, true)
 		--minetest.chat_send_all(dump(under).."  "..dump(node.name))
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
-			if minetest.registered_nodes[minetest.get_node(check).name]["liquidtype"] == "source" then
+			local cname = minetest.get_node(check).name
+			if not minetest.registered_nodes[cname] then return depth end					-- handle unknown nodes
+			if minetest.registered_nodes[cname]["liquidtype"] == "source" then
 				depth.surface = check
 				found = true
 			end
@@ -562,12 +566,13 @@ function water_life.water_depth(pos,max)
 			return depth
 		end
 	
-	else														-- start in liquid find way up first
+	else																			-- start in liquid find way up first
 		
 		local lastpos = pos
 		for i = 1,max,1 do
 			tempos = {x=pos.x, y=pos.y+i, z= pos.z}
 			node = minetest.get_node(tempos)
+			if not minetest.registered_nodes[node.name] then return depth end				-- handle unknown nodes
 			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
 
 			if ctype ~= "source" then
