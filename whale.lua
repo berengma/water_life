@@ -2,7 +2,7 @@
 local abs = math.abs
 local pi = math.pi
 local floor = math.floor
-local random = math.random
+local random = water_life.random
 local sqrt = math.sqrt
 local max = math.max
 local min = math.min
@@ -61,7 +61,7 @@ local function whale_brain(self)
 		if stand then stand.y = stand.y - 1 end
             
 		local node = mobkit.nodeatpos(stand)
-		if node then 
+		if node and minetest.registered_nodes[node.name] then 
 			if minetest.registered_nodes[node.name]["liquidtype"] == "none" then
 				mobkit.hurt(self, 20)
 			end
@@ -92,7 +92,7 @@ local function whale_brain(self)
         
 		yaw = yaw - pi
         
-		if node then -- anything above head ? dive.
+		if node and minetest.registered_nodes[node.name] then -- anything above head ? dive.
             
 			if minetest.registered_nodes[node.name]["liquidtype"] == "none" and node.name  ~= "air" then
 				local hvel = vector.multiply(vector.normalize({x=head.x,y=0,z=head.z}),4)
@@ -164,27 +164,35 @@ minetest.register_entity("water_life:whale",{
     
     on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
-            local obj = self.object
+			local pos = mobkit.get_stand_pos(self)
+			local yaw =  self.object:get_yaw() + pi
+			local obj = self.object
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
+			local left, right, up, down, under, above = water_life.radar(pos, yaw)
+			local attach = puncher:get_attach()
                                              
-            
-                self.object:set_velocity({x=hvel.x,y=-2,z=hvel.z})
-                self.object:add_velocity({x=0,y=-3, z=0})
-            
-            
-            if time_from_last_punch > 2 then
-                mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
-            else
-                if puncher:is_player() then
-                    minetest.chat_send_player(puncher:get_player_name(),">>> You missed <<<")
-                end
-            end
-            
-            
+			if attach and random(100) > (self.hp/5) then
+				puncher:set_detach()
+			end
+
+			if under > 6 then
+				self.object:set_velocity({x=hvel.x,y=-2,z=hvel.z})
+				self.object:add_velocity({x=0,y=-3, z=0})
+			end
+			
+			if time_from_last_punch > 2 then
+				mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
+			else
+				if puncher:is_player() then
+					minetest.chat_send_player(puncher:get_player_name(),">>> You missed <<<")
+				end
+			end
+			
+			
 			obj:set_nametag_attributes({
-                color = '#ff7373',
-                text = ">>> "..tostring(math.floor(self.hp/5)).."% <<<",
-                })
+				color = '#ff7373',
+				text = ">>> "..tostring(math.floor(self.hp/5)).."% <<<",
+				})
 		end
 	end,
 	

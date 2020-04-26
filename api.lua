@@ -438,7 +438,12 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed)
 						local vel = self.object:get_velocity()
 						vel.y = vel.y+0.4
 						self.object:set_velocity(vel)
-					end	
+					end
+					if endpos.y < pos.y  then
+						local vel = self.object:get_velocity()
+						vel.y = vel.y-0.1
+						self.object:set_velocity(vel)
+					end
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
 					
 		else
