@@ -41,13 +41,14 @@ end
 
 
 --sets an urchin somewhere but not in the center of a node
-function water_life.set_urchin(pos)
+function water_life.set_urchin(pos,name)
 	if not pos then return end
+	if not name then name = "water_life:urchin" end
 	local x = random()/2
 	local z = random()/2
 	if water_life.leftorright() then pos.x = pos.x +x else pos.x=pos.x - x end
 	if water_life.leftorright() then pos.z = pos.z +z else pos.z=pos.z - z end
-	local obj = minetest.add_entity(pos, "water_life:urchin")
+	local obj = minetest.add_entity(pos, name)
 	return obj
 end
 	

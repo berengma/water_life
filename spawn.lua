@@ -81,8 +81,35 @@ local function spawnstep(dtime)
 								local obj= water_life.set_urchin(coralpos)  --minetest.add_entity(coralpos,mobname)
 							end
 						end
-					end
-						
+				end
+				
+				mobname = "water_life:clams"
+				if water_life.clams_spawn_rate >= random(1000) then
+					local ground = depth.surface
+						ground.y = ground.y - depth.depth
+						local coraltable = minetest.find_nodes_in_area({x=ground.x-8, y=ground.y-2, z=ground.z-8}, {x=ground.x+8, y=ground.y+2, z=ground.z+8}, water_life.clams_spawn)
+						local nearlife = water_life.count_objects(ground,8,"water_life:clams")
+						if coraltable and #coraltable > 0 and nearlife.name < 5 and liquidflag == "sea" then
+							local coralpos = coraltable[random(#coraltable)]
+							coralpos.y = coralpos.y +1
+							local node = minetest.get_node(coralpos)
+								
+							if node.name == "default:water_source" then
+								local obj= water_life.set_urchin(coralpos,"water_life:clams")  --minetest.add_entity(coralpos,mobname)
+							end
+						end
+				end
+				
+				mobname = "water_life:jellyfish"
+				
+				local ground = depth.surface
+				local nearlife = water_life.count_objects(ground,nil,"water_life:jellyfish")
+				local faktor = 100 - nearlife.name * 10
+				if random(100) < faktor and liquidflag == "sea" then
+					local obj=minetest.add_entity(ground,mobname)
+				end
+				
+				
 					mobname = 'water_life:fish'
 					local nearlife = water_life.count_objects(pos2,24,"water_life:piranha")
 					if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish < 5) and (liquidflag == "river" or liquidflag == "muddy") then

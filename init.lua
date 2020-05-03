@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "260420"
+water_life.version = "030520"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
@@ -7,6 +7,7 @@ water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks
 water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100     
 water_life.shark_spawn_rate =  tonumber(minetest.settings:get("water_life_shark_spawn_rate")) or 100
 water_life.urchin_spawn_rate =  tonumber(minetest.settings:get("water_life_urchin_spawn_rate")) or 700
+water_life.clams_spawn_rate = tonumber(minetest.settings:get("water_life_clams_spawn_rate")) or 500
 water_life.fish_spawn_rate = tonumber(minetest.settings:get("water_life_fish_spawn_rate")) or 1000
 water_life.maxwhales = tonumber(minetest.settings:get("water_life_maxwhales")) or 1
 water_life.maxsharks = tonumber(minetest.settings:get("water_life_maxsharks")) or 5
@@ -29,6 +30,10 @@ if not water_life.apionly then
 	dofile(path.."/riverfish.lua")											-- load riverfish
 	dofile(path.."/piranha.lua")												-- load piranha
 	dofile(path.."/sea_urchin.lua")											-- load sea urchin
+	dofile(path.."/clams.lua")												-- load clams
+	dofile(path.."/plants.lua")												-- load water plants
+	dofile(path.."/corals.lua")												-- load corals
+	dofile(path.."/jellyfish.lua")											-- load jellyfish
 end
 
 
@@ -70,6 +75,7 @@ end
 
 if minetest.get_modpath("petz") then
 	water_life.register_shark_food("petz:kitty")
+	water_life.register_shark_food("petz:goat")
 	water_life.register_shark_food("petz:puppy")
 	water_life.register_shark_food("petz:ducky")
 	water_life.register_shark_food("petz:lamb")

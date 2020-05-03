@@ -16,6 +16,10 @@ water_life_fish_spawn_rate (Riverfish spawn chance in promille) int 1000
 # controls spawn chance of sea urchins 10 promille = 1 %
 water_life_urchin_spawn_rate (Sea urchin spawn chance in promille) int  300
 
+#-
+# controls spawn chance of clams 10 promille = 1 %
+water_life_clams_spawn_rate (Clams spawn chance in promille) int  500
+
 # -
 # total max number of whales spawning in aktive area
 water_life_maxwhales (Max possible whales in aktive area)  int 1

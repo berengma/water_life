@@ -172,7 +172,38 @@ if not water_life.apionly then
 		})
 		
 		
+
+
+		minetest.register_craftitem("water_life:jellyfish_item", {
+			description = ("Sea urchin"),
+			inventory_image = "water_life_jellyfish_item.png",
+			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
+			stack_max = 10,
+			liquids_pointable = false,
+			range = 10,
+			on_use = minetest.item_eat(1),                                    
+			groups = {food_meat = 1, flammable = 2},
+			on_place = function(itemstack, placer, pointed_thing)
+				if placer and not placer:is_player() then return itemstack end
+				if not pointed_thing then return itemstack end
+				if not pointed_thing.type == "node" then return itemstack end
+				
+				local pos = pointed_thing.above
+				local number = water_life.count_objects(pos,10,"water_life:jellyfish")
+				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
+															
+				local name = placer:get_player_name()
+				if minetest.is_protected(pos,name) then return itemstack end
+
+				local obj = minetest.add_entity(pos, "water_life:jellyfish")
+				
+				if obj then itemstack:take_item() end
+				
+				return itemstack
+			end,
+		})
 end
+
 --muddy water
 
 if water_life.muddy_water then
