@@ -23,6 +23,7 @@ minetest.register_craft({
 	cooktime = 5
 })
 
+if not water_life.petz and not water_life.mobsredo then
 -- lasso
 
 	minetest.register_tool("water_life:lasso", {
@@ -41,10 +42,8 @@ minetest.register_craft({
 			}
 		})
 	end
+end
 
-	
-minetest.register_alias("mobs:magic_lasso", "water_life:lasso")
---minetest.register_alias("petz:lasso", "water_life:lasso")
 	
 
 
@@ -175,7 +174,7 @@ if not water_life.apionly then
 
 
 		minetest.register_craftitem("water_life:jellyfish_item", {
-			description = ("Sea urchin"),
+			description = ("Jellyfish"),
 			inventory_image = "water_life_jellyfish_item.png",
 			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
 			stack_max = 10,

@@ -1,7 +1,8 @@
 water_life = {}
-water_life.version = "030520"
+water_life.version = "180520"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
+water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
 water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
 water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100     
@@ -35,6 +36,20 @@ if not water_life.apionly then
 	dofile(path.."/corals.lua")												-- load corals
 	dofile(path.."/jellyfish.lua")											-- load jellyfish
 end
+
+
+--check which lasso to use
+if water_life.mobsredo then 
+	water_life.catchBA = "mobe_redo:lasso"
+	if water_life.petz then minetest.unregister_item("petz:lasso") end
+	
+elseif water_life.petz then
+	water_life.catchBA = "petz:lasso"
+	
+else
+	water_life.catchBA = "water_life:lasso"
+end
+
 
 
 
