@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "180520"
+water_life.version = "210520"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -40,7 +40,7 @@ end
 
 --check which lasso to use
 if water_life.mobsredo then 
-	water_life.catchBA = "mobe_redo:lasso"
+	water_life.catchBA = "mobs:lasso"
 	if water_life.petz then minetest.unregister_item("petz:lasso") end
 	
 elseif water_life.petz then

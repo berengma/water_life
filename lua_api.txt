@@ -14,7 +14,7 @@ water_life.abo = minetest.get_mapgen_setting('active_object_send_range_blocks') 
 water_life.maxwhales = 1 
 water_life.maxsharks = water_life.abo/2
 water_life.maxmobs = 30
-
+water_life.catchBA = String containing name of item to capture big animals (for example "mobs:lasso" )
 
 
 helper functions:
