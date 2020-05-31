@@ -13,7 +13,7 @@ local function spawnstep(dtime)
             
 		local toomuch = false
             
-		if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 150 then	-- each player gets a spawn chance every 5s on average
+		if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 150 then	-- each player gets a spawn chance every 10s on average
         
 			local pos = plyr:get_pos()
 			local yaw = plyr:get_look_horizontal()
@@ -100,17 +100,46 @@ local function spawnstep(dtime)
 						end
 				end
 				
+				
 				mobname = "water_life:jellyfish"
 				
 				local ground = depth.surface
 				local nearlife = water_life.count_objects(ground,nil,"water_life:jellyfish")
-				local faktor = 100 - nearlife.name * 10
+				local faktor = 100 - nearlife.name * 20
 				if random(100) < faktor and liquidflag == "sea" then
 					local obj=minetest.add_entity(ground,mobname)
 				end
 				
 				
-					mobname = 'water_life:fish'
+				mobname = "water_life:coralfish"
+				
+				local ground = depth.surface
+				ground.y = ground.y - depth.depth
+				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
+				local nearlife = water_life.count_objects(ground,nil,mobname)
+				local faktor = 100 - nearlife.name * 6.66
+				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then
+					local cfish = coraltable[random(#coraltable)]
+					cfish.y = cfish.y +1
+					local obj=minetest.add_entity(cfish,mobname)
+				end
+				
+				
+				mobname = "water_life:clownfish"
+				
+				local ground = depth.surface
+				ground.y = ground.y - depth.depth
+				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
+				local nearlife = water_life.count_objects(ground,nil,mobname)
+				local faktor = 100 - nearlife.name * 50
+				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then
+					local cfish = coraltable[random(#coraltable)]
+					cfish.y = cfish.y +1
+					local obj=minetest.add_entity(cfish,mobname)
+				end
+				
+				
+				mobname = 'water_life:fish'
 					local nearlife = water_life.count_objects(pos2,24,"water_life:piranha")
 					if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or nearlife.fish < 5) and (liquidflag == "river" or liquidflag == "muddy") then
                             

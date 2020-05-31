@@ -31,7 +31,7 @@ water_life_maxsharks (Max possible sharks in aktive area) int 5
 # -
 # total max number of animals in an aktive area
 # other mods might not care about this setting
-water_life_maxmobs (Max possible animals in aktive area) int 30
+water_life_maxmobs (Max possible animals in aktive area) int 60
 
 # -
 # turn this to true if you only need the api but do

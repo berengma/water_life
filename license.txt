@@ -61,3 +61,12 @@ corals, kelp and seagrass:
 Copyright (C) Topywo
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) http://creativecommons.org/licenses/by-sa/3.0/
+
+
+clownfish and coralfish:
+
+
+Model/Textures: CC-BY-SA 3.0
+Author: Sapier
+
+URL: http://creativecommons.org/licenses/by-sa/3.0/de/legalcode
