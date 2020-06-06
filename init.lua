@@ -26,17 +26,17 @@ dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
 if not water_life.apionly then
 	dofile(path.."/spawn.lua")												-- load spawn function
-	dofile(path.."/whale.lua")												-- load whales
-	dofile(path.."/shark.lua")												-- load sharks
-	dofile(path.."/riverfish.lua")											-- load riverfish
-	dofile(path.."/piranha.lua")												-- load piranha
-	dofile(path.."/sea_urchin.lua")											-- load sea urchin
-	dofile(path.."/clams.lua")												-- load clams
-	dofile(path.."/plants.lua")												-- load water plants
-	dofile(path.."/corals.lua")												-- load corals
-	dofile(path.."/jellyfish.lua")											-- load jellyfish
-	dofile(path.."/coralfish.lua")											-- load coralfish
-	dofile(path.."/clownfish.lua")											-- load clownfish
+	dofile(path.."/animals/whale.lua")											-- load whales
+	dofile(path.."/animals/shark.lua")											-- load sharks
+	dofile(path.."/animals/riverfish.lua")										-- load riverfish
+	dofile(path.."/animals/piranha.lua")										-- load piranha
+	dofile(path.."/animals/sea_urchin.lua")										-- load sea urchin
+	dofile(path.."/animals/clams.lua")											-- load clams
+	dofile(path.."/flora/plants.lua")											-- load water plants
+	dofile(path.."/flora/corals.lua")											-- load corals
+	dofile(path.."/animals/jellyfish.lua")										-- load jellyfish
+	dofile(path.."/animals/coralfish.lua")										-- load coralfish
+	dofile(path.."/animals/clownfish.lua")										-- load clownfish
 end
 
 

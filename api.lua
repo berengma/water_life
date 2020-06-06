@@ -210,16 +210,23 @@ for _,obj in ipairs(all_objects) do
 	end
 	if entity and entity.name == "water_life:whale" then
 		hasil.whales = hasil.whales +1
-    elseif entity and entity.name == "water_life:shark" then
+	elseif entity and entity.name == "water_life:shark" then
 		hasil.sharks = hasil.sharks +1
-    elseif entity and (entity.name == "water_life:fish" or entity.name == "water_life:fish_tamed") then
-        hasil.fish = hasil.fish +1
+	elseif entity and (entity.name == "water_life:fish" or entity.name == "water_life:fish_tamed") then
+		hasil.fish = hasil.fish +1
 	end
-end
-return hasil
-end
+	
+	if entity and entity.name then
+			if not hasil[entity.name] then
+				hasil[entity.name] = 1
+			else
+				hasil[entity.name] = hasil[entity.name] +1
+			end
+		end
+	end
 
-
+	return hasil
+end
 
 
 -- returns 2D angle from self to target in radians
@@ -658,5 +665,21 @@ minetest.register_chatcommand("wl_version", {
 		
 		minetest.chat_send_player(name,core.colorize("#14ee00","Your water_life version # is: "..water_life.version))
         
+	end
+})
+
+minetest.register_chatcommand("wl_objects", {
+	params = "",
+	description = "find #objects in abo",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false end
+		local pos = player:get_pos()
+		
+		showit = water_life.count_objects(pos)
+		minetest.chat_send_player(name,dump(showit))
+          
+		
 	end
 })
