@@ -1,4 +1,4 @@
-
+local random = water_life.random
 
 
 local function fish_brain(self)
@@ -8,6 +8,18 @@ local function fish_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
+	
+	if mobkit.timer(self,5) then
+		local pos = self.object:get_pos()
+		local obj = self.object
+		if self.base and vector.distance(self.base,pos) > 5 then
+			water_life.hq_swimto(self,20,0.5,nil,self.base)
+		else
+			local coraltable = minetest.find_nodes_in_area({x=pos.x-5, y=pos.y-5, z=pos.z-5}, {x=pos.x+5, y=pos.y+5, z=pos.z+5},water_life.urchinspawn)
+			if #coraltable > 0 then self.base = coraltable[random(#coraltable)] end
+		end
+	end
+	
 	if mobkit.timer(self,1) then 
         if not self.isinliquid	then 
             --minetest.chat_send_all(dump(self.isinliquid))
@@ -59,7 +71,8 @@ minetest.register_entity("water_life:clownfish",{
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=300,
-    wild = true,
+	wild = true,
+	base = nil,
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
@@ -115,8 +128,9 @@ minetest.register_entity("water_life:clownfish_tamed",{
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 --	timeout=60,
-    wild = false,
-    owner = "",
+	wild = false,
+	base = nil,
+	owner = "",
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},

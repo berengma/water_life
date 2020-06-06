@@ -1,4 +1,4 @@
-
+local random = water_life.random
 
 
 local function fish_brain(self)
@@ -8,6 +8,53 @@ local function fish_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
+	
+	if mobkit.timer(self,2) then
+		local members = water_life.get_herd_members(self,5)
+		local score = 0
+		local entity = {}
+		if #members > 1 then
+			for i = #members,1,-1 do
+				entity = members[i]:get_luaentity()
+				if entity then
+					--minetest.chat_send_all(dump(entity.head).."   :   "..dump(score))
+							
+					if entity.head <= score then
+						table.remove(members,i)
+					else
+						score = entity.head
+					end
+				else
+					table.remove(members,i)
+				end
+			end
+			
+			local hpos = members[1]:get_pos()
+			--minetest.chat_send_all(dump("Boss-POS :"..minetest.pos_to_string(hpos)).."    score= "..dump(score))
+			if self.head ~= score then self.base = hpos end
+		
+		end
+	end
+			
+			
+	
+	if mobkit.timer(self,2) then
+		local pos = self.object:get_pos()
+		local obj = self.object
+		local prio = mobkit.get_queue_priority(self)
+		
+		if prio < 50 then
+			if self.base and vector.distance(self.base,pos) > 3 then
+				mobkit.clear_queue_high(self)
+				mobkit.clear_queue_low(self)
+				water_life.hq_swimto(self,20,0.5,nil,self.base)
+			else
+				local coraltable = minetest.find_nodes_in_area({x=pos.x-5, y=pos.y-5, z=pos.z-5}, {x=pos.x+5, y=pos.y+5, z=pos.z+5},water_life.urchinspawn)
+				if #coraltable > 0 then self.base = coraltable[random(#coraltable)] end
+			end
+		end
+	end
+	
 	if mobkit.timer(self,1) then 
         if not self.isinliquid	then 
             --minetest.chat_send_all(dump(self.isinliquid))
@@ -55,11 +102,14 @@ minetest.register_entity("water_life:coralfish",{
 	buoyancy = 1.0,					-- portion of hitbox submerged
 	max_speed = 2,                     
 	jump_height = 0.5,
-	view_range = 2,
+	view_range = 3,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=300,
-    wild = true,
+	wild = true,
+	swarm = {},
+	base = nil,
+	head = 65535,
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
@@ -115,7 +165,10 @@ minetest.register_entity("water_life:coralfish_tamed",{
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 --	timeout=60,
-    wild = false,
+	wild = false,
+	swarm = {},
+	base = nil,
+	head = 65535,
     owner = "",
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		

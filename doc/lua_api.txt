@@ -86,20 +86,16 @@ register enitiy "name" as shark food. Will be attacked by sharks if in water and
 
 
 ##########################################
-water_life.count_objects(pos,radius,name)
+water_life.count_objects(pos,radius)
 ##########################################
 
+if radius is nil radius will be the active_object_send_range_blocks * 16
 counts objects around >pos< with >radius< in nodes and returns a table:
-(>name< is a string or nil)
+
 
 table.all       -   total number of all objects
-table.sharks    -   total number of sharks
-table.whales    -   total number of whales
-table.fish      -   total number of fish wild/tamed
-table.name      -   total number of mob "name"
+table["objectname"] = nil or number of found objects
 
-if radius is nil radius will be the active_object_send_range_blocks * 16
-if name is nil table.name is 0
 
 
 #############################

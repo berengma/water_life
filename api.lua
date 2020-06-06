@@ -210,16 +210,50 @@ for _,obj in ipairs(all_objects) do
 	end
 	if entity and entity.name == "water_life:whale" then
 		hasil.whales = hasil.whales +1
-    elseif entity and entity.name == "water_life:shark" then
+	elseif entity and entity.name == "water_life:shark" then
 		hasil.sharks = hasil.sharks +1
-    elseif entity and (entity.name == "water_life:fish" or entity.name == "water_life:fish_tamed") then
-        hasil.fish = hasil.fish +1
+	elseif entity and (entity.name == "water_life:fish" or entity.name == "water_life:fish_tamed") then
+		hasil.fish = hasil.fish +1
+	end
+	
+	if entity and entity.name then
+			if not hasil[entity.name] then
+				hasil[entity.name] = 1
+			else
+				hasil[entity.name] = hasil[entity.name] +1
+			end
+		end
+	end
+
+	return hasil
+end
+
+
+function water_life.get_herd_members(self,radius)
+	
+	local pos = mobkit.get_stand_pos(self)
+	local name = self.name
+	
+	if not radius then radius = water_life.abo * 16 end
+
+	local all_objects = minetest.get_objects_inside_radius(pos, radius)
+	if #all_objects < 1 then return nil end
+
+	for i = #all_objects,1,-1 do
+	local entity = all_objects[i]:get_luaentity()
+		
+		if entity and entity.name ~= name then
+				table.remove(all_objects,i)
+		end
+		
+	end
+	
+	if #all_objects < 1 then
+		return nil
+	else
+		return all_objects
 	end
 end
-return hasil
-end
-
-
 
 
 -- returns 2D angle from self to target in radians
@@ -393,21 +427,27 @@ function water_life.hq_swimto(self,prty,speed,node,tgtpos)
 		if not mobkit.is_alive(self) then return true end
 		local pos = self.object:get_pos()
 		
-		
-		if vector.distance(pos,endpos) > 1 then
+		if mobkit.timer(self,1) then
+			if vector.distance(pos,endpos) > 1 then
+						
+						--minetest.chat_send_all(vector.distance(pos,endpos))
+						if endpos.y > pos.y  then
+							local vel = self.object:get_velocity()
+							vel.y = vel.y+0.4
+							self.object:set_velocity(vel)
+						end	
+						if endpos.y < pos.y then
+							local vel = self.object:get_velocity()
+							vel.y = vel.y-0.1
+							self.object:set_velocity(vel)
+						end
+						mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
+						pos = self.object:get_pos() --mobkit.get_stand_pos(self)
+						yaw = water_life.get_yaw_to_pos(self,endpos)
 					
-					--minetest.chat_send_all(vector.distance(pos,endpos))
-					if endpos.y > pos.y then
-						local vel = self.object:get_velocity()
-						vel.y = vel.y+0.3
-						self.object:set_velocity(vel)
-					end	
-					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
-					pos = self.object:get_pos() --mobkit.get_stand_pos(self)
-					yaw = water_life.get_yaw_to_pos(self,endpos)
-				
-		else			
-			return true
+			else			
+				return true
+			end
 		end
     
 end
@@ -658,5 +698,21 @@ minetest.register_chatcommand("wl_version", {
 		
 		minetest.chat_send_player(name,core.colorize("#14ee00","Your water_life version # is: "..water_life.version))
         
+	end
+})
+
+minetest.register_chatcommand("wl_objects", {
+	params = "",
+	description = "find #objects in abo",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false end
+		local pos = player:get_pos()
+		
+		showit = water_life.count_objects(pos)
+		minetest.chat_send_player(name,dump(showit))
+          
+		
 	end
 })
