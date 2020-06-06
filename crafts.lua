@@ -1,4 +1,4 @@
-
+local random = water_life.random
 
 -- raw meat
 minetest.register_craftitem("water_life:meat_raw", {
@@ -161,9 +161,14 @@ minetest.register_craftitem("water_life:coralfish", {
 				if minetest.is_protected(pos,name) then return itemstack end
 
 				local obj = minetest.add_entity(pos, "water_life:coralfish_tamed")
-				obj = obj:get_luaentity()
+				if obj then
+							local entity = obj:get_luaentity()
+							entity.base = nil
+							entity.owner = name
+							entity.head = random(65535)
+				end
 				itemstack:take_item()
-				obj.owner = name
+				
 				return itemstack
 			end,
 		})

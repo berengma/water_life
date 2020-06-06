@@ -111,8 +111,7 @@ local function spawnstep(dtime)
 				
 				mobname = "water_life:jellyfish"
 				
-				local ground = depth.surface
-				--local nearlife = water_life.count_objects(ground,nil,"water_life:jellyfish")
+				ground = depth.surface
 				local faktor = 100 - getcount(animal[mobname]) * 20
 				if random(100) < faktor and liquidflag == "sea" then
 					local obj=minetest.add_entity(ground,mobname)
@@ -121,29 +120,38 @@ local function spawnstep(dtime)
 				
 				mobname = "water_life:coralfish"
 				
-				local ground = depth.surface
+				
 				ground.y = ground.y - depth.depth
-				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
+				coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
 				--local nearlife = water_life.count_objects(ground,nil,mobname)
-				local faktor = 100 - getcount(animal[mobname]) * 6.66
+				faktor = 100 - getcount(animal[mobname]) * 6.66
 				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then
 					local cfish = coraltable[random(#coraltable)]
 					cfish.y = cfish.y +1
-					local obj=minetest.add_entity(cfish,mobname)
+					local maxfish = random(3,7)
+					for i = 1,maxfish,1 do
+						local obj=minetest.add_entity(cfish,mobname)
+						if obj then
+							local entity = obj:get_luaentity()
+							entity.base = cfish
+							entity.head = random(65535)
+						end
+					end
 				end
+				
 				
 				
 				mobname = "water_life:clownfish"
 				
-				local ground = depth.surface
-				ground.y = ground.y - depth.depth
-				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
-				--local nearlife = water_life.count_objects(ground,nil,mobname)
-				local faktor = 100 - getcount(animal[mobname]) * 50
+				faktor = 100 - getcount(animal[mobname]) * 50
 				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then
 					local cfish = coraltable[random(#coraltable)]
 					cfish.y = cfish.y +1
 					local obj=minetest.add_entity(cfish,mobname)
+					if obj then
+						local entity = obj:get_luaentity()
+						entity.base = cfish
+					end
 				end
 				
 				
