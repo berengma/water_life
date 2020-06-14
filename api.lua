@@ -602,7 +602,7 @@ function water_life.hq_go2land(self,prty,tgt)
 					local node=minetest.get_node({x=target.x,y=target.y+1,z=target.z})
 					 
 					 if node.name == "air" then
-						water_life.temp_show(target,5,2)
+						--water_life.temp_show(target,5,2)
 						break
 					 else
 						 target = nil

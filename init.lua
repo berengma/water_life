@@ -93,6 +93,7 @@ end
 
 if minetest.get_modpath("petz") then
 	water_life.register_shark_food("petz:kitty")
+	water_life.register_shark_food("petz:rat")
 	water_life.register_shark_food("petz:goat")
 	water_life.register_shark_food("petz:puppy")
 	water_life.register_shark_food("petz:ducky")
