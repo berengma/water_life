@@ -37,11 +37,13 @@ local function spawnstep(dtime)
                 
 			local pos2 = mobkit.pos_translate2d(pos,yaw,radius)									-- calculate position
 			local depth = water_life.water_depth(pos2,25)										-- get surface pos and water depth
+			local bdata =  water_life_get_biome_data(pos2)										-- get biome data at spaen position
 				
 			if depth.depth > 0 then									
 				if water_life.radar_debug then
 					water_life.temp_show(depth.surface,1,5)
 					minetest.chat_send_all(">>> Depth ="..dump(depth.depth).." <<<   "..dump(depth.type))
+					minetest.chat_send_all(dump(bdata.name))
 				end
 				pos2 = depth.surface												
 			end
@@ -60,6 +62,19 @@ local function spawnstep(dtime)
 			end
         
 			if liquidflag and not toomuch then
+				
+				local mobname = 'water_life:croc'
+				local faktor = 100 - getcount(animal[mobname]) * 33
+				if random(100) < faktor then
+					local fits = false
+					if string.match(bdata.name,"rainforest") or string.match(bdata.name,"savanna") then fits = true end
+					
+					if depth.depth < 4 and fits then      --shark min water depth
+						local obj=minetest.add_entity(depth.surface,mobname)			-- ok spawn it already damnit
+					end
+					
+                            
+				end
                         
 				local mobname = 'water_life:shark'
 				if water_life.shark_spawn_rate >= random(1000) then

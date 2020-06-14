@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "060620"
+water_life.version = "140620"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -37,6 +37,7 @@ if not water_life.apionly then
 	dofile(path.."/animals/jellyfish.lua")										-- load jellyfish
 	dofile(path.."/animals/coralfish.lua")										-- load coralfish
 	dofile(path.."/animals/clownfish.lua")										-- load clownfish
+	dofile(path.."/animals/crocodile.lua")										-- load crocodile
 end
 
 
@@ -92,6 +93,7 @@ end
 
 if minetest.get_modpath("petz") then
 	water_life.register_shark_food("petz:kitty")
+	water_life.register_shark_food("petz:rat")
 	water_life.register_shark_food("petz:goat")
 	water_life.register_shark_food("petz:puppy")
 	water_life.register_shark_food("petz:ducky")
