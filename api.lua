@@ -992,7 +992,7 @@ minetest.register_chatcommand("wl_objects", {
 		if not player then return false end
 		local pos = player:get_pos()
 		
-		showit = water_life.count_objects(pos)
+		local showit = water_life.count_objects(pos)
 		minetest.chat_send_player(name,dump(showit))
           
 		
