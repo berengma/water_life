@@ -998,3 +998,30 @@ minetest.register_chatcommand("wl_objects", {
 		
 	end
 })
+
+
+minetest.register_chatcommand("wl_kill", {
+	params = "<mob_name>",
+	description = "kill all mobs <mob_name> in abo",
+	privs = {server = true},
+	func = function(name, mob_name)
+		
+		if not name or not mob_name then return end
+		
+		local plyr = minetest.get_player_by_name(name)
+		local pos = plyr:get_pos()
+		local radius = water_life.abo * 16
+		local all_objects = minetest.get_objects_inside_radius(pos, radius)
+		local _,obj
+                                         
+		for _,obj in ipairs(all_objects) do
+			local entity = obj:get_luaentity()
+                                         
+			if entity and entity.name == mob_name then
+				obj:remove()
+			end
+		
+		end
+
+	end
+})
