@@ -126,7 +126,7 @@ local function spawnstep(dtime)
 				
 				mobname = "water_life:jellyfish"
 				
-				ground = depth.surface
+				local ground = depth.surface
 				local faktor = 100 - getcount(animal[mobname]) * 20
 				if random(100) < faktor and liquidflag == "sea" then
 					local obj=minetest.add_entity(ground,mobname)
@@ -137,7 +137,7 @@ local function spawnstep(dtime)
 				
 				
 				ground.y = ground.y - depth.depth
-				coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
+				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
 				--local nearlife = water_life.count_objects(ground,nil,mobname)
 				faktor = 100 - getcount(animal[mobname]) * 6.66
 				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then

@@ -73,13 +73,14 @@ local function croc_brain(self)
 		if prty < 20 then 
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)--mobkit.is_in_deep(target)
+			local corpse = water_life.get_close_drops(self,"meat")
 			local food = water_life.feed_shark(self)
 			
 			if target and mobkit.is_alive(target)  and target:get_attach() == nil and water_life.isinliquid(target) then --.is_in_deep(target) then
 				
 				local dist = water_life.dist2tgt(self,target)
 				if dist > 3 then
-					water_life.hq_water_attack(self,target,21,7,true)
+					water_life.hq_water_attack(self,target,24,7,true)
 				end
 			end
 			
@@ -89,7 +90,7 @@ local function croc_brain(self)
 								local dist = water_life.dist2tgt(self,food)
 								if dist > 3 then
 									mobkit.clear_queue_high(self)
-									water_life.hq_water_attack(self,food,21,7,true)
+									water_life.hq_water_attack(self,food,25,7,true)
 								end
 			end
 			
@@ -114,13 +115,24 @@ local function croc_brain(self)
 					end
 					
 				end
+				
+				--[[ not working yet
+				if corpse and water_life.inwater(corpse) then
+					
+					local dist = water_life.dist2tgt(self,corpse)
+					if dist < 7 and prty < 23 then
+						mobkit.clear_queue_high(self)
+						mobkit.clear_queue_low(self)
+						water_life.hq_swimto(self,23,1,nil,corpse:get_pos())--water_life.hq_catch_drop(self,23,corpse)
+					end
+				end]]
 			end
 			
 			if self.isonground then
 				if target and mobkit.is_alive(target)  then
 					local dist = water_life.dist2tgt(self,target)
 					if dist < 7 then
-						water_life.hq_hunt(self,21,target)
+						water_life.hq_hunt(self,24,target)
 					end
 				end
 				
@@ -128,6 +140,16 @@ local function croc_brain(self)
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 7 then
 						water_life.hq_hunt(self,25,food)
+					end
+				end
+				
+				if corpse and not water_life.inwater(corpse) then
+					
+					local dist = water_life.dist2tgt(self,corpse)
+					if dist < 7 and prty < 23 then
+						mobkit.clear_queue_high(self)
+						mobkit.clear_queue_low(self)
+						water_life.hq_catch_drop(self,23,corpse)
 					end
 				end
 			end
@@ -156,7 +178,7 @@ minetest.register_entity("water_life:croc",{
 	mesh = "water_life_crocodile.b3d",
 	textures = {"water_life_crocodile.png"},
 	visual_size = {x = 5.5, y = 5.5},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required

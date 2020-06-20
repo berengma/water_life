@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "140620"
+water_life.version = "200620"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -24,6 +24,9 @@ dofile(path.."/api.lua")               											-- load water_life api
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
+dofile(path.."/chatcommands.lua")												-- load chatcommands
+dofile(path.."/behaviors.lua")												-- load behaviors
+
 if not water_life.apionly then
 	dofile(path.."/spawn.lua")												-- load spawn function
 	dofile(path.."/animals/whale.lua")											-- load whales
@@ -76,10 +79,7 @@ minetest.register_entity(":zombiestrd:shark", {
 
 
 -- register shark food
---[[
-water_life.register_shark_food("water_life:fish")   --fish is too small for sharks
-water_life.register_shark_food("water_life:fish_tamed")
-]]
+
 
 if minetest.get_modpath("wildlife") then
 	water_life.register_shark_food("wildlife:deer")
