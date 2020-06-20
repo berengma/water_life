@@ -25,6 +25,7 @@ if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load mudd
 dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
 dofile(path.."/chatcommands.lua")												-- load chatcommands
+dofile(path.."/behaviors.lua")												-- load behaviors
 
 if not water_life.apionly then
 	dofile(path.."/spawn.lua")												-- load spawn function
