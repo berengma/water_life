@@ -144,24 +144,36 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 		
 		local pos = mobkit.get_stand_pos(self)
 		local y = self.object:get_velocity().y
---[[
-		if mobkit.is_there_yet2d(pos,minetest.yaw_to_dir(self.object:get_yaw()),dest) then
-			if not self.isonground or abs(dest.y-pos.y) > 0.1 then		-- prevent uncontrolled fall when velocity too high
-				self.object:set_velocity({x=0,y=y,z=0})
-			end
-			return true 
-		end]]
+		local dir = vector.normalize(vector.direction({x=pos.x,y=0,z=pos.z},
+											{x=dest.x,y=0,z=dest.z}))
+		dir = vector.multiply(dir,self.max_speed*speed_factor)
+		mobkit.turn2yaw(self,minetest.dir_to_yaw(dir))
+		dir.y = y
+		self.object:set_velocity(dir)
 
---		if self.isonground then
-			local dir = vector.normalize(vector.direction({x=pos.x,y=0,z=pos.z},
-														{x=dest.x,y=0,z=dest.z}))
-			dir = vector.multiply(dir,self.max_speed*speed_factor)
-			mobkit.turn2yaw(self,minetest.dir_to_yaw(dir))
-			dir.y = y
-			self.object:set_velocity(dir)
---		end
 	end
 	mobkit.queue_low(self,func)
+end
+
+function water_life.hq_catch_drop(self,prty,tgt)
+	
+	local func = function(self)
+	
+	if self.isinliquid then return true end
+		if not tgt then return true end
+		if mobkit.is_queue_empty_low(self) then
+			local pos = mobkit.get_stand_pos(self)
+			local tpos = tgt:get_pos()
+			local dist = vector.distance(pos,tpos)
+			if dist < 2 then 
+				tgt:remove()
+				return true
+			else
+				water_life.lq_dumbwalk(self,tpos,0.1)
+			end
+		end
+	end
+	mobkit.queue_high(self,func,prty)
 end
 
  -- drop on death what is definded in the entity table
@@ -201,6 +213,51 @@ function water_life.feed_shark(self)
 	return nil
 end
 
+
+
+
+function water_life.get_close_drops(self,name,element)
+	
+	local water = self.isinliquid
+	local objs = minetest.get_objects_inside_radius(self.object:get_pos(), water_life.abr * 16)
+	if #objs < 1 then return nil end
+	
+	for i = #objs,1,-1 do
+		local entity = objs[i]:get_luaentity()
+		if not entity or not entity.name == "__builtin:item" then table.remove(objs,i) end   -- remove any entity different from a drop
+	end
+	
+	if #objs < 1 then return nil end
+	if not name then return objs[random(#objs)] end 									-- no name, return random drop
+	
+	for i=#objs,1,-1 do
+		local entity = objs[i]:get_luaentity()
+		if not entity.itemstring then 
+			table.remove(objs,i)
+		else
+			if not string.match(entity.itemstring,name) then table.remove(objs,i) end			-- remove anything different from name 
+		end
+	end
+	
+	if #objs < 1 then
+		return nil
+	else
+		return objs[random(#objs)]
+	end
+end
+	
+
+function water_life.inwater(obj)
+	if not obj then return nil end
+	local pos = obj:get_pos()
+	local node = minetest.get_node(pos)
+	if not node or node.name == 'ignore' then return nil end
+	if not minetest.registered_nodes[node.name] then return nil end						-- handle unknown nodes
+		
+	local type = minetest.registered_nodes[node.name]["liquidtype"]
+	if type == "none" then return nil end
+	return true
+end
 
 function water_life.aqua_radar_dumb(pos,yaw,range,reverse,shallow) -- same as mobkit's but added shallow water if true
 	range = range or 4
@@ -532,7 +589,7 @@ function water_life.hq_hunt(self,prty,tgtobj,lost)
 			if mobkit.is_in_deep(tgtobj) then
 				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)
 			end
-			if dist > lost then
+			if dist > lost or math.abs(pos.y - opos.y) > 5 then
 				return true
 			elseif dist > 3 then
 				mobkit.goto_next_waypoint(self,opos)
@@ -951,77 +1008,4 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 minetest.register_privilege("god", {description ="unvulnerable"})
 end
 
- --chatcommands
 
-minetest.register_chatcommand("wl_bdata", {
-	params = "",
-	description = "biome id,name,heat and humidity",
-	privs = {server = true},
-	func = function(name, action)
-		local player = minetest.get_player_by_name(name)
-		if not player then return false end
-		local pos = player:get_pos()
-		local table = minetest.get_biome_data(pos)
-		
-		minetest.chat_send_player(name,dump(minetest.registered_biomes[minetest.get_biome_name(table.biome)]))
-                                           
-		minetest.chat_send_player(name,"ID :"..dump(table.biome).."  /Name :"..dump(minetest.get_biome_name(table.biome)).."  /Temp. in C :"..dump(math.floor((table.heat-32)*5/9)).."  /Humidity in % :"..dump(math.floor(table.humidity*100)/100))
-		
-	end
-})
-
-minetest.register_chatcommand("wl_version", {
-	params = "",
-	description = "shows water_life version number",
-	privs = {server = true},
-	func = function(name, action)
-		local player = minetest.get_player_by_name(name)
-		if not player then return false end
-		
-		minetest.chat_send_player(name,core.colorize("#14ee00","Your water_life version # is: "..water_life.version))
-        
-	end
-})
-
-minetest.register_chatcommand("wl_objects", {
-	params = "",
-	description = "find #objects in abo",
-	privs = {server = true},
-	func = function(name, action)
-		local player = minetest.get_player_by_name(name)
-		if not player then return false end
-		local pos = player:get_pos()
-		
-		local showit = water_life.count_objects(pos)
-		minetest.chat_send_player(name,dump(showit))
-          
-		
-	end
-})
-
-
-minetest.register_chatcommand("wl_kill", {
-	params = "<mob_name>",
-	description = "kill all mobs <mob_name> in abo",
-	privs = {server = true},
-	func = function(name, mob_name)
-		
-		if not name or not mob_name then return end
-		
-		local plyr = minetest.get_player_by_name(name)
-		local pos = plyr:get_pos()
-		local radius = water_life.abo * 16
-		local all_objects = minetest.get_objects_inside_radius(pos, radius)
-		local _,obj
-                                         
-		for _,obj in ipairs(all_objects) do
-			local entity = obj:get_luaentity()
-                                         
-			if entity and entity.name == mob_name then
-				obj:remove()
-			end
-		
-		end
-
-	end
-})

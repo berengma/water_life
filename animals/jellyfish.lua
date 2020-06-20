@@ -42,7 +42,7 @@ minetest.register_entity("water_life:jellyfish",{
 	mesh = "water_life_jellyfish.b3d",
 	textures = {"water_life_jellyfish.png"},
 	visual_size = {x = 1.5, y = 1.5}, --2.5
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
