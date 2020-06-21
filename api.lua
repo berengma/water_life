@@ -496,6 +496,9 @@ function water_life.get_next_waypoint_fast(self,tpos,nogopos)
 	local dir=vector.direction(pos,tpos)
 	local neighbor = mobkit.dir2neighbor(dir)
 	local height, pos2, liquidflag = mobkit.is_neighbor_node_reachable(self,neighbor)
+	local heightr = nil
+	local heightl = nil
+	local liq = nil
 	
 	if height then
 		local fast = false
