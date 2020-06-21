@@ -129,6 +129,10 @@ local function croc_brain(self)
 			end
 			
 			if self.isonground then
+				local rnd = random(1000)
+				if rnd < 30 then
+					mobkit.make_sound(self,"idle")
+				end
 				if target and mobkit.is_alive(target)  then
 					local dist = water_life.dist2tgt(self,target)
 					if dist < 7 then
@@ -172,7 +176,7 @@ minetest.register_entity("water_life:croc",{
 											-- common props
 	physical = true,
 	stepheight = 0.1,				--EVIL!
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-0.3, -0.1, -0.3, 0.3, 0.3, 0.3},
 	visual = "mesh",
 	mesh = "water_life_crocodile.b3d",
@@ -197,9 +201,21 @@ minetest.register_entity("water_life:croc",{
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
-	--sounds = {
-	--	attack='water_life_sharkattack',
-	--	},
+	sounds = {
+		attack='water_life_crocattack',
+		idle={
+			{name = "water_life_croc1",
+               gain = 1},
+			{name = "water_life_croc2",
+			gain = 1},
+			{name = "water_life_croc3",
+			gain = 1},
+			{name = "water_life_croc4",
+			gain = 1},
+			{name = "water_life_croc5",
+			gain = 1}
+			}
+		},
 	animation = {
 		def={range={x=14,y=25},speed=5,loop=true},
 		stand={range={x=1,y=1},speed=1,loop=false},

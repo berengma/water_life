@@ -1,5 +1,5 @@
 water_life = {}
-water_life.version = "200620"
+water_life.version = "210620"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")

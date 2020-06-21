@@ -69,7 +69,7 @@ end
 ------------------
 
 
-
+-- on land only, go to tgt and remove it
 function water_life.hq_catch_drop(self,prty,tgt)
 	
 	local func = function(self)
@@ -79,12 +79,20 @@ function water_life.hq_catch_drop(self,prty,tgt)
 		if mobkit.is_queue_empty_low(self) then
 			local pos = mobkit.get_stand_pos(self)
 			local tpos = tgt:get_pos()
-			local dist = vector.distance(pos,tpos)
-			if dist < 2 then 
-				tgt:remove()
-				return true
+			if pos and tpos then 
+				local dist = vector.distance(pos,tpos)
+				if dist < 2 then 
+					tgt:remove()
+					return true
+				else
+					if pos.y +0.5 >= tpos.y then
+						water_life.lq_dumbwalk(self,tpos,0.1)
+					else
+						water_life.lq_dumbjump(self,1)
+					end
+				end
 			else
-				water_life.lq_dumbwalk(self,tpos,0.1)
+				return true
 			end
 		end
 	end
@@ -189,8 +197,8 @@ function water_life.big_aqua_roam(self,prty,speed)
 end
 
 
-
-function water_life.hq_aqua_roam(self,prty,speed) -- this is the same as mobkit's, but allows movement in shallow water
+-- this is the same as mobkit's, but allows movement in shallow water
+function water_life.hq_aqua_roam(self,prty,speed) 
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
@@ -248,6 +256,7 @@ function water_life.hq_attack(self,prty,tgtobj)
 				mobkit.lq_turn2pos(self,tpos)
 				local height = tgtobj:is_player() and 0.35 or tgtobj:get_luaentity().height*0.6
 				if tpos.y+height>pos.y then 
+					mobkit.make_sound(self,"attack")
 					mobkit.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj) 
 				else
 					mobkit.lq_dumbwalk(self,mobkit.pos_shift(tpos,{x=random()-0.5,z=random()-0.5}))
@@ -261,6 +270,7 @@ end
 
 function water_life.hq_hunt(self,prty,tgtobj,lost)
 	if not lost then lost = self.view_range end
+	if water_life.leftorright() then mobkit.make_sound(self,"attack") end
 	
 	local func = function(self)
 		if not mobkit.is_alive(tgtobj) then return true end
@@ -275,7 +285,7 @@ function water_life.hq_hunt(self,prty,tgtobj,lost)
 			if dist > lost or math.abs(pos.y - opos.y) > 5 then
 				return true
 			elseif dist > 3 then
-				mobkit.goto_next_waypoint(self,opos)
+				water_life.goto_next_waypoint(self,opos)
 			else
 				water_life.hq_attack(self,prty+1,tgtobj)					
 			end
@@ -284,6 +294,7 @@ function water_life.hq_hunt(self,prty,tgtobj,lost)
 	mobkit.queue_high(self,func,prty)
 end
 
+-- slowly roam on land, breaks are taken with max of 120 seconds
 function water_life.hq_slow_roam(self,prty)
 	local func=function(self)
 		if self.isinliquid then return true end
@@ -298,6 +309,8 @@ function water_life.hq_slow_roam(self,prty)
 	mobkit.queue_high(self,func,prty)
 end
 
+
+--find any water nearby and go into it
 function water_life.hq_go2water(self,prty)
 	local pos = mobkit.get_stand_pos(self)
 	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
@@ -315,6 +328,8 @@ function water_life.hq_go2water(self,prty)
 	mobkit.queue_high(self,func,prty)
 end
 
+-- looks for a landing point on shore under air. tgt is optional
+-- and must be an object, so it will start searching yaw2tgt - 15 degrees
 function water_life.hq_go2land(self,prty,tgt) 
 	local init = false
 	local offset = 1

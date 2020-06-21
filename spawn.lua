@@ -38,6 +38,11 @@ local function spawnstep(dtime)
 			local pos2 = mobkit.pos_translate2d(pos,yaw,radius)									-- calculate position
 			local depth = water_life.water_depth(pos2,25)										-- get surface pos and water depth
 			local bdata =  water_life_get_biome_data(pos2)										-- get biome data at spaen position
+			local savepos = pos2
+			local dalam = depth.depth
+			local ground = {}
+			ground = depth.surface
+			
 				
 			if depth.depth > 0 then									
 				if water_life.radar_debug then
@@ -45,7 +50,8 @@ local function spawnstep(dtime)
 					minetest.chat_send_all(">>> Depth ="..dump(depth.depth).." <<<   "..dump(depth.type))
 					minetest.chat_send_all(dump(bdata.name))
 				end
-				pos2 = depth.surface												
+				pos2 = depth.surface
+				ground.y = ground.y -dalam + 1
 			end
                 
 			local liquidflag = nil
@@ -62,7 +68,7 @@ local function spawnstep(dtime)
 			end
         
 			if liquidflag and not toomuch then
-				
+				--minetest.chat_send_all(dump(depth.surface))
 				local mobname = 'water_life:croc'
 				local faktor = 100 - getcount(animal[mobname]) * 33
 				if random(100) < faktor then
@@ -75,12 +81,13 @@ local function spawnstep(dtime)
 					
                             
 				end
-                        
+                     --minetest.chat_send_all(dump(depth.surface))   
 				local mobname = 'water_life:shark'
 				if water_life.shark_spawn_rate >= random(1000) then
 						
 					local bcheck = water_life.count_objects(pos2,12)
-					if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"] then
+					if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"]
+						and not animal["water_life:croc"] then
                                 
 						if depth.depth > 4 then      --shark min water depth
 						local obj=minetest.add_entity({x=pos2.x,y=pos2.y-depth.depth+1,z=pos2.z},mobname)			-- ok spawn it already damnit
@@ -88,11 +95,10 @@ local function spawnstep(dtime)
 					end
                             
 				end
-                    
+                    --minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				mobname = "water_life:urchin"
 				if water_life.urchin_spawn_rate >= random(1000) then
-					local ground = depth.surface
-						ground.y = ground.y - depth.depth
+					
 						local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, water_life.urchinspawn)
 						--local nearlife = water_life.count_objects(ground,5,"water_life:urchin")
 						if coraltable and #coraltable > 0 and getcount(animal[mobname]) < 15 and liquidflag == "sea" then
@@ -106,10 +112,11 @@ local function spawnstep(dtime)
 						end
 				end
 				
+				depth = water_life.water_depth(savepos,25) -- do not ask why, but this is a must. Maybe I will discover later. Leave it and all .y val will be wrong
+				--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				mobname = "water_life:clams"
 				if water_life.clams_spawn_rate >= random(1000) then
-					local ground = depth.surface
-						ground.y = ground.y - depth.depth
+					
 						local coraltable = minetest.find_nodes_in_area({x=ground.x-8, y=ground.y-2, z=ground.z-8}, {x=ground.x+8, y=ground.y+2, z=ground.z+8}, water_life.clams_spawn)
 						--local nearlife = water_life.count_objects(ground,8,"water_life:clams")
 						if coraltable and #coraltable > 0 and getcount(animal[mobname]) < 15 and liquidflag == "sea" then
@@ -123,10 +130,10 @@ local function spawnstep(dtime)
 						end
 				end
 				
-				
+				--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				mobname = "water_life:jellyfish"
 				
-				local ground = depth.surface
+				
 				local faktor = 100 - getcount(animal[mobname]) * 20
 				if random(100) < faktor and liquidflag == "sea" then
 					local obj=minetest.add_entity(ground,mobname)
@@ -135,8 +142,8 @@ local function spawnstep(dtime)
 				
 				mobname = "water_life:coralfish"
 				
+				--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				
-				ground.y = ground.y - depth.depth
 				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
 				--local nearlife = water_life.count_objects(ground,nil,mobname)
 				faktor = 100 - getcount(animal[mobname]) * 6.66
@@ -155,7 +162,7 @@ local function spawnstep(dtime)
 				end
 				
 				
-				
+				--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				mobname = "water_life:clownfish"
 				
 				faktor = 100 - getcount(animal[mobname]) * 50
@@ -169,7 +176,7 @@ local function spawnstep(dtime)
 					end
 				end
 				
-				
+				--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
 				mobname = 'water_life:fish'
 					--local nearlife = water_life.count_objects(pos2,24,"water_life:piranha")
 					if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or getcount(animal[mobname]) < 5) and (liquidflag == "river" or liquidflag == "muddy") then
@@ -191,6 +198,8 @@ local function spawnstep(dtime)
                                 
                             
 					end
+					
+					--minetest.chat_send_all(dump(depth.surface).." "..dump(pos2))
                         
 					if water_life.whale_spawn_rate >= random(1000) and getcount(animal[mobname]) < (water_life.maxwhales) and liquidflag == "sea" then
 						mobname = 'water_life:whale'
@@ -202,7 +211,7 @@ local function spawnstep(dtime)
 							for i = 0,3,1 do
 								local whpos2 = mobkit.pos_translate2d(whpos,math.rad(i*90),30)
 								local under = water_life.find_collision(whpos,whpos2, false)
-								--minetest.chat_send_all(dump(under))
+								----minetest.chat_send_all(dump(under))
 								if under and under < 25 then
 									gotwhale = false
 									break
