@@ -80,7 +80,8 @@ local function spawnstep(dtime)
 				if water_life.shark_spawn_rate >= random(1000) then
 						
 					local bcheck = water_life.count_objects(pos2,12)
-					if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"] then
+					if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"]
+						and not animal["water_life:croc"] then
                                 
 						if depth.depth > 4 then      --shark min water depth
 						local obj=minetest.add_entity({x=pos2.x,y=pos2.y-depth.depth+1,z=pos2.z},mobname)			-- ok spawn it already damnit

@@ -13,6 +13,18 @@ local rad = math.rad
 local random = water_life.random
 
 
+local neighbors ={
+	{x=1,z=0},
+	{x=1,z=1},
+	{x=0,z=1},
+	{x=-1,z=1},
+	{x=-1,z=0},
+	{x=-1,z=-1},
+	{x=0,z=-1},
+	{x=1,z=-1}
+	}
+
+	
 -- pseudo random generator, init and call function
 water_life.randomtable = PcgRandom(math.random(2^23)+1)
 
@@ -478,7 +490,121 @@ function water_life.water_depth(pos,max)
 end
 	
 	
+-- amphibious version of mobkit
+function water_life.get_next_waypoint_fast(self,tpos,nogopos)
+	local pos = mobkit.get_stand_pos(self)
+	local dir=vector.direction(pos,tpos)
+	local neighbor = mobkit.dir2neighbor(dir)
+	local height, pos2, liquidflag = mobkit.is_neighbor_node_reachable(self,neighbor)
+	
+	if height then
+		local fast = false
+		heightl = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,-1))
+		if heightl and abs(heightl-height)<0.001 then
+			heightr = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,1))
+			if heightr and abs(heightr-height)<0.001 then
+				fast = true
+				dir.y = 0
+				local dirn = vector.normalize(dir)
+				local npos = mobkit.get_node_pos(mobkit.pos_shift(pos,neighbors[neighbor]))
+				local factor = abs(dirn.x) > abs(dirn.z) and abs(npos.x-pos.x) or abs(npos.z-pos.z)
+				pos2=mobkit.pos_shift(pos,{x=dirn.x*factor,z=dirn.z*factor})
+			end
+		end
+		return height, pos2, fast
+	else
 
+		for i=1,4 do
+			-- scan left
+			height, pos2, liq = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,-i))
+			if height then return height,pos2 end
+			-- scan right
+			height, pos2, liq = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,i))
+			if height then return height,pos2 end
+		end
+	end
+end
+
+-- amphibious version of mobkit
+function water_life.goto_next_waypoint(self,tpos)
+	local height, pos2 = water_life.get_next_waypoint_fast(self,tpos)
+	
+	if not height then return false end
+	
+	if height <= 0.01 then
+		local yaw = self.object:get_yaw()
+		local tyaw = minetest.dir_to_yaw(vector.direction(self.object:get_pos(),pos2))
+		if abs(tyaw-yaw) > 1 then
+			mobkit.lq_turn2pos(self,pos2) 
+		end
+		mobkit.lq_dumbwalk(self,pos2)
+	else
+		mobkit.lq_turn2pos(self,pos2) 
+		mobkit.lq_dumbjump(self,height) 
+	end
+	return true
+end
+
+
+
+function water_life.get_next_waypoint(self,tpos)
+	local pos = mobkit.get_stand_pos(self)
+	local dir=vector.direction(pos,tpos)
+	local neighbor = mobkit.dir2neighbor(dir)
+	local function update_pos_history(self,pos)
+		table.insert(self.pos_history,1,pos)
+		if #self.pos_history > 2 then table.remove(self.pos_history,#self.pos_history) end
+	end
+	local nogopos = self.pos_history[2]
+	
+	local height, pos2, liquidflag = mobkit.is_neighbor_node_reachable(self,neighbor)
+--minetest.chat_send_all('pos2 ' .. minetest.serialize(pos2))
+--minetest.chat_send_all('nogopos ' .. minetest.serialize(nogopos))	
+	if height and not (nogopos and mobkit.isnear2d(pos2,nogopos,0.1)) then
+
+		local heightl = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,-1))
+		if heightl and abs(heightl-height)<0.001 then
+			local heightr = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,1))
+			if heightr and abs(heightr-height)<0.001 then
+				dir.y = 0
+				local dirn = vector.normalize(dir)
+				local npos = mobkit.get_node_pos(mobkit.pos_shift(pos,neighbors[neighbor]))
+				local factor = abs(dirn.x) > abs(dirn.z) and abs(npos.x-pos.x) or abs(npos.z-pos.z)
+				pos2=mobkit.pos_shift(pos,{x=dirn.x*factor,z=dirn.z*factor})
+			end
+		end
+		update_pos_history(self,pos2)
+		return height, pos2
+	else
+
+		for i=1,3 do
+			-- scan left
+			local height, pos2, liq = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,-i*self.path_dir))
+			if height and not liq 
+			and not (nogopos and mobkit.isnear2d(pos2,nogopos,0.1)) then
+				update_pos_history(self,pos2)
+				return height,pos2 
+			end			
+			-- scan right
+			height, pos2, liq = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,i*self.path_dir))
+			if height and not liq 
+			and not (nogopos and mobkit.isnear2d(pos2,nogopos,0.1)) then
+				update_pos_history(self,pos2)
+				return height,pos2 
+			end
+		end
+		--scan rear
+		height, pos2, liquidflag = mobkit.is_neighbor_node_reachable(self,mobkit.neighbor_shift(neighbor,4))
+		if height and not liquidflag 
+		and not (nogopos and mobkit.isnear2d(pos2,nogopos,0.1)) then
+			update_pos_history(self,pos2)
+			return height,pos2 
+		end
+	end
+	-- stuck condition here
+	table.remove(self.pos_history,2)
+	self.path_dir = self.path_dir*-1	-- subtle change in pathfinding
+end
 -- Entity definitions
 
 -- entity for showing positions in debug
