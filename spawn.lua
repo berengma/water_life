@@ -51,7 +51,7 @@ local function spawnstep(dtime)
 					minetest.chat_send_all(dump(bdata.name))
 				end
 				pos2 = depth.surface
-				ground.y = ground.y -dalam + 1
+				ground.y = ground.y -dalam + 3
 			end
                 
 			local liquidflag = nil
@@ -90,7 +90,7 @@ local function spawnstep(dtime)
 						and not animal["water_life:croc"] then
                                 
 						if depth.depth > 4 then      --shark min water depth
-						local obj=minetest.add_entity({x=pos2.x,y=pos2.y-depth.depth+1,z=pos2.z},mobname)			-- ok spawn it already damnit
+						local obj=minetest.add_entity(ground,mobname)			-- ok spawn it already damnit
 						end
 					end
                             
