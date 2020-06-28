@@ -471,7 +471,7 @@ function water_life.water_depth(pos,max)
 			if not minetest.registered_nodes[node.name] then return depth end				-- handle unknown nodes
 			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
 
-			if ctype ~= "source" then
+			if ctype == "none" then
 				depth.surface = lastpos
 				found = true
 				break

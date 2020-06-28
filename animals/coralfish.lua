@@ -13,6 +13,7 @@ local function fish_brain(self)
 		local members = water_life.get_herd_members(self,5)
 		local score = 0
 		local entity = {}
+		-- this loop is searching for the herd boss with the highest score. All others will be deleted.
 		if #members > 1 then
 			for i = #members,1,-1 do
 				entity = members[i]:get_luaentity()
@@ -31,7 +32,7 @@ local function fish_brain(self)
 			
 			local hpos = members[1]:get_pos()
 			--minetest.chat_send_all(dump("Boss-POS :"..minetest.pos_to_string(hpos)).."    score= "..dump(score))
-			if self.head ~= score then self.base = hpos end
+			if self.head ~= score then self.base = hpos end			-- if active mob (self) is not boss then remember boss position
 		
 		end
 	end
