@@ -213,7 +213,7 @@ local function spawnstep(dtime)
 							for i = 0,3,1 do
 								local whpos2 = mobkit.pos_translate2d(whpos,math.rad(i*90),30)
 								local under = water_life.find_collision(whpos,whpos2, false)
-								minetest.chat_send_all(dump(under))
+								--minetest.chat_send_all(dump(under))
 								if under and under < 25 then
 									gotwhale = false
 									break
