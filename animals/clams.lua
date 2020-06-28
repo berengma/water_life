@@ -21,17 +21,16 @@ minetest.register_entity("water_life:clams", {
 	textures = {"water_life_clams.png^[makealpha:128,128,0"},
 	spritediv = {x=1, y=3},
 	initial_sprite_basepos = {x=0, y=0},
+	static_save = false,
 	drops = {
 		{name = "water_life:meat_raw", chance = 1, min = 1, max = 1},
 	},
-
+	buoyancy = 2,
 	phase = 0,
 	phasetimer = 0,
-
-	on_activate = function()
-		minetest.log("info", "[clams] whiteshell object activated!")
-	end,
-
+	makes_footstep_sound = true,
+	on_activate = mobkit.actfunc,		-- required
+	get_staticdata = mobkit.statfunc,
 	on_step = function(self, dtime)
 		self.phasetimer = self.phasetimer + dtime
 		if self.phasetimer > 2.0 then
