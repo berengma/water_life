@@ -21,6 +21,7 @@ local path = minetest.get_modpath(minetest.get_current_modname())
 
 
 dofile(path.."/api.lua")               											-- load water_life api
+dofile(path.."/paths.lua")													-- load pathfinding
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
