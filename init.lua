@@ -1,5 +1,12 @@
+-----------------------------------------------------------
+--
+-- Water_life copyright 2020 by Gundul
+-- see software and media licenses in the licenses folder
+-- 
+-----------------------------------------------------------
+
 water_life = {}
-water_life.version = "280620"
+water_life.version = "190720"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
