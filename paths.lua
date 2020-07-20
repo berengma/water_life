@@ -1,6 +1,7 @@
 
 local openSet = {}
 local closedSet = {}
+local random = water_life.random
 
 local function get_distance(start_pos, end_pos)
 	local distX = math.abs(start_pos.x - end_pos.x)
