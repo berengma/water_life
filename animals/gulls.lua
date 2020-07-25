@@ -38,7 +38,7 @@ minetest.register_entity("water_life:gull",{
 	physical = true,
 	stepheight = 0.3,				
 	collide_with_objects = false,
-	collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
+	collisionbox = {-0.45, -0.15, -0.85, 0.65, 0.15, 0.25},
 	visual = "mesh",
 	mesh = "water_life_gull.b3d",
 	textures = {"water_life_gull_gray.png","water_life_gull_black.png","water_life_gull_grayblue.png"},
