@@ -437,7 +437,7 @@ if minetest.get_modpath("unified_inventory") then
 	minetest.register_tool("water_life:croc_bag", {
 		description = ("CrocBag"),
 		inventory_image = "water_life_crocbag.png",
-		groups = {bagslots=32},
+		groups = {bagslots=24},
 	})
 end
 
