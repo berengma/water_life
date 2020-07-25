@@ -423,3 +423,28 @@ if minetest.get_modpath("dye") then
 			recipe = {"water_life:coralskyblue"},
 		})
 	end
+	
+if minetest.get_modpath("unified_inventory") then
+	minetest.register_craft({
+			output = "water_life:croc_bag",
+			recipe = {
+				{"farming:string", "water_life:crocleather", "farming:string"},
+				{"water_life:crocleather", "water_life:crocleather", "water_life:crocleather"},
+				{"farming:string", "water_life:crocleather", "farming:string"}
+			}
+		})
+	
+	minetest.register_tool("water_life:croc_bag", {
+		description = ("CrocBag"),
+		inventory_image = "water_life_crocbag.png",
+		groups = {bagslots=32},
+	})
+end
+
+minetest.register_craftitem("water_life:crocleather", {
+			description = ("Crockleather"),
+			inventory_image = "water_life_crocleather.png",
+			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
+			liquids_pointable = false,
+			groups = {leather = 1, flammable = 2},
+		})
