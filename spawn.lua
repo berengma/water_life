@@ -82,6 +82,18 @@ local function spawnstep(dtime)
                             
 				end
                      --minetest.chat_send_all(dump(minetest.pos_to_string(depth.surface)).." "..dump(minetest.pos_to_string(ground)))   
+				
+				local mobname = "water_life:gull"
+				local faktor = 100 - getcount(animal[mobname]) * 20
+				if random(100) < faktor and liquidflag == "sea" then
+					if depth.depth > 4 then
+						local spawn = depth.surface
+						spawn.y = spawn.y + 12
+						local obj=minetest.add_entity(spawn,mobname)			-- ok spawn it already damnit
+					end
+				end
+					
+					
 				local mobname = 'water_life:shark'
 				if water_life.shark_spawn_rate >= random(1000) then
 						

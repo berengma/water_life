@@ -74,7 +74,11 @@ local function walkable(node, pos, current_pos)
 			end
 
 		end
-		return minetest.registered_nodes[node.name].walkable
+		if minetest.registered_nodes[node.name].walkable then
+			return true
+		else
+			return false
+		end
 end
 
 local function get_neighbor_ground_level(pos, jump_height, fall_height, current_pos)

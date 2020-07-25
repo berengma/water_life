@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "200720"
+water_life.version = "250720"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -49,6 +49,7 @@ if not water_life.apionly then
 	dofile(path.."/animals/coralfish.lua")										-- load coralfish
 	dofile(path.."/animals/clownfish.lua")										-- load clownfish
 	dofile(path.."/animals/crocodile.lua")										-- load crocodile
+	dofile(path.."/animals/gulls.lua")											-- load gulls
 end
 
 
