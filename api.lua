@@ -427,7 +427,7 @@ function water_life.radar(pos, yaw, radius, water)
     local above = water_life.find_collision(pos,{x=pos.x, y=pos.y + radius, z=pos.z}, water)
     if not above then above = radius end
     if water_life.radar_debug then
-        minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
+       -- minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
     end
     return left, right, up, down, under, above
 end
@@ -436,16 +436,16 @@ end
 -- function to find liquid surface and depth at that position
 function water_life.water_depth(pos,max)
 	
-	local depth = {}
-	depth.surface = {}
-	depth.depth = 0
-	depth.type = ""
+	
+	local surface = {}
+	local depth = 0
+	local type = ""
 	if not max then max = 10 end
-	if not pos then return depth end
+	if not pos then return nil end
 	local tempos = {}
 	local node = minetest.get_node(pos)
-	if not node or node.name == 'ignore' then return depth end
-	if not minetest.registered_nodes[node.name] then return depth end						-- handle unknown nodes
+	if not node or node.name == 'ignore' then return nil end
+	if not minetest.registered_nodes[node.name] then return nil end						-- handle unknown nodes
 		
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
@@ -457,14 +457,14 @@ function water_life.water_depth(pos,max)
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
 			local cname = minetest.get_node(check).name
-			if not minetest.registered_nodes[cname] then return depth end					-- handle unknown nodes
+			if not minetest.registered_nodes[cname] then return nil end					-- handle unknown nodes
 			if minetest.registered_nodes[cname]["liquidtype"] == "source" then
-				depth.surface = check
+				surface = check
 				found = true
 			end
 		end
 		if not found then
-			return depth
+			return nil
 		end
 	
 	else																			-- start in liquid find way up first
@@ -473,25 +473,25 @@ function water_life.water_depth(pos,max)
 		for i = 1,max,1 do
 			tempos = {x=pos.x, y=pos.y+i, z= pos.z}
 			node = minetest.get_node(tempos)
-			if not minetest.registered_nodes[node.name] then return depth end				-- handle unknown nodes
+			if not minetest.registered_nodes[node.name] then return nil end				-- handle unknown nodes
 			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
 
 			if ctype == "none" then
-				depth.surface = lastpos
+				surface = lastpos
 				found = true
 				break
 			end
 			lastpos = tempos
 		end
-		if not found then depth.surface = lastpos end
+		if not found then surface = lastpos end
 	end
 	
-	pos = depth.surface
-	depth.type = minetest.get_node(pos).name or ""
+	pos = surface
+	type = minetest.get_node(pos).name or ""
 	local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
-	depth.depth = under or max
+	depth = under or max
 
-	return depth
+	return depth, type, surface
 end
 	
 	
@@ -900,5 +900,4 @@ function water_life.hq_glide(self,prty,fmin,fmax)
 	end
 	mobkit.queue_high(self,func,prty)
 end
-
 
