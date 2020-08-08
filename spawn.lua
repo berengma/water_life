@@ -49,7 +49,7 @@ local function spawnstep(dtime)
 					minetest.chat_send_all(dump(bdata.name))
 				end
 				pos2 = surface
-				ground = mobkit.pos_shift(surface,{y=(dalam*-1)})
+				
 			end
                 
 			local liquidflag = nil
@@ -66,6 +66,8 @@ local function spawnstep(dtime)
 			end
         
 			if liquidflag and not toomuch and surface then
+				ground = mobkit.pos_shift(surface,{y=(dalam*-1)})
+				
 				--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 				local mobname = 'water_life:croc'
 				local faktor = 100 - getcount(animal[mobname]) * 33
@@ -108,8 +110,10 @@ local function spawnstep(dtime)
                     --minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 				mobname = "water_life:urchin"
 				if water_life.urchin_spawn_rate >= random(1000) then
-					
-						local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, water_life.urchinspawn)
+							
+						local upos1 = mobkit.pos_shift(ground,{x=-5,y=-2,z=-5})
+						local upos2 = mobkit.pos_shift(ground,{x=5,y=2,z=5})
+						local coraltable = minetest.find_nodes_in_area(upos1, upos2, water_life.urchinspawn)
 						--local nearlife = water_life.count_objects(ground,5,"water_life:urchin")
 						if coraltable and #coraltable > 0 and getcount(animal[mobname]) < 15 and liquidflag == "sea" then
 							local coralpos = coraltable[random(#coraltable)]
@@ -155,7 +159,9 @@ local function spawnstep(dtime)
 				
 				--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 				
-				local coraltable = minetest.find_nodes_in_area({x=ground.x-5, y=ground.y-2, z=ground.z-5}, {x=ground.x+5, y=ground.y+2, z=ground.z+5}, 				water_life.urchinspawn)
+				local cfpos1 = mobkit.pos_shift(ground,{x=-5,y=-2,z=-5})
+				local cfpos2 = mobkit.pos_shift(ground,{x=5,y=2,z=5})
+				local coraltable = minetest.find_nodes_in_area(cfpos1,cfpos2,water_life.urchinspawn)
 				--local nearlife = water_life.count_objects(ground,nil,mobname)
 				faktor = 100 - getcount(animal[mobname]) * 6.66
 				if random(100) < faktor and liquidflag == "sea" and #coraltable > 1 then
