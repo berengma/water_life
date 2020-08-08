@@ -369,14 +369,15 @@ end
 
 
 -- this is the same as mobkit's, but allows movement in shallow water
-function water_life.hq_aqua_roam(self,prty,speed) 
+function water_life.hq_aqua_roam(self,prty,speed,anim)
+	if not anim then anim = "def" end
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
 	local func = function(self)
 		if init then
-			mobkit.animate(self,'def')
+			mobkit.animate(self,anim)
 			init = false
 		end
 		local pos = mobkit.get_stand_pos(self)
@@ -496,7 +497,7 @@ function water_life.hq_go2water(self,prty)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			pos = mobkit.get_stand_pos(self)
 			local height = target.y - pos.y
-			water_life.dumbstep(self,height,target,0.1,5)
+			water_life.dumbstep(self,height,target,0.1,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
