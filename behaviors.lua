@@ -844,7 +844,11 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 		self.object:set_yaw(yaw)
 		duration = duration-self.dtime
 		local dist = water_life.dist2tgt(self,target)
-		if  dist > self.view_range then return true end
+		if  dist > self.view_range then
+			minetest.after(3,function()
+				return true
+			end)
+		end
 		if duration <= 0 or dist < 4 then
 			mobkit.remember(self,"warned",target:get_player_name())
 			return true

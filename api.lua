@@ -433,6 +433,24 @@ function water_life.radar(pos, yaw, radius, water)
 end
 
 
+--find a spawn position under air
+function water_life.find_node_under_air(pos,radius,name)
+	if not pos then return nil end
+	if not radius then radius = 3 end
+	if not name then name={"group:crumbly","group:stone","group:tree"} end
+	
+	local pos1 = mobkit.pos_shift(pos,{x=radius*-1,y=radius*-1,z=radius*-1})
+	local pos2 = mobkit.pos_shift(pos,{x=radius,y=radius,z=radius})
+	local spawner = minetest.find_nodes_in_area_under_air(pos1, pos2, name)
+	if not spawner or #spawner < 1 then
+		return nil
+	else
+		local rpos = spawner[random(#spawner)]
+		rpos = mobkit.pos_shift(rpos,{y=1})
+		return rpos
+	end
+end
+
 -- function to find liquid surface and depth at that position
 function water_life.water_depth(pos,max)
 	
@@ -613,6 +631,8 @@ function water_life.get_next_waypoint(self,tpos)
 	table.remove(self.pos_history,2)
 	self.path_dir = self.path_dir*-1	-- subtle change in pathfinding
 end
+
+
 -- Entity definitions
 
 -- entity for showing positions in debug

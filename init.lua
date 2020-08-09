@@ -52,6 +52,7 @@ if not water_life.apionly then
 	dofile(path.."/animals/gulls.lua")											-- load gulls
 	dofile(path.."/animals/gecko.lua")											-- load tokays
 	dofile(path.."/animals/beaver.lua")										-- load beavers
+	dofile(path.."/animals/snake.lua")											-- load snakes
 end
 
 
