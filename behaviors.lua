@@ -325,14 +325,16 @@ end
 
 
 -- same as mobkit.hq_aqua_roam but for large mobs
-function water_life.big_aqua_roam(self,prty,speed)
+function water_life.big_aqua_roam(self,prty,speed,anim)
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
+	if not anim then anim = 'def' end
+	
 	local func = function(self)
 		if init then
-			mobkit.animate(self,'def')
+			mobkit.animate(self,anim)
 			init = false
 		end
 		local pos = mobkit.get_stand_pos(self)
@@ -832,7 +834,10 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 	
 	local func=function(self)
 		if init then 
-			mobkit.animate(self,anim) 
+			mobkit.make_sound(self,"warn")
+			minetest.after(1,function(anim)
+				mobkit.animate(self,anim)
+			end,anim)
 			init=false
 		end
 		local yaw = water_life.get_yaw_to_object(self,target)
