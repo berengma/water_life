@@ -2,7 +2,8 @@ local timer = 0
 local landtimer = 0
 local pi = math.pi
 local random = water_life.random
-local landinterval = 45						-- check every 45 seconds for spawnpos on land
+local landinterval = 60						-- check every 60 seconds for spawnpos on land
+local waterinterval = 20						-- check every 20 seconds for spawnpos in water
 
 
 local function getcount(name)
@@ -19,7 +20,7 @@ local function spawnstep(dtime)
 	timer = timer + dtime
 	landtimer = landtimer + dtime
 	
-	if timer > 10 then
+	if timer > waterinterval then
         
 		for _,plyr in ipairs(minetest.get_connected_players()) do
 			
@@ -58,10 +59,12 @@ local function spawnstep(dtime)
 					
 					
 					local mobname = 'water_life:snake'
-					local faktor = 100 - getcount(animal[mobname]) * 50
+					local faktor = (100 - getcount(animal[mobname]) * 50) + 25
 					if random(100) < faktor then
-						local fits = false
-						if string.match(landdata.name,"desert") or string.match(landdata.name,"savanna") then
+						local fits = minetest.is_protected(landpos)
+						--minetest.chat_send_all(dump(fits))
+						
+						if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna")) and not fits then
 							local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
 						end
 					end
@@ -188,12 +191,13 @@ local function spawnstep(dtime)
 							end
 					end
 					
+					
 					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 					mobname = "water_life:jellyfish"
 					
 					
 					local faktor = 100 - getcount(animal[mobname]) * 20
-					if random(100) < faktor and liquidflag == "sea" then
+					if random(100) < faktor and liquidflag == "sea" and depth > 2 then
 						local obj=minetest.add_entity(mobkit.pos_shift(ground,{y=2}),mobname)
 					end
 					

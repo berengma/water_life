@@ -32,7 +32,8 @@ local function snake_brain(self)
 		
 		if land then
 			land = math.floor(os.clock()-land)
-			if random(120,600) < land then
+			--minetest.chat_send_all(dump(land))
+			if random(240,360) < land then
 				--minetest.chat_send_all("Go to water")
 				mobkit.clear_queue_high(self)
 				water_life.hq_go2water(self,15)
@@ -42,7 +43,7 @@ local function snake_brain(self)
 		
 		if water then
 			water = math.floor(os.clock()-water)
-			if random (30,120) < water then
+			if random (60,120) < water then
 				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
 				water_life.hq_go2land(self,15)
@@ -92,6 +93,9 @@ local function snake_brain(self)
 				
 				if self.isinliquid then
 					
+					 water_life.hq_aqua_roam(self,21,1,"swim")
+					
+					 --[[
 					if target and mobkit.is_alive(target)  and target:get_attach() == nil and not water_life.isinliquid(target) then --.is_in_deep(target) then
 						
 						local dist = water_life.dist2tgt(self,target)
@@ -100,7 +104,7 @@ local function snake_brain(self)
 							water_life.hq_go2land(self,20,target)
 						end
 						
-					end
+					end]]
 					
 				end
 				
@@ -128,7 +132,12 @@ local function snake_brain(self)
 	
 	if mobkit.is_queue_empty_high(self) then
 		if self.isinliquid then water_life.hq_aqua_roam(self,10,1,"swim") end
-		if self.isonground then  water_life.hq_slow_roam(self,10) end
+		if self.isonground then
+			
+			water_life.hq_idle(self,10,random(60,180),"sleep")
+			water_life.hq_snake_move(self,9)
+			
+		end
 	end
 	
 	

@@ -858,3 +858,42 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 end
 
 
+
+function water_life.hq_snake_move(self,prty,anim)
+	anim = anim or 'look'
+	local init = true
+	local getpos = nil
+	
+	local func=function(self)
+		local getpos = nil
+		local pos = mobkit.get_stand_pos(self) --self.object:get_pos()
+		local yaw = 0
+		
+		if init then 
+			mobkit.animate(self,anim)
+			init=false
+			yaw = rad(random(360))
+			pos = mobkit.pos_translate2d(pos,yaw,self.view_range+5)
+			getpos = water_life.find_node_under_air(pos,self.view_range)
+			--water_life.temp_show(getpos,5,5)
+			              
+		end
+		
+		
+		if getpos then
+			
+			water_life.hq_idle(self,prty-1,10,anim)
+			water_life.hq_findpath(self,prty-2,getpos, 1.5,0.1)
+			return true
+			
+			
+		else
+			return true
+			
+			
+		end
+		
+		
+	end
+	mobkit.queue_high(self,func,prty)
+end
