@@ -36,7 +36,7 @@ minetest.register_entity("water_life:jellyfish",{
 											-- common props
 	physical = true,
 	stepheight = 0.3,				
-	collide_with_objects = true,
+	collide_with_objects = false,
 	collisionbox = {-0.15, -0.65, -0.15, 0.15, 0.3, 0.15},
 	visual = "mesh",
 	mesh = "water_life_jellyfish.b3d",

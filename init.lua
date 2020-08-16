@@ -1,5 +1,12 @@
+-----------------------------------------------------------
+--
+-- Water_life copyright 2020 by Gundul
+-- see software and media licenses in the licenses folder
+-- 
+-----------------------------------------------------------
+
 water_life = {}
-water_life.version = "210620"
+water_life.version = "160820"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -21,6 +28,7 @@ local path = minetest.get_modpath(minetest.get_current_modname())
 
 
 dofile(path.."/api.lua")               											-- load water_life api
+dofile(path.."/paths.lua")													-- load pathfinding
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
@@ -41,6 +49,10 @@ if not water_life.apionly then
 	dofile(path.."/animals/coralfish.lua")										-- load coralfish
 	dofile(path.."/animals/clownfish.lua")										-- load clownfish
 	dofile(path.."/animals/crocodile.lua")										-- load crocodile
+	dofile(path.."/animals/gulls.lua")											-- load gulls
+	dofile(path.."/animals/gecko.lua")											-- load tokays
+	dofile(path.."/animals/beaver.lua")										-- load beavers
+	dofile(path.."/animals/snake.lua")											-- load snakes
 end
 
 

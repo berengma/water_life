@@ -11,6 +11,11 @@ local sign = math.sign
 local time = os.time
 local rad = math.rad
 local random = water_life.random
+local deg=math.deg
+local tan = math.tan
+local cos = math.cos
+local atan=math.atan
+
 
 
 local neighbors ={
@@ -422,25 +427,43 @@ function water_life.radar(pos, yaw, radius, water)
     local above = water_life.find_collision(pos,{x=pos.x, y=pos.y + radius, z=pos.z}, water)
     if not above then above = radius end
     if water_life.radar_debug then
-        minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
+       -- minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
     end
     return left, right, up, down, under, above
 end
 
 
+--find a spawn position under air
+function water_life.find_node_under_air(pos,radius,name)
+	if not pos then return nil end
+	if not radius then radius = 3 end
+	if not name then name={"group:crumbly","group:stone","group:tree"} end
+	
+	local pos1 = mobkit.pos_shift(pos,{x=radius*-1,y=radius*-1,z=radius*-1})
+	local pos2 = mobkit.pos_shift(pos,{x=radius,y=radius,z=radius})
+	local spawner = minetest.find_nodes_in_area_under_air(pos1, pos2, name)
+	if not spawner or #spawner < 1 then
+		return nil
+	else
+		local rpos = spawner[random(#spawner)]
+		rpos = mobkit.pos_shift(rpos,{y=1})
+		return rpos
+	end
+end
+
 -- function to find liquid surface and depth at that position
 function water_life.water_depth(pos,max)
 	
-	local depth = {}
-	depth.surface = {}
-	depth.depth = 0
-	depth.type = ""
+	
+	local surface = {}
+	local depth = 0
+	local type = ""
 	if not max then max = 10 end
-	if not pos then return depth end
+	if not pos then return nil end
 	local tempos = {}
 	local node = minetest.get_node(pos)
-	if not node or node.name == 'ignore' then return depth end
-	if not minetest.registered_nodes[node.name] then return depth end						-- handle unknown nodes
+	if not node or node.name == 'ignore' then return nil end
+	if not minetest.registered_nodes[node.name] then return nil end						-- handle unknown nodes
 		
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
@@ -452,14 +475,14 @@ function water_life.water_depth(pos,max)
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
 			local cname = minetest.get_node(check).name
-			if not minetest.registered_nodes[cname] then return depth end					-- handle unknown nodes
+			if not minetest.registered_nodes[cname] then return nil end					-- handle unknown nodes
 			if minetest.registered_nodes[cname]["liquidtype"] == "source" then
-				depth.surface = check
+				surface = check
 				found = true
 			end
 		end
 		if not found then
-			return depth
+			return nil
 		end
 	
 	else																			-- start in liquid find way up first
@@ -468,25 +491,25 @@ function water_life.water_depth(pos,max)
 		for i = 1,max,1 do
 			tempos = {x=pos.x, y=pos.y+i, z= pos.z}
 			node = minetest.get_node(tempos)
-			if not minetest.registered_nodes[node.name] then return depth end				-- handle unknown nodes
+			if not minetest.registered_nodes[node.name] then return nil end				-- handle unknown nodes
 			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
 
-			if ctype ~= "source" then
-				depth.surface = lastpos
+			if ctype == "none" then
+				surface = lastpos
 				found = true
 				break
 			end
 			lastpos = tempos
 		end
-		if not found then depth.surface = lastpos end
+		if not found then surface = lastpos end
 	end
 	
-	pos = depth.surface
-	depth.type = minetest.get_node(pos).name or ""
+	pos = surface
+	type = minetest.get_node(pos).name or ""
 	local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
-	depth.depth = under or max
+	depth = under or max
 
-	return depth
+	return depth, type, surface
 end
 	
 	
@@ -608,6 +631,8 @@ function water_life.get_next_waypoint(self,tpos)
 	table.remove(self.pos_history,2)
 	self.path_dir = self.path_dir*-1	-- subtle change in pathfinding
 end
+
+
 -- Entity definitions
 
 -- entity for showing positions in debug
@@ -635,5 +660,4 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
         
 minetest.register_privilege("god", {description ="unvulnerable"})
 end
-
 

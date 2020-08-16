@@ -11,11 +11,182 @@ local sign = math.sign
 local time = os.time
 local rad = math.rad
 local random = water_life.random
+local deg=math.deg
+local tan = math.tan
+local cos = math.cos
+local atan=math.atan
+
+
+
+-- flying stuff
+
+local function chose_turn(self,a,b)
+    
+    local remember = mobkit.recall(self,"turn")
+    if not remember then
+        if water_life.leftorright() then
+            remember = "1"
+            mobkit.remember(self,"time", self.time_total)
+            mobkit.remember(self,"turn", "1")
+        else
+            remember = "0"
+            mobkit.remember(self,"time", self.time_total)
+            mobkit.remember(self,"turn", "0")
+        end
+    end
+    
+    if a > b then 
+        mobkit.remember(self,"turn", "1")
+        mobkit.remember(self,"time", self.time_total)
+        return false
+        
+    elseif a < b then
+        mobkit.remember(self,"turn","0")
+        mobkit.remember(self,"time", self.time_total)
+        return true
+        
+    else 
+        
+        if remember == "0" then return true else return false end
+    
+    end
+end
+
+
+
+local function pitchroll2pitchyaw(aoa,roll)
+	if roll == 0.0 then return aoa,0 end 
+	-- assumed vector x=0,y=0,z=1
+	local p1 = tan(aoa)
+	local y = cos(roll)*p1
+	local x = sqrt(p1^2-y^2)
+	local pitch = atan(y)
+	local yaw=atan(x)*math.sign(roll)
+	return pitch,yaw
+end
+
 
 
 ------------------
 -- LQ behaviors --
 ------------------
+
+
+function water_life.lq_fly_aoa(self,lift,aoa,roll,acc,anim)
+	aoa=rad(aoa)
+	roll=rad(roll)
+	local hpitch = 0
+	local hyaw = 0
+	local caoa = 0
+	local laoa = nil
+	local croll=roll
+	local lroll = nil 
+	local lastrot = nil
+	local init = true
+	local func=function(self)
+		local rotation=self.object:get_rotation()
+		local vel = self.object:get_velocity()	
+		local vrot = mobkit.dir_to_rot(vel,lastrot)
+		lastrot = vrot
+		if init then
+			if anim then mobkit.animate(self,anim) end
+			init = false	
+		end
+		
+		local accel=self.object:get_acceleration()
+		
+				-- gradual changes
+		if abs(roll-rotation.z) > 0.5*self.dtime then
+			croll = rotation.z+0.5*self.dtime*math.sign(roll-rotation.z)
+		end		
+		
+		if 	croll~=lroll then 
+			hpitch,hyaw = pitchroll2pitchyaw(aoa,croll)
+			lroll = croll
+		end
+		
+		local hrot = {x=vrot.x+hpitch,y=vrot.y-hyaw,z=croll}
+		self.object:set_rotation(hrot)
+		local hdir = mobkit.rot_to_dir(hrot)
+		local cross = vector.cross(vel,hdir)
+		local lift_dir = vector.normalize(vector.cross(cross,hdir))	
+		
+		local daoa = deg(aoa)
+		local lift_coefficient = 0.24*abs(daoa)*(1/(0.025*daoa+1))^4*math.sign(aoa)	-- homegrown formula
+		local lift_val = lift*vector.length(vel)^2*lift_coefficient
+		
+		local lift_acc = vector.multiply(lift_dir,lift_val)
+		lift_acc=vector.add(vector.multiply(minetest.yaw_to_dir(rotation.y),acc),lift_acc)
+
+		self.object:set_acceleration(vector.add(accel,lift_acc))
+	end
+	mobkit.queue_low(self,func)
+end
+
+function water_life.lq_fly_pitch(self,lift,pitch,roll,acc,anim)
+	pitch = rad(pitch)
+	roll=rad(roll)
+	local cpitch = pitch
+	local croll = roll
+	local hpitch = 0
+	local hyaw = 0
+	local lpitch = nil
+	local lroll = nil 
+	local lastrot = nil
+	local init = true
+
+	local func=function(self)
+		if init then
+			if anim then mobkit.animate(self,anim) end
+			init = false	
+		end
+		local rotation=self.object:get_rotation()
+		local accel=self.object:get_acceleration()
+		local vel = self.object:get_velocity()	
+		local speed = vector.length(vel)
+		local vdir = vector.normalize(vel)
+		local vrot = mobkit.dir_to_rot(vel,lastrot)
+		lastrot = vrot
+		
+		-- gradual changes
+		if abs(roll-rotation.z) > 0.5*self.dtime then
+			croll = rotation.z+0.5*self.dtime*math.sign(roll-rotation.z)
+		end		
+		if abs(pitch-rotation.x) > 0.5*self.dtime then
+			cpitch = rotation.x+0.5*self.dtime*math.sign(pitch-rotation.x)
+		end
+		
+		if cpitch~=lpitch or croll~=lroll then 
+			hpitch,hyaw = pitchroll2pitchyaw(cpitch,croll)
+			lpitch = cpitch lroll = croll
+		end
+		
+		local aoa = deg(-vrot.x+cpitch)							-- angle of attack
+		local hrot = {x=hpitch, y=vrot.y-hyaw, z=croll}			-- hull rotation
+		self.object:set_rotation(hrot)
+		local hdir = mobkit.rot_to_dir(hrot)					-- hull dir
+		
+		local cross = vector.cross(hdir,vel)					
+		local lift_dir = vector.normalize(vector.cross(hdir,cross))
+		
+		local lift_coefficient = 0.24*max(aoa,0)*(1/(0.025*max(aoa,0)+1))^4	-- homegrown formula
+--		local lift_val = mobkit.minmax(lift*speed^2*lift_coefficient,speed/self.dtime)
+--		local lift_val = max(lift*speed^2*lift_coefficient,0)
+		local lift_val = min(lift*speed^2*lift_coefficient,20)
+--if lift_val > 10 then minetest.chat_send_all('lift: '.. lift_val ..' vel:'.. speed ..' aoa:'.. aoa) end
+		
+		local lift_acc = vector.multiply(lift_dir,lift_val)
+		lift_acc=vector.add(vector.multiply(minetest.yaw_to_dir(rotation.y),acc),lift_acc)
+		accel=vector.add(accel,lift_acc)
+		accel=vector.add(accel,vector.multiply(vdir,-speed*speed*0.02))	-- drag
+		accel=vector.add(accel,vector.multiply(hdir,acc))				-- propeller
+
+		self.object:set_acceleration(accel)
+
+	end
+	mobkit.queue_low(self,func)
+end
+
 
 
 function water_life.lq_dumbjump(self,height,anim)
@@ -154,14 +325,16 @@ end
 
 
 -- same as mobkit.hq_aqua_roam but for large mobs
-function water_life.big_aqua_roam(self,prty,speed)
+function water_life.big_aqua_roam(self,prty,speed,anim)
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
+	if not anim then anim = 'def' end
+	
 	local func = function(self)
 		if init then
-			mobkit.animate(self,'def')
+			mobkit.animate(self,anim)
 			init = false
 		end
 		local pos = mobkit.get_stand_pos(self)
@@ -198,14 +371,15 @@ end
 
 
 -- this is the same as mobkit's, but allows movement in shallow water
-function water_life.hq_aqua_roam(self,prty,speed) 
+function water_life.hq_aqua_roam(self,prty,speed,anim)
+	if not anim then anim = "def" end
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
 	local func = function(self)
 		if init then
-			mobkit.animate(self,'def')
+			mobkit.animate(self,anim)
 			init = false
 		end
 		local pos = mobkit.get_stand_pos(self)
@@ -268,9 +442,10 @@ function water_life.hq_attack(self,prty,tgtobj)
 end
 
 
-function water_life.hq_hunt(self,prty,tgtobj,lost)
+function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 	if not lost then lost = self.view_range end
 	if water_life.leftorright() then mobkit.make_sound(self,"attack") end
+	
 	
 	local func = function(self)
 		if not mobkit.is_alive(tgtobj) then return true end
@@ -295,7 +470,9 @@ function water_life.hq_hunt(self,prty,tgtobj,lost)
 end
 
 -- slowly roam on land, breaks are taken with max of 120 seconds
-function water_life.hq_slow_roam(self,prty)
+function water_life.hq_slow_roam(self,prty,idle)
+	if not idle then idle = random(30,120) end
+	
 	local func=function(self)
 		if self.isinliquid then return true end
 		if mobkit.is_queue_empty_low(self) and self.isonground then
@@ -303,7 +480,7 @@ function water_life.hq_slow_roam(self,prty)
 			local neighbor = random(8)
 
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(self,neighbor)
-			if height and not liquidflag then mobkit.dumbstep(self,height,tpos,0.1,random(120)) end
+			if height and not liquidflag then mobkit.dumbstep(self,height,tpos,0.1,idle) end
 		end
 	end
 	mobkit.queue_high(self,func,prty)
@@ -322,7 +499,7 @@ function water_life.hq_go2water(self,prty)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			pos = mobkit.get_stand_pos(self)
 			local height = target.y - pos.y
-			water_life.dumbstep(self,height,target,0.1,5)
+			water_life.dumbstep(self,height,target,0.1,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
@@ -552,3 +729,171 @@ end
 end
 
 
+-- flying
+
+function water_life.hq_climb(self,prty,fmin,fmax)
+	if not max then max = 30 end
+	if not min then min = 20 end
+	
+	local func=function(self)
+		if mobkit.timer(self,1) then
+			local remember = mobkit.recall(self,"time")
+            if remember then
+                if self.time_total - remember > 15 then
+                    mobkit.forget(self,"turn")
+                    mobkit.forget(self,"time")
+                    
+                end
+            end
+			self.action = "fly"
+			local pos = self.object:get_pos()
+			local yaw = self.object:get_yaw()
+			
+			local left, right, up, down, under, above = water_life.radar(pos,yaw,32,true)
+			
+			if  (down < 3) and (under >= fmax) then 
+				water_life.hq_glide(self,prty,fmin,fmax)
+				return true
+			end
+            if left > 3 or right > 3 then
+                local lift = 0.6
+                local pitch = 8
+                local roll = 6
+                local acc = 1.2
+                --roll = (max(left,right)/30 *3)+(down/100)*3+roll
+				roll = (max(left,right)/30 * 7.5)
+				lift = lift + (down - up) /400
+				pitch = pitch + (down - up) /30
+				--lift = lift + (down/100) - (up/100)
+                local turn = chose_turn(self,left,right)
+                if turn then
+                    mobkit.clear_queue_low(self)
+                    water_life.lq_fly_pitch(self,lift,pitch,roll*-1,acc,'fly')
+                else 
+                    mobkit.clear_queue_low(self)
+                    water_life.lq_fly_pitch(self,lift,pitch,roll,acc,'fly')
+                end
+            end
+		end
+		if mobkit.timer(self,15) then mobkit.clear_queue_low(self) end
+		if mobkit.is_queue_empty_low(self) then water_life.lq_fly_pitch(self,0.6,8,(random(2)-1.5)*30,1.2,'fly') end 
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+function water_life.hq_glide(self,prty,fmin,fmax)
+	if not max then fmax = 30 end
+	if not min then fmin = 20 end
+	
+	local func = function(self)
+		if mobkit.timer(self,1) then
+			self.action = "glide"
+            local remember = mobkit.recall(self,"time")
+            if remember then
+                if self.time_total - remember > 15 then
+                    mobkit.forget(self,"turn")
+                    mobkit.forget(self,"time")
+                    
+                end
+            end
+			local pos = self.object:get_pos()
+			local yaw = self.object:get_yaw()
+            local left, right, up, down, under, above = water_life.radar(pos,yaw,32,true)
+			if  (down > 10) or (under < fmin) then 
+				water_life.hq_climb(self,prty,fmin,fmax)
+				return true
+			end
+            if left > 3 or right > 3 then
+				local lift = 0.6
+                local pitch = 8
+                local roll = 0
+                local acc = 1.2
+                --roll = (max(left,right)/30 *3)+(down/100)*3+roll
+				roll = (max(left,right)/30 *7.5)
+                local turn = chose_turn(self,left,right)
+                if turn then
+                    mobkit.clear_queue_low(self)
+                    water_life.lq_fly_pitch(self,lift,pitch,roll*-1,acc,'glide')
+                else 
+                    mobkit.clear_queue_low(self)
+                    water_life.lq_fly_pitch(self,lift,pitch,roll,acc,'glide')
+                end
+            end
+		end	
+	if mobkit.timer(self,20) then mobkit.clear_queue_low(self) end
+	if mobkit.is_queue_empty_low(self) then water_life.lq_fly_pitch(self,0.6,-4,(random(2)-1.5)*30,0,'glide') end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+
+function water_life.hq_snake_warn(self,target,prty,duration,anim)
+	anim = anim or 'warn'
+	local init = true
+	
+	local func=function(self)
+		if init then 
+			mobkit.make_sound(self,"warn")
+			minetest.after(1,function(anim)
+				mobkit.animate(self,anim)
+			end,anim)
+			init=false
+		end
+		local yaw = water_life.get_yaw_to_object(self,target)
+		self.object:set_yaw(yaw)
+		duration = duration-self.dtime
+		local dist = water_life.dist2tgt(self,target)
+		if  dist > self.view_range then
+			minetest.after(3,function()
+				return true
+			end)
+		end
+		if duration <= 0 or dist < 4 then
+			mobkit.remember(self,"warned",target:get_player_name())
+			return true
+		end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+
+function water_life.hq_snake_move(self,prty,anim)
+	anim = anim or 'look'
+	local init = true
+	local getpos = nil
+	
+	local func=function(self)
+		local getpos = nil
+		local pos = mobkit.get_stand_pos(self) --self.object:get_pos()
+		local yaw = 0
+		
+		if init then 
+			mobkit.animate(self,anim)
+			init=false
+			yaw = rad(random(360))
+			pos = mobkit.pos_translate2d(pos,yaw,self.view_range+5)
+			getpos = water_life.find_node_under_air(pos,self.view_range)
+			--water_life.temp_show(getpos,5,5)
+			              
+		end
+		
+		
+		if getpos then
+			
+			water_life.hq_idle(self,prty-1,10,anim)
+			water_life.hq_findpath(self,prty-2,getpos, 1.5,0.1)
+			return true
+			
+			
+		else
+			return true
+			
+			
+		end
+		
+		
+	end
+	mobkit.queue_high(self,func,prty)
+end

@@ -52,10 +52,11 @@ biome.humid	= humidity in % (float rounded, two decimal places)
  
  will try to find a liquid surface at position pos, give up after #max nodes
  
- returns a table:
- table.surface 		= position of water surface node
- table.water_depth	= liquid depth at that position
- table.type			= string of liquid source node found
+ returns depth,type,surface or nil:
+ 
+ surface 		= table, position of water surface node
+ depth		= float, liquid depth at that position
+ type		= string,  name of liquid source node found
  
  
  
@@ -269,3 +270,11 @@ wl_version
 ##########
 
 will print out water_life version number, needs server priv
+
+
+#######
+wl_kill <mobname>
+#######
+
+kills all <mobname> in abr
+

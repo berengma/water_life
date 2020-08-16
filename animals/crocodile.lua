@@ -199,6 +199,7 @@ minetest.register_entity("water_life:croc",{
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
+		{name = "water_life:crocleather", chance = 3, min = 1, max = 2},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	sounds = {
