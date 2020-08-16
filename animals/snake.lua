@@ -86,7 +86,7 @@ local function snake_brain(self)
 					
 					local dist = water_life.dist2tgt(self,target)
 					if dist < self.view_range then
-						
+						-- snakes do not attack when in water
 					end
 				end
 				

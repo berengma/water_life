@@ -61,10 +61,12 @@ local function spawnstep(dtime)
 					local mobname = 'water_life:snake'
 					local faktor = (100 - getcount(animal[mobname]) * 50) + 25
 					if random(100) < faktor then
-						local fits = minetest.is_protected(landpos)
+						local fits = minetest.is_protected(landpos,mobname)
 						--minetest.chat_send_all(dump(fits))
 						
-						if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna")) and not fits then
+						if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna"))
+						and not fits and landdata.temp > 15 then
+							
 							local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
 						end
 					end
