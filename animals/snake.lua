@@ -121,7 +121,13 @@ local function snake_brain(self)
 							water_life.hq_snake_warn(self,target,30,8)
 						elseif dist < 5 or action == pname then
 							mobkit.forget(self,"warned")
-							water_life.hq_hunt(self,31,target)
+							
+							local meta = target:get_meta()
+							if meta:get_int("snakepoison") > 0 then
+								water_life.hq_runfrom(self,31,target)
+							else
+								water_life.hq_hunt(self,31,target)
+							end
 						end
 					end
 					

@@ -17,6 +17,23 @@ local cos = math.cos
 local atan=math.atan
 
 
+water_life.hud_poison =   {
+        hud_elem_type = "image",  -- See HUD element types
+        -- Type of element, can be "image", "text", "statbar", or "inventory"
+
+        position = {x=0.5, y=0.8},
+        -- Left corner position of element
+
+        name = "water_life_poison.png",
+
+        scale = {x = 0.1, y = 0.1},
+
+        text = "water_life_poison.png",
+
+       -- size = { x=16, y=16 },
+        -- Size of element in pixels
+}
+
 
 local neighbors ={
 	{x=1,z=0},

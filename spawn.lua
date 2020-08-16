@@ -31,6 +31,14 @@ local function spawnstep(dtime)
 				local pos = plyr:get_pos()
 				local yaw = plyr:get_look_horizontal()
 				local animal = water_life.count_objects(pos)
+				local meta = plyr:get_meta()
+				
+				
+				if meta:get_int("snakepoison") > 0 then
+					plyr:hud_add(water_life.hud_poison)
+					local score = plyr:get_hp()
+					plyr:set_hp(score-1)
+				end
 			
 				if animal.all > water_life.maxmobs then toomuch = true end
 				
