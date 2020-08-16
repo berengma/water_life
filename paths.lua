@@ -355,15 +355,16 @@ end
 
 
 
-function water_life.hq_findpath(self,prty,tpos, dist)
+function water_life.hq_findpath(self,prty,tpos, dist,speed)
 	if not dist then dist = 1 end
+	if not speed then speed = 1 end
 	
 	local func = function(self)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			local pos = self.object:get_pos()
 			if vector.distance(pos,tpos) > dist then
 				
-				if not water_life.gopath(self,tpos) then return true end
+				if not water_life.gopath(self,tpos,speed) then return true end
 				
 			else
 				return true
@@ -375,7 +376,7 @@ end
 
 
 
-function water_life.gopath(self,tpos)
+function water_life.gopath(self,tpos,speedfactor)
 	local height, pos2 = water_life.go_further(self,tpos)
 	if not speedfactor then speedfactor = 1 end
 	

@@ -27,13 +27,13 @@ minetest.register_node("water_life:shark_buoy", {
 	on_place = function(itemstack, placer, pointed_thing)
                                                 
 		local pos = pointed_thing.above
-		local depth = water_life.water_depth(pos,20)					-- max must be specified and >12 or buoys will always be set
-		if depth and depth.type ~= "" and depth.surface ~= {} then
+		local depth,sytpe,surface = water_life.water_depth(pos,20)					-- max must be specified and >12 or buoys will always be set
+		if surface then
 													
-			local height = depth.depth-1 
-			pos = depth.surface
+			local height = depth-1 
+			pos = surface
 			pos.y = pos.y - height
-			local pos_top = depth.surface--{x = pos.x, y = pos.y + height, z = pos.z}
+			local pos_top = surface--{x = pos.x, y = pos.y + height, z = pos.z}
 			local node_top = minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z})
 			local def_top = minetest.registered_nodes[node_top.name]
 			local player_name = placer:get_player_name()

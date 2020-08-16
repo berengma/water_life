@@ -427,25 +427,43 @@ function water_life.radar(pos, yaw, radius, water)
     local above = water_life.find_collision(pos,{x=pos.x, y=pos.y + radius, z=pos.z}, water)
     if not above then above = radius end
     if water_life.radar_debug then
-        minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
+       -- minetest.chat_send_all(dump(water_life.radar_debug).."  left = "..left.."   right = "..right.."   up = "..up.."   down = "..down.."   under = "..under.."   above = "..above)
     end
     return left, right, up, down, under, above
 end
 
 
+--find a spawn position under air
+function water_life.find_node_under_air(pos,radius,name)
+	if not pos then return nil end
+	if not radius then radius = 3 end
+	if not name then name={"group:crumbly","group:stone","group:tree"} end
+	
+	local pos1 = mobkit.pos_shift(pos,{x=radius*-1,y=radius*-1,z=radius*-1})
+	local pos2 = mobkit.pos_shift(pos,{x=radius,y=radius,z=radius})
+	local spawner = minetest.find_nodes_in_area_under_air(pos1, pos2, name)
+	if not spawner or #spawner < 1 then
+		return nil
+	else
+		local rpos = spawner[random(#spawner)]
+		rpos = mobkit.pos_shift(rpos,{y=1})
+		return rpos
+	end
+end
+
 -- function to find liquid surface and depth at that position
 function water_life.water_depth(pos,max)
 	
-	local depth = {}
-	depth.surface = {}
-	depth.depth = 0
-	depth.type = ""
+	
+	local surface = {}
+	local depth = 0
+	local type = ""
 	if not max then max = 10 end
-	if not pos then return depth end
+	if not pos then return nil end
 	local tempos = {}
 	local node = minetest.get_node(pos)
-	if not node or node.name == 'ignore' then return depth end
-	if not minetest.registered_nodes[node.name] then return depth end						-- handle unknown nodes
+	if not node or node.name == 'ignore' then return nil end
+	if not minetest.registered_nodes[node.name] then return nil end						-- handle unknown nodes
 		
 	local type = minetest.registered_nodes[node.name]["liquidtype"]
 	local found = false
@@ -457,14 +475,14 @@ function water_life.water_depth(pos,max)
 		if under then
 			local check = {x=pos.x, y=pos.y - under-1, z=pos.z}
 			local cname = minetest.get_node(check).name
-			if not minetest.registered_nodes[cname] then return depth end					-- handle unknown nodes
+			if not minetest.registered_nodes[cname] then return nil end					-- handle unknown nodes
 			if minetest.registered_nodes[cname]["liquidtype"] == "source" then
-				depth.surface = check
+				surface = check
 				found = true
 			end
 		end
 		if not found then
-			return depth
+			return nil
 		end
 	
 	else																			-- start in liquid find way up first
@@ -473,25 +491,25 @@ function water_life.water_depth(pos,max)
 		for i = 1,max,1 do
 			tempos = {x=pos.x, y=pos.y+i, z= pos.z}
 			node = minetest.get_node(tempos)
-			if not minetest.registered_nodes[node.name] then return depth end				-- handle unknown nodes
+			if not minetest.registered_nodes[node.name] then return nil end				-- handle unknown nodes
 			local ctype = minetest.registered_nodes[node.name]["liquidtype"]
 
 			if ctype == "none" then
-				depth.surface = lastpos
+				surface = lastpos
 				found = true
 				break
 			end
 			lastpos = tempos
 		end
-		if not found then depth.surface = lastpos end
+		if not found then surface = lastpos end
 	end
 	
-	pos = depth.surface
-	depth.type = minetest.get_node(pos).name or ""
+	pos = surface
+	type = minetest.get_node(pos).name or ""
 	local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - max, z=pos.z}, false)
-	depth.depth = under or max
+	depth = under or max
 
-	return depth
+	return depth, type, surface
 end
 	
 	
@@ -613,6 +631,8 @@ function water_life.get_next_waypoint(self,tpos)
 	table.remove(self.pos_history,2)
 	self.path_dir = self.path_dir*-1	-- subtle change in pathfinding
 end
+
+
 -- Entity definitions
 
 -- entity for showing positions in debug
@@ -640,265 +660,4 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
         
 minetest.register_privilege("god", {description ="unvulnerable"})
 end
-
-
--- flying stuff
-
-local function chose_turn(self,a,b)
-    
-    local remember = mobkit.recall(self,"turn")
-    if not remember then
-        if water_life.leftorright() then
-            remember = "1"
-            mobkit.remember(self,"time", self.time_total)
-            mobkit.remember(self,"turn", "1")
-        else
-            remember = "0"
-            mobkit.remember(self,"time", self.time_total)
-            mobkit.remember(self,"turn", "0")
-        end
-    end
-    
-    if a > b then 
-        mobkit.remember(self,"turn", "1")
-        mobkit.remember(self,"time", self.time_total)
-        return false
-        
-    elseif a < b then
-        mobkit.remember(self,"turn","0")
-        mobkit.remember(self,"time", self.time_total)
-        return true
-        
-    else 
-        
-        if remember == "0" then return true else return false end
-    
-    end
-end
-
-
-local function pitchroll2pitchyaw(aoa,roll)
-	if roll == 0.0 then return aoa,0 end 
-	-- assumed vector x=0,y=0,z=1
-	local p1 = tan(aoa)
-	local y = cos(roll)*p1
-	local x = sqrt(p1^2-y^2)
-	local pitch = atan(y)
-	local yaw=atan(x)*math.sign(roll)
-	return pitch,yaw
-end
-
-function water_life.lq_fly_aoa(self,lift,aoa,roll,acc,anim)
-	aoa=rad(aoa)
-	roll=rad(roll)
-	local hpitch = 0
-	local hyaw = 0
-	local caoa = 0
-	local laoa = nil
-	local croll=roll
-	local lroll = nil 
-	local lastrot = nil
-	local init = true
-	local func=function(self)
-		local rotation=self.object:get_rotation()
-		local vel = self.object:get_velocity()	
-		local vrot = mobkit.dir_to_rot(vel,lastrot)
-		lastrot = vrot
-		if init then
-			if anim then mobkit.animate(self,anim) end
-			init = false	
-		end
-		
-		local accel=self.object:get_acceleration()
-		
-				-- gradual changes
-		if abs(roll-rotation.z) > 0.5*self.dtime then
-			croll = rotation.z+0.5*self.dtime*math.sign(roll-rotation.z)
-		end		
-		
-		if 	croll~=lroll then 
-			hpitch,hyaw = pitchroll2pitchyaw(aoa,croll)
-			lroll = croll
-		end
-		
-		local hrot = {x=vrot.x+hpitch,y=vrot.y-hyaw,z=croll}
-		self.object:set_rotation(hrot)
-		local hdir = mobkit.rot_to_dir(hrot)
-		local cross = vector.cross(vel,hdir)
-		local lift_dir = vector.normalize(vector.cross(cross,hdir))	
-		
-		local daoa = deg(aoa)
-		local lift_coefficient = 0.24*abs(daoa)*(1/(0.025*daoa+1))^4*math.sign(aoa)	-- homegrown formula
-		local lift_val = lift*vector.length(vel)^2*lift_coefficient
-		
-		local lift_acc = vector.multiply(lift_dir,lift_val)
-		lift_acc=vector.add(vector.multiply(minetest.yaw_to_dir(rotation.y),acc),lift_acc)
-
-		self.object:set_acceleration(vector.add(accel,lift_acc))
-	end
-	mobkit.queue_low(self,func)
-end
-
-function water_life.lq_fly_pitch(self,lift,pitch,roll,acc,anim)
-	pitch = rad(pitch)
-	roll=rad(roll)
-	local cpitch = pitch
-	local croll = roll
-	local hpitch = 0
-	local hyaw = 0
-	local lpitch = nil
-	local lroll = nil 
-	local lastrot = nil
-	local init = true
-
-	local func=function(self)
-		if init then
-			if anim then mobkit.animate(self,anim) end
-			init = false	
-		end
-		local rotation=self.object:get_rotation()
-		local accel=self.object:get_acceleration()
-		local vel = self.object:get_velocity()	
-		local speed = vector.length(vel)
-		local vdir = vector.normalize(vel)
-		local vrot = mobkit.dir_to_rot(vel,lastrot)
-		lastrot = vrot
-		
-		-- gradual changes
-		if abs(roll-rotation.z) > 0.5*self.dtime then
-			croll = rotation.z+0.5*self.dtime*math.sign(roll-rotation.z)
-		end		
-		if abs(pitch-rotation.x) > 0.5*self.dtime then
-			cpitch = rotation.x+0.5*self.dtime*math.sign(pitch-rotation.x)
-		end
-		
-		if cpitch~=lpitch or croll~=lroll then 
-			hpitch,hyaw = pitchroll2pitchyaw(cpitch,croll)
-			lpitch = cpitch lroll = croll
-		end
-		
-		local aoa = deg(-vrot.x+cpitch)							-- angle of attack
-		local hrot = {x=hpitch, y=vrot.y-hyaw, z=croll}			-- hull rotation
-		self.object:set_rotation(hrot)
-		local hdir = mobkit.rot_to_dir(hrot)					-- hull dir
-		
-		local cross = vector.cross(hdir,vel)					
-		local lift_dir = vector.normalize(vector.cross(hdir,cross))
-		
-		local lift_coefficient = 0.24*max(aoa,0)*(1/(0.025*max(aoa,0)+1))^4	-- homegrown formula
---		local lift_val = mobkit.minmax(lift*speed^2*lift_coefficient,speed/self.dtime)
---		local lift_val = max(lift*speed^2*lift_coefficient,0)
-		local lift_val = min(lift*speed^2*lift_coefficient,20)
---if lift_val > 10 then minetest.chat_send_all('lift: '.. lift_val ..' vel:'.. speed ..' aoa:'.. aoa) end
-		
-		local lift_acc = vector.multiply(lift_dir,lift_val)
-		lift_acc=vector.add(vector.multiply(minetest.yaw_to_dir(rotation.y),acc),lift_acc)
-		accel=vector.add(accel,lift_acc)
-		accel=vector.add(accel,vector.multiply(vdir,-speed*speed*0.02))	-- drag
-		accel=vector.add(accel,vector.multiply(hdir,acc))				-- propeller
-
-		self.object:set_acceleration(accel)
-
-	end
-	mobkit.queue_low(self,func)
-end
-
-
--- back to my code
--- hq functions self explaining
-function water_life.hq_climb(self,prty,fmin,fmax)
-	if not max then max = 30 end
-	if not min then min = 20 end
-	
-	local func=function(self)
-		if mobkit.timer(self,1) then
-			local remember = mobkit.recall(self,"time")
-            if remember then
-                if self.time_total - remember > 15 then
-                    mobkit.forget(self,"turn")
-                    mobkit.forget(self,"time")
-                    
-                end
-            end
-			self.action = "fly"
-			local pos = self.object:get_pos()
-			local yaw = self.object:get_yaw()
-			
-			local left, right, up, down, under, above = water_life.radar(pos,yaw,32,true)
-			
-			if  (down < 3) and (under >= fmax) then 
-				water_life.hq_glide(self,prty,fmin,fmax)
-				return true
-			end
-            if left > 3 or right > 3 then
-                local lift = 0.6
-                local pitch = 8
-                local roll = 6
-                local acc = 1.2
-                --roll = (max(left,right)/30 *3)+(down/100)*3+roll
-				roll = (max(left,right)/30 * 7.5)
-				lift = lift + (down - up) /400
-				pitch = pitch + (down - up) /30
-				--lift = lift + (down/100) - (up/100)
-                local turn = chose_turn(self,left,right)
-                if turn then
-                    mobkit.clear_queue_low(self)
-                    water_life.lq_fly_pitch(self,lift,pitch,roll*-1,acc,'fly')
-                else 
-                    mobkit.clear_queue_low(self)
-                    water_life.lq_fly_pitch(self,lift,pitch,roll,acc,'fly')
-                end
-            end
-		end
-		if mobkit.timer(self,15) then mobkit.clear_queue_low(self) end
-		if mobkit.is_queue_empty_low(self) then water_life.lq_fly_pitch(self,0.6,8,(random(2)-1.5)*30,1.2,'fly') end 
-	end
-	mobkit.queue_high(self,func,prty)
-end
-
-function water_life.hq_glide(self,prty,fmin,fmax)
-	if not max then fmax = 30 end
-	if not min then fmin = 20 end
-	
-	local func = function(self)
-		if mobkit.timer(self,1) then
-			self.action = "glide"
-            local remember = mobkit.recall(self,"time")
-            if remember then
-                if self.time_total - remember > 15 then
-                    mobkit.forget(self,"turn")
-                    mobkit.forget(self,"time")
-                    
-                end
-            end
-			local pos = self.object:get_pos()
-			local yaw = self.object:get_yaw()
-            local left, right, up, down, under, above = water_life.radar(pos,yaw,32,true)
-			if  (down > 10) or (under < fmin) then 
-				water_life.hq_climb(self,prty,fmin,fmax)
-				return true
-			end
-            if left > 3 or right > 3 then
-				local lift = 0.6
-                local pitch = 8
-                local roll = 0
-                local acc = 1.2
-                --roll = (max(left,right)/30 *3)+(down/100)*3+roll
-				roll = (max(left,right)/30 *7.5)
-                local turn = chose_turn(self,left,right)
-                if turn then
-                    mobkit.clear_queue_low(self)
-                    water_life.lq_fly_pitch(self,lift,pitch,roll*-1,acc,'glide')
-                else 
-                    mobkit.clear_queue_low(self)
-                    water_life.lq_fly_pitch(self,lift,pitch,roll,acc,'glide')
-                end
-            end
-		end	
-	if mobkit.timer(self,20) then mobkit.clear_queue_low(self) end
-	if mobkit.is_queue_empty_low(self) then water_life.lq_fly_pitch(self,0.6,-4,(random(2)-1.5)*30,0,'glide') end
-	end
-	mobkit.queue_high(self,func,prty)
-end
-
 
