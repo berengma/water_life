@@ -35,7 +35,7 @@ local function spawnstep(dtime)
 				
 				
 				if meta:get_int("snakepoison") > 0 then
-					plyr:hud_add(water_life.hud_poison)
+					if not water_life.poison[plyr:get_player_name()] then water_life.poison[plyr:get_player_name()] = plyr:hud_add(water_life.hud_poison) end
 					local score = plyr:get_hp()
 					plyr:set_hp(score-1)
 				end
