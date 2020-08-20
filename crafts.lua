@@ -319,8 +319,11 @@ if not water_life.apionly then
 						
 						local name = user:get_player_name()
 						local meta = user:get_meta()
+						local score = user:get_hp()
+												
 						if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
-						minetest.item_eat(5)               
+						user:set_hp(score+10)
+						itemstack:take_item()
 						if water_life.poison[name] then
 							user:hud_remove(water_life.poison[name])
 						end
