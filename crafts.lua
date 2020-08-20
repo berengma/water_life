@@ -330,7 +330,7 @@ if not water_life.apionly then
 					return itemstack
 			end,
 						
-			groups = {food_meat = 1, flammable = 2},
+			groups = {vessel = 1},
 		})
 		
 		minetest.register_craft({
