@@ -121,7 +121,13 @@ local function snake_brain(self)
 							water_life.hq_snake_warn(self,target,30,8)
 						elseif dist < 5 or action == pname then
 							mobkit.forget(self,"warned")
-							water_life.hq_hunt(self,31,target)
+							
+							local meta = target:get_meta()
+							if meta:get_int("snakepoison") > 0 then
+								water_life.hq_runfrom(self,31,target)
+							else
+								water_life.hq_hunt(self,31,target)
+							end
 						end
 					end
 					
@@ -149,7 +155,7 @@ end
 minetest.register_entity("water_life:snake",{
 											-- common props
 	physical = true,
-	stepheight = 0.5,				--EVIL!
+	stepheight = 0.1,				--EVIL!
 	collide_with_objects = false,
 	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
 	visual = "mesh",
@@ -208,6 +214,20 @@ minetest.register_entity("water_life:snake",{
 					water_life.hq_hunt(self,31,puncher)
 				end
 			end
+		end
+	end,
+                                             
+	on_rightclick = function(self, clicker)
+		if not clicker or not clicker:is_player() then return end
+		local inv = clicker:get_inventory()
+		local item = clicker:get_wielded_item()
+        
+		if not item or item:get_name() ~= "fireflies:bug_net" then return end
+		if not inv:room_for_item("main", "water_life:snake_item") then return end
+                                            
+		if random(1000) < 333 then
+			inv:add_item("main", "water_life:snake_item")
+			self.object:remove()
 		end
 	end,
 })

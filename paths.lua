@@ -74,7 +74,8 @@ local function walkable(node, pos, current_pos)
 			end
 
 		end
-		if minetest.registered_nodes[node.name].walkable then
+		if minetest.registered_nodes[node.name] and 
+		minetest.registered_nodes[node.name].walkable then
 			return true
 		else
 			return false

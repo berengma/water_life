@@ -153,7 +153,7 @@ if not water_life.apionly then
 			end,
 		})
 
-minetest.register_craftitem("water_life:coralfish", {
+		minetest.register_craftitem("water_life:coralfish", {
 			description = ("Coralfish"),
 			inventory_image = "water_life_coralfish_item.png",
 			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
@@ -187,33 +187,33 @@ minetest.register_craftitem("water_life:coralfish", {
 			end,
 		})
 
-minetest.register_craftitem("water_life:clownfish", {
-			description = ("Clownfish"),
-			inventory_image = "water_life_clownfish_item.png",
-			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
-			stack_max = 10,
-			liquids_pointable = false,
-			range = 10,
-			on_use = minetest.item_eat(1),                                    
-			groups = {food_meat = 1, flammable = 2},
-			on_place = function(itemstack, placer, pointed_thing)
-				if placer and not placer:is_player() then return itemstack end
-				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
-				
-				local pos = pointed_thing.above
-				local number = water_life.count_objects(pos,nil,"water_life:clownfish_tamed")
-				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
-															
-				local name = placer:get_player_name()
-				if minetest.is_protected(pos,name) then return itemstack end
+		minetest.register_craftitem("water_life:clownfish", {
+					description = ("Clownfish"),
+					inventory_image = "water_life_clownfish_item.png",
+					wield_scale = {x = 0.5, y = 0.5, z = 0.5},
+					stack_max = 10,
+					liquids_pointable = false,
+					range = 10,
+					on_use = minetest.item_eat(1),                                    
+					groups = {food_meat = 1, flammable = 2},
+					on_place = function(itemstack, placer, pointed_thing)
+						if placer and not placer:is_player() then return itemstack end
+						if not pointed_thing then return itemstack end
+						if not pointed_thing.type == "node" then return itemstack end
+						
+						local pos = pointed_thing.above
+						local number = water_life.count_objects(pos,nil,"water_life:clownfish_tamed")
+						if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
+																	
+						local name = placer:get_player_name()
+						if minetest.is_protected(pos,name) then return itemstack end
 
-				local obj = minetest.add_entity(pos, "water_life:clownfish_tamed")
-				obj = obj:get_luaentity()
-				itemstack:take_item()
-				obj.owner = name
-				return itemstack
-			end,
+						local obj = minetest.add_entity(pos, "water_life:clownfish_tamed")
+						obj = obj:get_luaentity()
+						itemstack:take_item()
+						obj.owner = name
+						return itemstack
+					end,
 		})
 
 		minetest.register_craftitem("water_life:urchin_item", {
@@ -276,7 +276,70 @@ minetest.register_craftitem("water_life:clownfish", {
 				return itemstack
 			end,
 		})
+		
+		
+		
+		
+		minetest.register_craftitem("water_life:snake_item", {
+			description = ("Rattlesnake"),
+			inventory_image = "water_life_snake_item.png",
+			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
+			stack_max = 10,
+			liquids_pointable = false,
+			range = 10,
+			on_use = minetest.item_eat(5),                                    
+			groups = {food_meat = 1, flammable = 2},
+			on_place = function(itemstack, placer, pointed_thing)
+				if placer and not placer:is_player() then return itemstack end
+				if not pointed_thing then return itemstack end
+				if not pointed_thing.type == "node" then return itemstack end
+				
+				local pos = pointed_thing.above
+				local number = water_life.count_objects(pos,water_life.abr * 16,"water_life:snake")
+				if number.all > water_life.maxmobs or number.name > 5 then return itemstack end
+															
+				local name = placer:get_player_name()
+				if minetest.is_protected(pos,name) then return itemstack end
+
+				local obj = minetest.add_entity(pos, "water_life:snake")
+				
+				if obj then itemstack:take_item() end
+				
+				return itemstack
+			end,
+		})
+		
+		minetest.register_craftitem("water_life:antiserum", {
+			description = ("Antiserum, cures snake bites"),
+			inventory_image = "water_life_antiserum.png",
+			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
+			liquids_pointable = false,
+			on_use = function(itemstack, user, pointed_thing)
+						if not user or not user:is_player() then return itemstack end
+						
+						local name = user:get_player_name()
+						local meta = user:get_meta()
+						local score = user:get_hp()
+												
+						if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
+						user:set_hp(score+10)
+						itemstack:take_item()
+						if water_life.poison[name] then
+							user:hud_remove(water_life.poison[name])
+						end
+					return itemstack
+			end,
+						
+			groups = {vessel = 1},
+		})
+		
+		minetest.register_craft({
+			type = "shapeless",
+			output = "water_life:antiserum",
+			recipe = {"water_life:snake_item","water_life:snake_item","water_life:snake_item"},
+		})
 end
+
 
 --muddy water
 

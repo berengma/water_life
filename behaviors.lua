@@ -15,6 +15,7 @@ local deg=math.deg
 local tan = math.tan
 local cos = math.cos
 local atan=math.atan
+water_life.poison = {}
 
 
 
@@ -233,79 +234,59 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 end
 
 
+function water_life.lq_jumpattack(self,height,target,extra)
+	local phase=1		
+	local timer=0.5
+	local tgtbox = target:get_properties().collisionbox
+	local func=function(self)
+		if not mobkit.is_alive(target) then return true end
+		if self.isonground then
+			if phase==1 then	-- collision bug workaround
+				local vel = self.object:get_velocity()
+				vel.y = -mobkit.gravity*sqrt(height*2/-mobkit.gravity)
+				self.object:set_velocity(vel)
+				mobkit.make_sound(self,'charge')
+				phase=2
+			else
+				mobkit.lq_idle(self,0.3)
+				return true
+			end
+		elseif phase==2 then
+			local dir = minetest.yaw_to_dir(self.object:get_yaw())
+			local vy = self.object:get_velocity().y
+			dir=vector.multiply(dir,6)
+			dir.y=vy
+			self.object:set_velocity(dir)
+			phase=3
+		elseif phase==3 then	-- in air
+			local tgtpos = target:get_pos()
+			local pos = self.object:get_pos()
+			-- calculate attack spot
+			local yaw = self.object:get_yaw()
+			local dir = minetest.yaw_to_dir(yaw)
+			local apos = mobkit.pos_translate2d(pos,yaw,self.attack.range)
 
-
-------------------
--- HQ behaviors --
-------------------
-
-
--- on land only, go to tgt and remove it
-function water_life.hq_catch_drop(self,prty,tgt)
-	
-	local func = function(self)
-	
-	if self.isinliquid then return true end
-		if not tgt then return true end
-		if mobkit.is_queue_empty_low(self) then
-			local pos = mobkit.get_stand_pos(self)
-			local tpos = tgt:get_pos()
-			if pos and tpos then 
-				local dist = vector.distance(pos,tpos)
-				if dist < 2 then 
-					tgt:remove()
-					return true
-				else
-					if pos.y +0.5 >= tpos.y then
-						water_life.lq_dumbwalk(self,tpos,0.1)
-					else
-						water_life.lq_dumbjump(self,1)
+			if mobkit.is_pos_in_box(apos,tgtpos,tgtbox) then	--bite
+				target:punch(self.object,1,self.attack)
+				if extra and target:is_player() then
+					if extra == "snake" then
+						local meta = target:get_meta()
+						local name = target:get_player_name()
+						meta:set_int("snakepoison",1)
+						water_life.poison[name] = target:hud_add(water_life.hud_poison)
 					end
 				end
-			else
-				return true
+					-- bounce off
+				local vy = self.object:get_velocity().y
+				self.object:set_velocity({x=dir.x*-3,y=vy,z=dir.z*-3})	
+					-- play attack sound if defined
+				mobkit.make_sound(self,'attack')
+				phase=4
 			end
 		end
 	end
-	mobkit.queue_high(self,func,prty)
-end
-
-
-
--- turn around 180degrees from tgtob and swim away until out of sight
-function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight) 
-	
-	local func = function(self)
-		if not outofsight then outofsight = self.view_range * 1.5 end
-		
-		if not mobkit.is_alive(tgtobj) then return true end
-        
-            local pos = mobkit.get_stand_pos(self)
-            local opos = tgtobj:get_pos()
-			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
-            local distance = vector.distance(pos,opos)
-            
-            if distance < outofsight then
-                
-                local swimto, height = water_life.aqua_radar_dumb(pos,yaw,3)
-                if height and height > pos.y then
-                    local vel = self.object:get_velocity()
-                    vel.y = vel.y+0.1
-                    self.object:set_velocity(vel)
-                end	
-                mobkit.hq_aqua_turn(self,51,swimto,speed)
-                
-            else
-                return true
-            end
-                
-            --minetest.chat_send_all("angel= "..dump(yaw).."  viewrange= "..dump(self.view_range).." distance= "..dump(vector.distance(pos,opos)))
-
-        
-		
-	end
-	mobkit.queue_high(self,func,prty)
-end
+	mobkit.queue_low(self,func)
+end     
 
 
 
@@ -420,18 +401,25 @@ function water_life.hq_attack(self,prty,tgtobj)
 		if self.isinliquid then return true end
 		if not mobkit.is_alive(tgtobj) then return true end
 		if mobkit.is_queue_empty_low(self) then
+			local meta = nil
+			local poison = 0
 			local pos = mobkit.get_stand_pos(self)
 --			local tpos = tgtobj:get_pos()
 			local tpos = mobkit.get_stand_pos(tgtobj)
 			local dist = vector.distance(pos,tpos)
-			if dist > 3 then 
+			if tgtobj:is_player() then
+				meta = tgtobj:get_meta()
+				poison = meta:get_int("snakepoison")
+			end
+			
+			if dist > 3 or poison > 0 then 
 				return true
 			else
 				mobkit.lq_turn2pos(self,tpos)
 				local height = tgtobj:is_player() and 0.35 or tgtobj:get_luaentity().height*0.6
 				if tpos.y+height>pos.y then 
 					mobkit.make_sound(self,"attack")
-					mobkit.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj) 
+					water_life.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj,"snake") 
 				else
 					mobkit.lq_dumbwalk(self,mobkit.pos_shift(tpos,{x=random()-0.5,z=random()-0.5}))
 				end
@@ -454,6 +442,16 @@ function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 			local pos = mobkit.get_stand_pos(self)
 			local opos = tgtobj:get_pos()
 			local dist = vector.distance(pos,opos)
+			local meta = nil
+			local poison = 0
+			
+			if tgtobj:is_player() then
+				meta = tgtobj:get_meta()
+				poison = meta:get_int("snakepoison")
+			end
+			
+			if poison > 0 then return true end
+			
 			if mobkit.is_in_deep(tgtobj) then
 				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)
 			end
@@ -894,6 +892,39 @@ function water_life.hq_snake_move(self,prty,anim)
 		end
 		
 		
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+function water_life.hq_runfrom(self,prty,tgtobj)
+	local init=true
+	local timer=6
+	local func = function(self)
+	
+		if not mobkit.is_alive(tgtobj) then return true end
+		if init then
+			timer = timer-self.dtime
+			if timer <=0 or vector.distance(self.object:get_pos(),tgtobj:get_pos()) < 8 then
+				mobkit.make_sound(self,'scared')
+				init=false
+			end
+			return
+		end
+		
+		if mobkit.is_queue_empty_low(self) and self.isonground then
+			local pos = mobkit.get_stand_pos(self)
+			local opos = tgtobj:get_pos()
+			if vector.distance(pos,opos) < self.view_range*1.5 then
+				local tpos = {x=2*pos.x - opos.x,
+								y=opos.y,
+								z=2*pos.z - opos.z}
+				mobkit.goto_next_waypoint(self,tpos)
+			else
+				water_life.hq_idle(self,prty+1,sleep)
+				return true
+			end
+		end
 	end
 	mobkit.queue_high(self,func,prty)
 end
