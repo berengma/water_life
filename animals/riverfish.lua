@@ -14,7 +14,7 @@ local function fish_brain(self)
             mobkit.hurt(self,1)
         end
         local plyr = mobkit.get_nearby_player(self)
-        if plyr and self.wild then
+        if plyr and plyr:is_player() and self.wild then
             mobkit.animate(self,"fast")
             water_life.hq_swimfrom(self,50,plyr,3)
         end

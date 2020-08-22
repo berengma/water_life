@@ -664,6 +664,45 @@ end
 end
 
 
+
+-- turn around 180degrees from tgtob and swim away until out of sight
+function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight)
+
+        local func = function(self)
+                if not outofsight then outofsight = self.view_range * 1.5 end
+
+                if not mobkit.is_alive(tgtobj) then return true end
+
+            local pos = mobkit.get_stand_pos(self)
+            local opos = tgtobj:get_pos()
+                        local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
+            local distance = vector.distance(pos,opos)
+
+            if distance < outofsight then
+
+                local swimto, height = water_life.aqua_radar_dumb(pos,yaw,3)
+                if height and height > pos.y then
+                    local vel = self.object:get_velocity()
+                    vel.y = vel.y+0.1
+                    self.object:set_velocity(vel)
+                end
+                mobkit.hq_aqua_turn(self,51,swimto,speed)
+
+            else
+                return true
+            end
+
+            --minetest.chat_send_all("angel= "..dump(yaw).."  viewrange= "..dump(self.view_range).." distance= "..dump(vector.distance(pos,opos)))
+
+
+
+        end
+        mobkit.queue_high(self,func,prty)
+end
+
+
+
+
 function water_life.hq_water_attack(self,tgtobj,prty,speed,shallow)
 	
 	local pos = self.object:get_pos()
