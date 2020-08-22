@@ -14,7 +14,7 @@ local function jellyfish_brain(self)
             mobkit.hurt(self,1)
         end
         local plyr = mobkit.get_nearby_player(self)
-        if plyr then
+        if plyr and plyr:is_player() then
             water_life.hq_swimfrom(self,50,plyr,1)
         end
         
