@@ -239,6 +239,7 @@ function water_life.lq_jumpattack(self,height,target,extra)
 	local timer=0.5
 	local tgtbox = target:get_properties().collisionbox
 	local func=function(self)
+		local selfname = self.object:get_luaentity().name
 		if not mobkit.is_alive(target) then return true end
 		if self.isonground then
 			if phase==1 then	-- collision bug workaround
@@ -268,8 +269,8 @@ function water_life.lq_jumpattack(self,height,target,extra)
 
 			if mobkit.is_pos_in_box(apos,tgtpos,tgtbox) then	--bite
 				target:punch(self.object,1,self.attack)
-				if extra and target:is_player() then
-					if extra == "snake" then
+				if selfname and target:is_player() then
+					if selfname == "water_life:snake" then
 						local meta = target:get_meta()
 						local name = target:get_player_name()
 						meta:set_int("snakepoison",1)
@@ -419,7 +420,7 @@ function water_life.hq_attack(self,prty,tgtobj)
 				local height = tgtobj:is_player() and 0.35 or tgtobj:get_luaentity().height*0.6
 				if tpos.y+height>pos.y then 
 					mobkit.make_sound(self,"attack")
-					water_life.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj,"snake") 
+					water_life.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj) 
 				else
 					mobkit.lq_dumbwalk(self,mobkit.pos_shift(tpos,{x=random()-0.5,z=random()-0.5}))
 				end
@@ -443,14 +444,14 @@ function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 			local opos = tgtobj:get_pos()
 			local dist = vector.distance(pos,opos)
 			local meta = nil
-			local poison = 0
+			local poison = nil
 			
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
 				poison = meta:get_int("snakepoison")
 			end
 			
-			if poison > 0 then return true end
+			if poison and poison > 0 then return true end
 			
 			if mobkit.is_in_deep(tgtobj) then
 				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)
@@ -958,7 +959,7 @@ function water_life.hq_runfrom(self,prty,tgtobj)
 				local tpos = {x=2*pos.x - opos.x,
 								y=opos.y,
 								z=2*pos.z - opos.z}
-				mobkit.goto_next_waypoint(self,tpos)
+				water_life.goto_next_waypoint(self,tpos)
 			else
 				water_life.hq_idle(self,prty+1,sleep)
 				return true
