@@ -433,7 +433,7 @@ end
 
 function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 	if not lost then lost = self.view_range end
-	if water_life.leftorright() then mobkit.make_sound(self,"attack") end
+	if random(100) < 20 then mobkit.make_sound(self,"attack") end
 	
 	
 	local func = function(self)
@@ -937,7 +937,7 @@ function water_life.hq_snake_move(self,prty,anim)
 end
 
 
-function water_life.hq_runfrom(self,prty,tgtobj)
+function water_life.hq_snakerun(self,prty,tgtobj)
 	local init=true
 	local timer=6
 	local func = function(self)
@@ -955,13 +955,17 @@ function water_life.hq_runfrom(self,prty,tgtobj)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			local pos = mobkit.get_stand_pos(self)
 			local opos = tgtobj:get_pos()
-			if vector.distance(pos,opos) < self.view_range*1.5 then
+			if vector.distance(pos,opos) < (self.view_range*3) then
+				--minetest.chat_send_all(dump(vector.distance(pos,opos)).."  "..dump(self.view_range*3))
 				local tpos = {x=2*pos.x - opos.x,
 								y=opos.y,
 								z=2*pos.z - opos.z}
 				water_life.goto_next_waypoint(self,tpos)
 			else
-				water_life.hq_idle(self,prty+1,sleep)
+				mobkit.clear_queue_low(self)
+				mobkit.clear_queue_high(self)
+				--water_life.hq_idle(self,10,random(60,120),"sleep")
+				water_life.hq_snake_move(self,15)
 				return true
 			end
 		end

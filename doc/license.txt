@@ -70,3 +70,30 @@ Model/Textures: CC-BY-SA 3.0
 Author: Sapier
 
 URL: http://creativecommons.org/licenses/by-sa/3.0/de/legalcode
+
+
+
+piranha and sea urchin:
+
+Model/Textures: CC-BY-SA 3.0
+Author: ElCeejo
+
+URL: http://creativecommons.org/licenses/by-sa/3.0/de/legalcode
+
+
+
+crocodile:
+
+Model/Textures: CC-BY-SA 3.0
+Author: APercy
+
+URL: http://creativecommons.org/licenses/by-sa/3.0/de/legalcode
+
+
+
+snake, gecko and beaver:
+
+Model/Textures: CC0
+Author: MisterE
+
+https://creativecommons.org/publicdomain/zero/1.0/
