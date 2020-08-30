@@ -123,8 +123,9 @@ local function snake_brain(self)
 							mobkit.forget(self,"warned")
 							
 							local meta = target:get_meta()
+							--minetest.chat_send_all(dump(action).." "..pname.."   poison level = "..dump(meta:get_int("snakepoison")))
 							if meta:get_int("snakepoison") > 0 then
-								water_life.hq_runfrom(self,31,target)
+								water_life.hq_snakerun(self,31,target)
 							else
 								water_life.hq_hunt(self,31,target)
 							end
