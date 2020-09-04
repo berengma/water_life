@@ -291,6 +291,45 @@ end
 
 
 
+------------------
+-- HQ behaviors --
+------------------
+
+
+-- on land only, go to tgt and remove it
+function water_life.hq_catch_drop(self,prty,tgt)
+	
+	local func = function(self)
+	
+	if self.isinliquid then return true end
+		if not tgt then return true end
+		if mobkit.is_queue_empty_low(self) then
+			local pos = mobkit.get_stand_pos(self)
+			local tpos = tgt:get_pos()
+			if pos and tpos then 
+				local dist = vector.distance(pos,tpos)
+				if dist < 2 then 
+					tgt:remove()
+					return true
+				else
+					if pos.y +0.5 >= tpos.y then
+						water_life.lq_dumbwalk(self,tpos,0.1)
+					else
+						water_life.lq_dumbjump(self,1)
+					end
+				end
+			else
+				return true
+			end
+		end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+
+
+
 -- same as mobkit.hq_aqua_turn but for large mobs
 function water_life.big_hq_aqua_turn(self,prty,tyaw,speed)
     

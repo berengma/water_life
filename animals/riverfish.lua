@@ -14,10 +14,19 @@ local function fish_brain(self)
             mobkit.hurt(self,1)
         end
         local plyr = mobkit.get_nearby_player(self)
-        if plyr and plyr:is_player() and self.wild then
-            mobkit.animate(self,"fast")
-            water_life.hq_swimfrom(self,50,plyr,3)
-        end
+	   local predator = mobkit.get_nearby_entity(self,"water_life:snake")
+	   local value = mobkit.get_queue_priority(self)
+	   
+	   if value < 50 then
+		if value < 45 and predator then
+			mobkit.animate(self,"fast")
+			water_life.hq_swimfrom(self,45,predator,3)
+			
+		elseif plyr and plyr:is_player() and self.wild then
+			mobkit.animate(self,"fast")
+			water_life.hq_swimfrom(self,50,plyr,3)
+		end
+	   end
         if self.isinliquid and self.isinliquid ~="default:river_water_source" then
             water_life.hq_swimto(self,30,1,"default:river_water_source")
         end
