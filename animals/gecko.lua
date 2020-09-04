@@ -50,120 +50,30 @@ local function croc_brain(self)
 	
 	if mobkit.timer(self,1) then
 		
-	if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
-		mobkit.remember(self,"waterlife",os.clock())
-	end
-		
-	if self.isinliquid then
-		if mobkit.recall(self,"landlife") then
+		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.clock())
-			mobkit.forget(self,"landlife")
 		end
-	end
-	
-	if self.isonground then
-		if mobkit.recall(self,"waterlife") then
-			mobkit.remember(self,"landlife",os.clock())
-			mobkit.forget(self,"waterlife")
+			
+		if self.isinliquid then
+			if mobkit.recall(self,"landlife") then
+				mobkit.remember(self,"waterlife",os.clock())
+				mobkit.forget(self,"landlife")
+			end
 		end
-	end
 		
-        local prty = mobkit.get_queue_priority(self)
-	   
-		if prty < 20 then 
-			local target = mobkit.get_nearby_player(self)
-			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)--mobkit.is_in_deep(target)
-			local corpse = water_life.get_close_drops(self,"meat")
-			local food = water_life.feed_shark(self)
-			
-			if target and mobkit.is_alive(target)  and target:get_attach() == nil and water_life.isinliquid(target) then --.is_in_deep(target) then
-				
-				local dist = water_life.dist2tgt(self,target)
-				if dist > 3 then
-					water_life.hq_water_attack(self,target,24,7,true)
-				end
+		if self.isonground then
+			if mobkit.recall(self,"waterlife") then
+				mobkit.remember(self,"landlife",os.clock())
+				mobkit.forget(self,"waterlife")
 			end
-			
-			
-
-			if food and mobkit.is_in_deep(food) and not aliveinwater then
-								local dist = water_life.dist2tgt(self,food)
-								if dist > 3 then
-									mobkit.clear_queue_high(self)
-									water_life.hq_water_attack(self,food,25,7,true)
-								end
-			end
-			
-			if self.isinliquid then
-				
-				if target and mobkit.is_alive(target)  and target:get_attach() == nil and not water_life.isinliquid(target) then --.is_in_deep(target) then
-					
-					local dist = water_life.dist2tgt(self,target)
-					if dist < 10 then
-						mobkit.clear_queue_high(self)
-						water_life.hq_go2land(self,20,target)
-					end
-					
-				end
-				
-				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
-					
-					local dist = water_life.dist2tgt(self,food)
-					if dist < 10 then
-						mobkit.clear_queue_high(self)
-						water_life.hq_go2land(self,20,food)
-					end
-					
-				end
-				
-				--[[ not working yet
-				if corpse and water_life.inwater(corpse) then
-					
-					local dist = water_life.dist2tgt(self,corpse)
-					if dist < 7 and prty < 23 then
-						mobkit.clear_queue_high(self)
-						mobkit.clear_queue_low(self)
-						water_life.hq_swimto(self,23,1,nil,corpse:get_pos())--water_life.hq_catch_drop(self,23,corpse)
-					end
-				end]]
-			end
-			
-			if self.isonground then
-				local rnd = random(1000)
-				if rnd < 30 then
-					mobkit.make_sound(self,"idle")
-				end
-				if target and mobkit.is_alive(target)  then
-					local dist = water_life.dist2tgt(self,target)
-					if dist < 7 then
-						water_life.hq_hunt(self,24,target)
-					end
-				end
-				
-				if food and mobkit.is_alive(food) then
-					local dist = water_life.dist2tgt(self,food)
-					if dist < 7 then
-						water_life.hq_hunt(self,25,food)
-					end
-				end
-				
-				if corpse and not water_life.inwater(corpse) then
-					
-					local dist = water_life.dist2tgt(self,corpse)
-					if dist < 7 and prty < 23 then
-						mobkit.clear_queue_high(self)
-						mobkit.clear_queue_low(self)
-						water_life.hq_catch_drop(self,23,corpse)
-					end
-				end
-			end
-				
 		end
-	end
-	
-	if mobkit.is_queue_empty_high(self) then
-		if self.isinliquid then water_life.hq_aqua_roam(self,10,1) end
-		if self.isonground then  water_life.hq_slow_roam(self,10) end
+			
+		
+		
+		if mobkit.is_queue_empty_high(self) then
+			if self.isinliquid then water_life.hq_aqua_roam(self,10,1) end
+			if self.isonground then  water_life.hq_slow_roam(self,10) end
+		end
 	end
 	
 	
@@ -177,7 +87,7 @@ minetest.register_entity("water_life:gecko",{
 	physical = true,
 	stepheight = 0.1,				--EVIL!
 	collide_with_objects = true,
-	collisionbox = {-0.3, -0.1, -0.3, 0.3, 0.3, 0.3},
+	collisionbox = {-0.3, 0, -0.3, 0.3, 0.3, 0.3},
 	visual = "mesh",
 	mesh = "water_life_gecko.b3d",
 	textures = {"water_life_geckoskin.png"},
