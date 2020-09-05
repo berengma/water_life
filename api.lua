@@ -63,6 +63,17 @@ end
 local random = water_life.random
 
 
+-- returns ingame time, 1 = morning, 2 = noon, 3 = afternoon, 4 = night
+function water_life.get_game_time()
+	local time = minetest.get_timeofday()
+	local hour = math.floor(time*24)
+	
+	if hour >= 5 and hour < 10 then return 1 end
+	if hour >= 10 and hour < 15 then return 2 end
+	if hour >= 15 and hour < 20 then return 3 end
+	if hour > 20 or hour < 5 then return 4 end
+end
+
 
 function water_life_get_biome_data(pos)
 	if not pos then return nil end
@@ -75,6 +86,40 @@ function water_life_get_biome_data(pos)
 	biome.humid = math.floor(table.humidity*100)/100
 	return biome
 end
+
+
+
+-- returns closest enemy or player, if player is true    enemies must be in entity definition: predators = {[name1]=1,[name2]=1,.....}
+function water_life.get_closest_enemy(self,player)	
+	local cobj = nil
+	local dist = water_life.abr*64
+	local pos = self.object:get_pos()
+	local otable = minetest.get_objects_inside_radius(pos, self.view_range)
+	
+	if not self.predators and not player then return nil end
+	
+	for _,obj in ipairs(otable) do
+		local luaent = obj:get_luaentity()
+		
+		if mobkit.is_alive(obj) and not obj:is_player() and luaent and self.predators[luaent.name] then
+			local opos = obj:get_pos()
+			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
+			if odist < dist then
+				dist=odist
+				cobj=obj
+			end
+		elseif mobkit.is_alive(obj) and obj:is_player() and player then
+			local opos = obj:get_pos()
+			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
+			if odist < dist then
+				dist=odist
+				cobj=obj
+			end
+		end
+	end
+	return cobj
+end
+
 
 
 --sets an urchin somewhere but not in the center of a node

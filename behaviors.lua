@@ -534,6 +534,7 @@ function water_life.hq_go2water(self,prty)
 	local func=function(self)
 		--minetest.chat_send_all(dump(vector.distance(pos,target)))
 		if self.isinliquid or not target then return true end
+		
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			pos = mobkit.get_stand_pos(self)
 			local height = target.y - pos.y
@@ -542,6 +543,7 @@ function water_life.hq_go2water(self,prty)
 	end
 	mobkit.queue_high(self,func,prty)
 end
+
 
 -- looks for a landing point on shore under air. tgt is optional
 -- and must be an object, so it will start searching yaw2tgt - 15 degrees
@@ -713,11 +715,12 @@ function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight)
 
                 if not mobkit.is_alive(tgtobj) then return true end
 
-            local pos = mobkit.get_stand_pos(self)
-            local opos = tgtobj:get_pos()
-                        local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
-            local distance = vector.distance(pos,opos)
-
+			local pos = mobkit.get_stand_pos(self)
+			local opos = tgtobj:get_pos()
+			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
+			local distance = vector.distance(pos,opos)
+			if self.isonground then return true end
+			
             if distance < outofsight then
 
                 local swimto, height = water_life.aqua_radar_dumb(pos,yaw,3)

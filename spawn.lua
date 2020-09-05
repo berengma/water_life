@@ -58,9 +58,13 @@ local function spawnstep(dtime)
 				-- no need of so many postions on land
 				if landtimer > landinterval then
 					landpos = water_life.find_node_under_air(pos2)
+					geckopos = water_life.find_node_under_air(pos2,5,{"group:tree","group:leaves","default:junglegrass"})
 				end
 				
-				--snakes spawn on land, too
+				
+				
+				
+				--some spawn on land, too
 				
 				if landpos then
 					local landdata =  water_life_get_biome_data(landpos)
@@ -79,6 +83,24 @@ local function spawnstep(dtime)
 						end
 					end
 				end
+				
+				
+				if geckopos then
+					local landdata =  water_life_get_biome_data(geckopos)
+					
+					local mobname = 'water_life:gecko'
+					local faktor = (100 - getcount(animal[mobname]) * 50)
+					if random(100) < faktor then
+						
+						
+						if (string.match(landdata.name,"rainforest") or string.match(landdata.name,"savanna"))
+						and not fits and landdata.temp > 20 then
+							
+							local obj=minetest.add_entity(geckopos,mobname)			-- ok spawn it already damnit
+						end
+					end
+				end
+				
 				
 				
 				--water spawn
