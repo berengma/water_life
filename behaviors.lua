@@ -526,10 +526,11 @@ end
 
 
 --find any water nearby and go into it
-function water_life.hq_go2water(self,prty)
+function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
 	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
 	--if target then water_life.temp_show(target,10,10) end
+	if not speed then speed = 0.1 end
 	
 	local func=function(self)
 		--minetest.chat_send_all(dump(vector.distance(pos,target)))
@@ -538,7 +539,7 @@ function water_life.hq_go2water(self,prty)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			pos = mobkit.get_stand_pos(self)
 			local height = target.y - pos.y
-			water_life.dumbstep(self,height,target,0.1,0)
+			water_life.dumbstep(self,height,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
@@ -709,17 +710,25 @@ end
 
 -- turn around 180degrees from tgtob and swim away until out of sight
 function water_life.hq_swimfrom(self,prty,tgtobj,speed,outofsight)
+		local init = true
 
         local func = function(self)
-                if not outofsight then outofsight = self.view_range * 1.5 end
+			if not outofsight then outofsight = self.view_range * 1.5 end
+			if not mobkit.is_alive(tgtobj) then return true end
 
-                if not mobkit.is_alive(tgtobj) then return true end
-
+			
 			local pos = mobkit.get_stand_pos(self)
 			local opos = tgtobj:get_pos()
 			local yaw = water_life.get_yaw_to_object(self,tgtobj) + math.rad(random(-30,30))+math.rad(180)
 			local distance = vector.distance(pos,opos)
 			if self.isonground then return true end
+			
+			if init then 
+			
+				mobkit.animate(self,"swim")
+				init=false
+			
+			end
 			
             if distance < outofsight then
 
@@ -1008,6 +1017,40 @@ function water_life.hq_snakerun(self,prty,tgtobj)
 				mobkit.clear_queue_high(self)
 				--water_life.hq_idle(self,10,random(60,120),"sleep")
 				water_life.hq_snake_move(self,15)
+				return true
+			end
+		end
+	end
+	mobkit.queue_high(self,func,prty)
+end
+
+
+function water_life.hq_runfrom(self,prty,tgtobj)
+	local init=true
+	local timer=6
+	local func = function(self)
+	
+		if self.isinliquid then return true end
+		if not mobkit.is_alive(tgtobj) then return true end
+		--[[if init then
+			timer = timer-self.dtime
+			if timer <=0 or vector.distance(self.object:get_pos(),tgtobj:get_pos()) < 8 then
+				mobkit.make_sound(self,'scared')
+				init=false
+			end
+			return
+		end]]
+		
+		if mobkit.is_queue_empty_low(self) and self.isonground then
+			local pos = mobkit.get_stand_pos(self)
+			local opos = tgtobj:get_pos()
+			if vector.distance(pos,opos) < self.view_range*1.1 then
+				local tpos = {x=2*pos.x - opos.x,
+								y=opos.y,
+								z=2*pos.z - opos.z}
+				mobkit.goto_next_waypoint(self,tpos)
+			else
+				self.object:set_velocity({x=0,y=0,z=0})
 				return true
 			end
 		end

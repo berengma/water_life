@@ -54,6 +54,7 @@ local function spawnstep(dtime)
 				local ground = {}
 				local dalam = depth
 				local landpos = nil
+				local geckopos = nil
 				
 				-- no need of so many postions on land
 				if landtimer > landinterval then
@@ -69,7 +70,7 @@ local function spawnstep(dtime)
 				if landpos then
 					local landdata =  water_life_get_biome_data(landpos)
 					
-					
+					-- the snake
 					local mobname = 'water_life:snake'
 					local faktor = (100 - getcount(animal[mobname]) * 50) + 25
 					if random(100) < faktor then
@@ -78,6 +79,18 @@ local function spawnstep(dtime)
 						
 						if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna"))
 						and not fits and landdata.temp > 15 then
+							
+							local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
+						end
+					end
+					
+					
+					--the beaver
+					local mobname = 'water_life:beaver'
+					local faktor = (100 - getcount(animal[mobname]) * 25) 
+					if random(100) < faktor then
+						
+						if string.match(landdata.name,"coniferous") and landdata.temp > -5 and landdata.temp < 20 then
 							
 							local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
 						end
@@ -94,7 +107,7 @@ local function spawnstep(dtime)
 						
 						
 						if (string.match(landdata.name,"rainforest") or string.match(landdata.name,"savanna"))
-						and not fits and landdata.temp > 20 then
+						and landdata.temp > 20 then
 							
 							local obj=minetest.add_entity(geckopos,mobname)			-- ok spawn it already damnit
 						end
