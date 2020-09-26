@@ -1,6 +1,10 @@
 # all settings for client menu or in minetest.conf on servers
 
 # -
+# I am a baby, please turn off the dangerous wild animals
+water_life_dangerous (turn off agressive animals)  bool false
+
+# -
 # controls spawn chance of whales 10 promille = 1 %
 water_life_whale_spawn_rate (Whales spawn chance in promille) int 100
 

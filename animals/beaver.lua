@@ -127,7 +127,7 @@ minetest.register_entity("water_life:beaver",{
 	visual = "mesh",
 	mesh = "water_life_beaver.b3d",
 	textures = {"water_life_beaver.png"},
-	visual_size = {x = 0.1, y = 0.1},
+	visual_size = {x = 0.2, y = 0.2},
 	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required

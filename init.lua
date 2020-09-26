@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "130920"
+water_life.version = "260920"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -21,6 +21,7 @@ water_life.maxwhales = tonumber(minetest.settings:get("water_life_maxwhales")) o
 water_life.maxsharks = tonumber(minetest.settings:get("water_life_maxsharks")) or 5
 water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs")) or 60
 water_life.apionly = minetest.settings:get_bool("water_life_apionly") or false
+water_life.dangerous = minetest.settings:get_bool("water_life_dangerous") or false
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 
@@ -37,10 +38,8 @@ dofile(path.."/behaviors.lua")												-- load behaviors
 
 if not water_life.apionly then
 	dofile(path.."/spawn.lua")												-- load spawn function
-	dofile(path.."/animals/whale.lua")											-- load whales
-	dofile(path.."/animals/shark.lua")											-- load sharks
+	dofile(path.."/animals/whale.lua")											-- load whales	
 	dofile(path.."/animals/riverfish.lua")										-- load riverfish
-	dofile(path.."/animals/piranha.lua")										-- load piranha
 	dofile(path.."/animals/sea_urchin.lua")										-- load sea urchin
 	dofile(path.."/animals/clams.lua")											-- load clams
 	dofile(path.."/flora/plants.lua")											-- load water plants
@@ -48,11 +47,15 @@ if not water_life.apionly then
 	dofile(path.."/animals/jellyfish.lua")										-- load jellyfish
 	dofile(path.."/animals/coralfish.lua")										-- load coralfish
 	dofile(path.."/animals/clownfish.lua")										-- load clownfish
-	dofile(path.."/animals/crocodile.lua")										-- load crocodile
 	dofile(path.."/animals/gulls.lua")											-- load gulls
 	dofile(path.."/animals/gecko.lua")											-- load tokays
 	dofile(path.."/animals/beaver.lua")										-- load beavers
-	dofile(path.."/animals/snake.lua")											-- load snakes
+	if not water_life.dangerous then
+		dofile(path.."/animals/snake.lua")											-- load snakes
+		dofile(path.."/animals/piranha.lua")										-- load piranha
+		dofile(path.."/animals/shark.lua")											-- load sharks
+		dofile(path.."/animals/crocodile.lua")										-- load crocodile
+	end
 end
 
 
