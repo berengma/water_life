@@ -70,17 +70,20 @@ local function spawnstep(dtime)
 				if landpos then
 					local landdata =  water_life_get_biome_data(landpos)
 					
-					-- the snake
-					local mobname = 'water_life:snake'
-					local faktor = (100 - getcount(animal[mobname]) * 50) + 25
-					if random(100) < faktor then
-						local fits = minetest.is_protected(landpos,mobname)
-						--minetest.chat_send_all(dump(fits))
-						
-						if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna"))
-						and not fits and landdata.temp > 15 then
+					
+					if not water_life.dangerous then
+						-- the snake
+						local mobname = 'water_life:snake'
+						local faktor = (100 - getcount(animal[mobname]) * 50) + 25
+						if random(100) < faktor then
+							local fits = minetest.is_protected(landpos,mobname)
+							--minetest.chat_send_all(dump(fits))
 							
-							local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
+							if (string.match(landdata.name,"desert") or string.match(landdata.name,"savanna"))
+							and not fits and landdata.temp > 15 then
+								
+								local obj=minetest.add_entity(landpos,mobname)			-- ok spawn it already damnit
+							end
 						end
 					end
 					
@@ -144,35 +147,52 @@ local function spawnstep(dtime)
 				if liquidflag and not toomuch and surface then
 					ground = mobkit.pos_shift(surface,{y=(dalam*-1)})
 					
-					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
-					local mobname = 'water_life:croc'
-					local faktor = 100 - getcount(animal[mobname]) * 33
-					if random(100) < faktor then
-						local fits = false
-						if string.match(bdata.name,"rainforest") or string.match(bdata.name,"savanna") then fits = true end
-						
-						if depth < 4 and fits then      --shark min water depth
-							local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
-						end
-						
-						
-					end
-					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
 					
-					
-					local mobname = 'water_life:snake'
-					local faktor = (100 - getcount(animal[mobname]) * 50) +25
-					if random(100) < faktor then
-						local fits = false
-						if string.match(bdata.name,"desert") or string.match(bdata.name,"savanna") then fits = true end
-						
-						if depth < 3 and fits then      --snake max water depth
-							local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
+					if not water_life.dangerous then
+						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
+						local mobname = 'water_life:croc'
+						local faktor = 100 - getcount(animal[mobname]) * 33
+						if random(100) < faktor then
+							local fits = false
+							if string.match(bdata.name,"rainforest") or string.match(bdata.name,"savanna") then fits = true end
+							
+							if depth < 4 and fits then      --shark min water depth
+								local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
+							end
+							
+							
 						end
+						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
 						
 						
+						local mobname = 'water_life:snake'
+						local faktor = (100 - getcount(animal[mobname]) * 50) +25
+						if random(100) < faktor then
+							local fits = false
+							if string.match(bdata.name,"desert") or string.match(bdata.name,"savanna") then fits = true end
+							
+							if depth < 3 and fits then      --snake max water depth
+								local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
+							end
+							
+							
+						end
+						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
+							
+						local mobname = 'water_life:shark'
+						if water_life.shark_spawn_rate >= random(1000) then
+								
+							local bcheck = water_life.count_objects(pos2,12)
+							if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"]
+								and not animal["water_life:croc"] then
+								
+								if depth > 4 then      --shark min water depth
+								local obj=minetest.add_entity(mobkit.pos_shift(ground,{y=2}),mobname)			-- spawn it 2 nodes above sea ground
+								end
+							end
+							
+						end
 					end
-					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
 					
 					local mobname = "water_life:gull"
 					local faktor = 100 - getcount(animal[mobname]) * 20
@@ -184,20 +204,7 @@ local function spawnstep(dtime)
 						end
 					end
 						
-						
-					local mobname = 'water_life:shark'
-					if water_life.shark_spawn_rate >= random(1000) then
-							
-						local bcheck = water_life.count_objects(pos2,12)
-						if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"]
-							and not animal["water_life:croc"] then
-							
-							if depth > 4 then      --shark min water depth
-							local obj=minetest.add_entity(mobkit.pos_shift(ground,{y=2}),mobname)			-- spawn it 2 nodes above sea ground
-							end
-						end
-						
-					end
+					
 					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 					mobname = "water_life:urchin"
 					if water_life.urchin_spawn_rate >= random(1000) then
@@ -291,7 +298,10 @@ local function spawnstep(dtime)
 						if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or getcount(animal[mobname]) < 5) and (liquidflag == "river" or liquidflag == "muddy") then
 						
 							local table = minetest.get_biome_data(pos)
-							if table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)] then mobname = "water_life:piranha" end
+							
+							if not water_life.dangerous and table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)] then
+								mobname = "water_life:piranha"
+							end
 							
 								if depth > 2 then										-- min water depth for piranha and riverfish
 									if mobname == "water_life:fish" then

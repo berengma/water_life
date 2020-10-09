@@ -5,6 +5,13 @@
 water_life_dangerous (turn off agressive animals)  bool false
 
 # -
+# Sound volume adjustment 
+# 0.9 means 90% of original sound volume
+# 1.1 means 110% of original sound volume
+# every step of 0.1 adds/reduces 10%
+water_life_soundadjust (volume adjustment) float 1.0
+
+# -
 # controls spawn chance of whales 10 promille = 1 %
 water_life_whale_spawn_rate (Whales spawn chance in promille) int 100
 

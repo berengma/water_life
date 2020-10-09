@@ -6,12 +6,14 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "260920"
+water_life.version = "091020"
 water_life.shark_food = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
 water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
+
+-- settingtypes
 water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100     
 water_life.shark_spawn_rate =  tonumber(minetest.settings:get("water_life_shark_spawn_rate")) or 100
 water_life.urchin_spawn_rate =  tonumber(minetest.settings:get("water_life_urchin_spawn_rate")) or 700
@@ -22,6 +24,7 @@ water_life.maxsharks = tonumber(minetest.settings:get("water_life_maxsharks")) o
 water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs")) or 60
 water_life.apionly = minetest.settings:get_bool("water_life_apionly") or false
 water_life.dangerous = minetest.settings:get_bool("water_life_dangerous") or false
+water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust")) or 1.0
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 

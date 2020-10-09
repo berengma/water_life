@@ -150,7 +150,10 @@ minetest.register_entity("water_life:gecko",{
 		},
                                              
 	sounds = {
-		idle='water_life_tokeh'
+		idle={
+                name='water_life_tokeh',
+                gain = water_life.soundadjust
+                }
 		},
 	
 	brainfunc = gecko_brain,

@@ -53,7 +53,7 @@ minetest.register_entity("water_life:gull",{
 	buoyancy = 1.0,					-- portion of hitbox submerged
 	max_speed = 2,                     
 	jump_height = 0.5,
-	view_range = 3,
+	view_range = 16,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=300,
@@ -64,15 +64,15 @@ minetest.register_entity("water_life:gull",{
 	sounds = {
 		idle={
 			{name = "water_life_seagull1",
-               gain = 1},
+               gain = water_life.soundadjust},
 			{name = "water_life_seagull2",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_seagull3",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_seagull4",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_seagull5",
-			gain = 1}
+			gain = water_life.soundadjust}
 			}
 		},
 	animation = {
