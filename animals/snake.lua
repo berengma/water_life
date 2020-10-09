@@ -195,7 +195,10 @@ minetest.register_entity("water_life:snake",{
 		},
 
 	sounds = {
-		warn='water_life_snake',
+		warn={
+                name='water_life_snake',
+                gain = water_life.soundadjust,
+                }
 		},                                  
 	brainfunc = snake_brain,
 	

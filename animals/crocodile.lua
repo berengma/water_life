@@ -206,15 +206,15 @@ minetest.register_entity("water_life:croc",{
 		attack='water_life_crocattack',
 		idle={
 			{name = "water_life_croc1",
-               gain = 1},
+               gain = water_life.soundadjust},
 			{name = "water_life_croc2",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_croc3",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_croc4",
-			gain = 1},
+			gain = water_life.soundadjust},
 			{name = "water_life_croc5",
-			gain = 1}
+			gain = water_life.soundadjust}
 			}
 		},
 	animation = {
