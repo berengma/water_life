@@ -338,6 +338,12 @@ if not water_life.apionly then
 			output = "water_life:antiserum",
 			recipe = {"water_life:snake_item","water_life:snake_item","water_life:snake_item"},
 		})
+		
+		minetest.register_craftitem("water_life:beaver_fur", {
+		description = ("Beaver fur"),
+		inventory_image = "water_life_beaverfur.png",
+		groups = {flammable = 2, fur = 1}
+		})
 end
 
 

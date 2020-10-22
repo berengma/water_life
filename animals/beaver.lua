@@ -143,8 +143,8 @@ minetest.register_entity("water_life:beaver",{
 	max_hp = 25,
 	--timeout=300,
 	drops = {
-		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
-		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
+		{name = "water_life:beaver_fur", chance = 5, min = 1, max = 1,},		
+		{name = "water_life:meat_raw", chance = 2, min = 1, max = 3,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	
@@ -161,8 +161,9 @@ minetest.register_entity("water_life:beaver",{
 	brainfunc = beaver_brain,
 	
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+                                              
 		if mobkit.is_alive(self) then
-			
+			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 		end
 	end,
 })
