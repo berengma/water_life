@@ -1,3 +1,4 @@
+local S = water_life.S
 
 local phasearmor = {
 	[0]={fleshy=0},
@@ -12,7 +13,7 @@ water_life.clams_spawn = {"water_life:seagrassgreen","water_life:seagrassred"}
 --entity def
 
 minetest.register_entity("water_life:clams", {
-	description="White shelled clams",
+	description=S("White shelled clams"),
 	hp_max = 15,
 	physical = true,
 	collisionbox = {-0.2,-0.2,-0.2, 0.2,0.2,0.2},

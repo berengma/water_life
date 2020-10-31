@@ -1,0 +1,65 @@
+# textdomain: water_life
+
+
+
+### api.lua ###
+
+unvulnerable=
+
+### buoy.lua ###
+
+Shark-buoy, keeps off sharks in radius of 10 nodes=
+
+### chatcommands.lua ###
+
+Humidity in %=
+ID=
+Name=
+Temp. in C=
+Your water_life version # is: =
+biome id,name,heat and humidity=
+find #objects in abo=
+kill all mobs <mob_name> in abo=
+shows water_life version number=
+test=
+
+### clams.lua ###
+
+White shelled clams=
+
+### corals.lua ###
+
+Magenta Coral=
+Skyblue Coral=
+
+### crafts.lua ###
+
+Antiserum, cures snake bites=
+Beaver fur=
+Clownfish=
+Coralfish=
+CrocBag=
+Crockleather=
+Flowing muddy river water=
+Jellyfish=
+Lasso (right-click animal to capture it)=
+Meat=
+Muddy river water source=
+Piranha=
+Rattlesnake=
+Raw Meat=
+Riverfish=
+Sea urchin=
+artificial coral skeleton=
+
+### plants.lua ###
+
+Brown Kelp=
+Green Kelp=
+Green Seagrass=
+Red Seagrass=
+Sea salad mix=
+
+### whale.lua ###
+
+>>> You missed <<<=

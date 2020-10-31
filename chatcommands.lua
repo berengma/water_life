@@ -1,8 +1,9 @@
- --chatcommands
+local S = water_life.S 
+--chatcommands
 
 minetest.register_chatcommand("wl_bdata", {
 	params = "",
-	description = "biome id,name,heat and humidity",
+	description = S("biome id,name,heat and humidity"),
 	privs = {server = true},
 	func = function(name, action)
 		local player = minetest.get_player_by_name(name)
@@ -12,27 +13,27 @@ minetest.register_chatcommand("wl_bdata", {
 		
 		minetest.chat_send_player(name,dump(minetest.registered_biomes[minetest.get_biome_name(table.biome)]))
                                            
-		minetest.chat_send_player(name,"ID :"..dump(table.biome).."  /Name :"..dump(minetest.get_biome_name(table.biome)).."  /Temp. in C :"..dump(math.floor((table.heat-32)*5/9)).."  /Humidity in % :"..dump(math.floor(table.humidity*100)/100))
+		minetest.chat_send_player(name,S("ID") .. " :"..dump(table.biome).."  /".. S("Name") ..":"..dump(minetest.get_biome_name(table.biome)).."  /" .. S("Temp. in C") .. " :"..dump(math.floor((table.heat-32)*5/9)).."  /" .. S("Humidity in %") .. " :"..dump(math.floor(table.humidity*100)/100))
 		
 	end
 })
 
 minetest.register_chatcommand("wl_version", {
 	params = "",
-	description = "shows water_life version number",
+	description = S("shows water_life version number"),
 	privs = {server = true},
 	func = function(name, action)
 		local player = minetest.get_player_by_name(name)
 		if not player then return false end
 		
-		minetest.chat_send_player(name,core.colorize("#14ee00","Your water_life version # is: "..water_life.version))
+		minetest.chat_send_player(name,core.colorize("#14ee00",S("Your water_life version # is: ") ..water_life.version))
         
 	end
 })
 
 minetest.register_chatcommand("wl_objects", {
 	params = "",
-	description = "find #objects in abo",
+	description = S("find #objects in abo"),
 	privs = {server = true},
 	func = function(name, action)
 		local player = minetest.get_player_by_name(name)
@@ -49,7 +50,7 @@ minetest.register_chatcommand("wl_objects", {
 
 minetest.register_chatcommand("wl_kill", {
 	params = "<mob_name>",
-	description = "kill all mobs <mob_name> in abo",
+	description = S("kill all mobs <mob_name> in abo"),
 	privs = {server = true},
 	func = function(name, mob_name)
 		
@@ -75,7 +76,7 @@ minetest.register_chatcommand("wl_kill", {
 
 minetest.register_chatcommand("wl_test", {
 	params = "<mob_name>",
-	description = "test",
+	description = S("test"),
 	privs = {server = true},
 	func = function(name, mob_name)
 		

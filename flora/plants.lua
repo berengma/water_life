@@ -1,3 +1,5 @@
+local S = water_life.S
+
 local function coral_on_place(itemstack, placer, pointed_thing)
 	if pointed_thing.type ~= "node" or not placer then
 		return itemstack
@@ -44,7 +46,7 @@ end
 -- NODES
 
 minetest.register_node("water_life:kelpgreen", {
-	description = "Green Kelp",
+	description = S("Green Kelp"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	tiles = {"default_sand.png"},
@@ -116,7 +118,7 @@ minetest.register_node("water_life:kelpgreen", {
 
 
 minetest.register_node("water_life:kelpbrown", {
-	description = "Brown Kelp",
+	description = S("Brown Kelp"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	tiles = {"default_sand.png"},
@@ -188,7 +190,7 @@ minetest.register_node("water_life:kelpbrown", {
 
 
 minetest.register_node("water_life:seagrassgreen", {
-	description = "Green Seagrass",
+	description = S("Green Seagrass"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	paramtype = "light",
@@ -218,7 +220,7 @@ minetest.register_node("water_life:seagrassgreen", {
 })
 
 minetest.register_node("water_life:seagrassred", {
-	description = "Red Seagrass",
+	description = S("Red Seagrass"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	paramtype = "light",
@@ -251,7 +253,7 @@ minetest.register_node("water_life:seagrassred", {
 
 
 minetest.register_craftitem("water_life:seasaladmix", {
-	description = "Sea salad mix",
+	description = S("Sea salad mix"),
 	inventory_image = "water_life_seasaladmix.png",
 	on_use = minetest.item_eat(6)
 })

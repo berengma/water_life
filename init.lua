@@ -30,6 +30,22 @@ water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
+-- Load support for intllib.
+local S
+
+-- Boilerplate to support localized strings if intllib mod is installed.
+if(minetest.get_translator) then
+	S = minetest.get_translator(minetest.get_current_modname())
+	
+elseif minetest.get_modpath( "intllib" ) and intllib then
+	S = intllib.Getter()
+	
+else
+	S = function ( s ) return s end
+
+end
+
+water_life.S = S
 
 dofile(path.."/api.lua")               											-- load water_life api
 dofile(path.."/paths.lua")													-- load pathfinding

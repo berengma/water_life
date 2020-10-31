@@ -1,12 +1,11 @@
+local S = water_life.S
 local random = water_life.random
-
-
 
 if not water_life.petz and not water_life.mobsredo then
 -- lasso
 
 	minetest.register_tool("water_life:lasso", {
-		description = ("Lasso (right-click animal to capture it)"),
+		description = S("Lasso (right-click animal to capture it)"),
 		inventory_image = "water_life_lasso.png",
 		groups = {flammable = 2}
 	})
@@ -31,7 +30,7 @@ if not water_life.mobsredo then
 	
 	-- raw meat
 	minetest.register_craftitem("water_life:meat_raw", {
-		description = ("Raw Meat"),
+		description = S("Raw Meat"),
 		inventory_image = "water_life_meat_raw.png",
 		on_use = minetest.item_eat(3),
 		groups = {food_meat_raw = 1, flammable = 2}
@@ -39,7 +38,7 @@ if not water_life.mobsredo then
 
 	-- cooked meat
 	minetest.register_craftitem("water_life:meat", {
-		description = ("Meat"),
+		description = S("Meat"),
 		inventory_image = "water_life_meat.png",
 		on_use = minetest.item_eat(8),
 		groups = {food_meat = 1, flammable = 2}
@@ -78,7 +77,7 @@ minetest.register_abm({
 
 
 minetest.register_node("water_life:artificial_skeleton", {
-	description = "artificial coral skeleton",
+	description = S("artificial coral skeleton"),
 	tiles = {"default_coral_skeleton.png"},
 	groups = {cracky = 3},
 	sounds = default.node_sound_stone_defaults(),
@@ -96,7 +95,7 @@ minetest.register_craft({
 if not water_life.apionly then
 	
 		minetest.register_craftitem("water_life:riverfish", {
-			description = ("Riverfish"),
+			description = S("Riverfish"),
 			inventory_image = "water_life_riverfish_item.png",
 			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
 			stack_max = 10,
@@ -125,7 +124,7 @@ if not water_life.apionly then
 		})
 
 		minetest.register_craftitem("water_life:piranha", {
-			description = ("Piranha"),
+			description = S("Piranha"),
 			inventory_image = "water_life_piranha_item.png",
 			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
 			stack_max = 10,
@@ -154,7 +153,7 @@ if not water_life.apionly then
 		})
 
 		minetest.register_craftitem("water_life:coralfish", {
-			description = ("Coralfish"),
+			description = S("Coralfish"),
 			inventory_image = "water_life_coralfish_item.png",
 			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
 			stack_max = 10,
@@ -188,7 +187,7 @@ if not water_life.apionly then
 		})
 
 		minetest.register_craftitem("water_life:clownfish", {
-					description = ("Clownfish"),
+					description = S("Clownfish"),
 					inventory_image = "water_life_clownfish_item.png",
 					wield_scale = {x = 0.5, y = 0.5, z = 0.5},
 					stack_max = 10,
@@ -217,7 +216,7 @@ if not water_life.apionly then
 		})
 
 		minetest.register_craftitem("water_life:urchin_item", {
-			description = ("Sea urchin"),
+			description = S("Sea urchin"),
 			inventory_image = "water_life_urchin_item.png",
 			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
 			stack_max = 10,
@@ -249,7 +248,7 @@ if not water_life.apionly then
 
 
 		minetest.register_craftitem("water_life:jellyfish_item", {
-			description = ("Jellyfish"),
+			description = S("Jellyfish"),
 			inventory_image = "water_life_jellyfish_item.png",
 			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
 			stack_max = 10,
@@ -281,7 +280,7 @@ if not water_life.apionly then
 		
 		
 		minetest.register_craftitem("water_life:snake_item", {
-			description = ("Rattlesnake"),
+			description = S("Rattlesnake"),
 			inventory_image = "water_life_snake_item.png",
 			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
 			stack_max = 10,
@@ -310,7 +309,7 @@ if not water_life.apionly then
 		})
 		
 		minetest.register_craftitem("water_life:antiserum", {
-			description = ("Antiserum, cures snake bites"),
+			description = S("Antiserum, cures snake bites"),
 			inventory_image = "water_life_antiserum.png",
 			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
 			liquids_pointable = false,
@@ -340,7 +339,7 @@ if not water_life.apionly then
 		})
 		
 		minetest.register_craftitem("water_life:beaver_fur", {
-		description = ("Beaver fur"),
+		description = S("Beaver fur"),
 		inventory_image = "water_life_beaverfur.png",
 		groups = {flammable = 2, fur = 1}
 		})
@@ -352,7 +351,7 @@ end
 if water_life.muddy_water then
 
 		minetest.register_node("water_life:muddy_river_water_source", {
-			description = "Muddy river water source",
+			description = S("Muddy river water source"),
 			drawtype = "liquid",
 			waving = 3,
 			tiles = {
@@ -398,7 +397,7 @@ if water_life.muddy_water then
 		})
 
 		minetest.register_node("water_life:muddy_river_water_flowing", {
-			description = "Flowing muddy river water",
+			description = S("Flowing muddy river water"),
 			drawtype = "flowingliquid",
 			waving = 3,
 			tiles = {"water_life_muddy_river_water_source.png"},
@@ -504,14 +503,14 @@ if minetest.get_modpath("unified_inventory") then
 		})
 	
 	minetest.register_tool("water_life:croc_bag", {
-		description = ("CrocBag"),
+		description = S("CrocBag"),
 		inventory_image = "water_life_crocbag.png",
 		groups = {bagslots=24},
 	})
 end
 
 minetest.register_craftitem("water_life:crocleather", {
-			description = ("Crockleather"),
+			description = S("Crockleather"),
 			inventory_image = "water_life_crocleather.png",
 			wield_scale = {x = 0.5, y = 0.5, z = 0.5},
 			liquids_pointable = false,

@@ -1,3 +1,5 @@
+local S = water_life.S
+
 local function coral_on_place(itemstack, placer, pointed_thing)
 	if pointed_thing.type ~= "node" or not placer then
 		return itemstack
@@ -44,7 +46,7 @@ end
 
 
 minetest.register_node("water_life:coralmagenta", {
-	description = "Magenta Coral",
+	description = S("Magenta Coral"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	paramtype = "light",
@@ -74,7 +76,7 @@ minetest.register_node("water_life:coralmagenta", {
 })
 
 minetest.register_node("water_life:coralskyblue", {
-	description = "Skyblue Coral",
+	description = S("Skyblue Coral"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	paramtype = "light",

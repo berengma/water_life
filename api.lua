@@ -1,4 +1,6 @@
 
+local S = water_life.S
+
 local abs = math.abs
 local pi = math.pi
 local floor = math.floor
@@ -720,6 +722,6 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
         return 0
         end, true)
         
-minetest.register_privilege("god", {description ="unvulnerable"})
+minetest.register_privilege("god", {description =S("unvulnerable")})
 end
 

@@ -1,6 +1,7 @@
+local S = water_life.S
 
 minetest.register_node("water_life:shark_buoy", {
-	description = "Shark-buoy, keeps off sharks in radius of 10 nodes",
+	description = S("Shark-buoy, keeps off sharks in radius of 10 nodes"),
 	drawtype = "plantlike_rooted",
 	waving = 1,
 	tiles = {"water_life_shark_net_top.png","default_tin_block.png","default_tin_block.png","default_tin_block.png","default_tin_block.png","default_tin_block.png"},

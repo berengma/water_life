@@ -1,0 +1,65 @@
+# textdomain: water_life
+
+
+
+### api.lua ###
+
+unvulnerable=Unverwundbar
+
+### buoy.lua ###
+
+Shark-buoy, keeps off sharks in radius of 10 nodes=Hai-Boje, hält Haie im Radius von 10 Knoten fern
+
+### chatcommands.lua ###
+
+Humidity in %=Luftfeuchtigkeit in %
+ID=ID
+Name=Name
+Temp. in C=Temperatur in C°
+Your water_life version # is: =Deine water_life-Version # ist:
+biome id,name,heat and humidity=Biome id,Name,Wärme und Feuchtigkeit
+find #objects in abo=finde #Objekte in abo
+kill all mobs <mob_name> in abo=TÃ¶te alle mobs <mob_name> in abo
+shows water_life version number=Zeigt water_life Versionsnummer
+test=test
+
+### clams.lua ###
+
+White shelled clams=Weißschalige Muscheln
+
+### corals.lua ###
+
+Magenta Coral=Magentafarbene Koralle
+Skyblue Coral=Himmelblaue Koralle
+
+### crafts.lua ###
+
+Antiserum, cures snake bites=Gegengift, heilt Schlangenbisse
+Beaver fur=Biberfell
+Clownfish=Clownfisch
+Coralfish=Korallenfisch
+CrocBag=Krokodilsledertasche
+Crockleather=Krokodilsleder
+Flowing muddy river water=Fließendes schlammiges Flusswasser
+Jellyfish=Qualle
+Lasso (right-click animal to capture it)=Lasso (rechts-klick um Tiere zu fangen)
+Meat=Fleisch
+Muddy river water source=Schlammiges Flusswasserquelle
+Piranha=Piranha
+Rattlesnake=Klapperschlange
+Raw Meat=Rohes Fleisch
+Riverfish=Flußfisch
+Sea urchin=Seeigel
+artificial coral skeleton=Künstliches Korallenskelett
+
+### plants.lua ###
+
+Brown Kelp=Brauner Seetang
+Green Kelp=Grüner Seetang
+Green Seagrass=Grünes Seegras
+Red Seagrass=Rotes Seegras
+Sea salad mix=Gemischter Meeressalat
+
+### whale.lua ###
+
+>>> You missed <<<=>>> Du verfehlst <<<

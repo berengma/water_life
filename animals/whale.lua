@@ -1,3 +1,4 @@
+local S = water_life.S
 
 local abs = math.abs
 local pi = math.pi
@@ -184,7 +185,7 @@ minetest.register_entity("water_life:whale",{
 				mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 			else
 				if puncher:is_player() then
-					minetest.chat_send_player(puncher:get_player_name(),">>> You missed <<<")
+					minetest.chat_send_player(puncher:get_player_name(),S(">>> You missed <<<"))
 				end
 			end
 			
