@@ -333,6 +333,30 @@ if not water_life.apionly then
 			groups = {vessel = 1},
 		})
 		
+		--[[
+		minetest.register_craftitem("water_life:repellant", {
+			description = ("No moskitos for half a day"),
+			inventory_image = "water_life_repell.png",
+			wield_scale = {x = 0.4, y = 0.4, z = 0.4},
+			liquids_pointable = false,
+			on_use = function(itemstack, user, pointed_thing)
+						if not user or not user:is_player() then return itemstack end
+						
+						local name = user:get_player_name()
+						local meta = user:get_meta()
+						
+						meta:set_int("repellant",math.floor(os.clock()))
+						itemstack:take_item()
+		                                               
+						if not water_life.repellant[name] then
+							water_life.repellant[name] = user:hud_add(water_life.hud_repellant)
+						end
+					return itemstack
+			end,
+						
+			groups = {vessel = 1},
+		})]]
+		
 		minetest.register_craft({
 			type = "shapeless",
 			output = "water_life:antiserum",

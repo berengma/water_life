@@ -18,8 +18,7 @@ local atan=math.atan
 
 
 water_life.hud_poison =   {
-        hud_elem_type = "image",  -- See HUD element types
-        -- Type of element, can be "image", "text", "statbar", or "inventory"
+        hud_elem_type = "image",
 
         position = {x=0.5, y=0.8},
         -- Left corner position of element
@@ -29,9 +28,20 @@ water_life.hud_poison =   {
         scale = {x = 0.1, y = 0.1},
 
         text = "water_life_poison.png",
+}
 
-       -- size = { x=16, y=16 },
-        -- Size of element in pixels
+
+water_life.hud_repellant =   {
+        hud_elem_type = "image",
+
+        position = {x=0.55, y=0.8},
+        -- Left corner position of element
+
+        name = "water_life_repellanthud.png",
+
+        scale = {x = 0.1, y = 0.1},
+
+        text = "water_life_repellanthud.png",
 }
 
 
@@ -57,6 +67,8 @@ function water_life.random(min,max)
 		min = 1
 	end
 	if max and not min then min = 1 end
+	if max < min then return water_life.randomtable:next(max,min) end
+	
 	return water_life.randomtable:next(min,max)
 end
 
@@ -501,8 +513,8 @@ function water_life.find_node_under_air(pos,radius,name)
 	if not radius then radius = 3 end
 	if not name then name={"group:crumbly","group:stone","group:tree"} end
 	
-	local pos1 = mobkit.pos_shift(pos,{x=radius*-1,y=radius*-1,z=radius*-1})
-	local pos2 = mobkit.pos_shift(pos,{x=radius,y=radius,z=radius})
+	local pos1 = {x=pos.x-radius, y=pos.y-radius, z=pos.z-radius} --mobkit.pos_shift(pos,{x=radius*-1,y=radius*-1,z=radius*-1})
+	local pos2 = {x=pos.x+radius, y=pos.y+radius, z=pos.z+radius} --mobkit.pos_shift(pos,{x=radius,y=radius,z=radius})
 	local spawner = minetest.find_nodes_in_area_under_air(pos1, pos2, name)
 	if not spawner or #spawner < 1 then
 		return nil
