@@ -40,6 +40,11 @@ water_life_maxwhales (Max possible whales in aktive area)  int 1
 water_life_maxsharks (Max possible sharks in aktive area) int 5
 
 # -
+# max lifetime of a moskito (default 300 = 5 minutes)
+water_life_moskitolifetime (Max lifetime of a moskito in seconds) int 300
+
+
+# -
 # total max number of animals in an aktive area
 # other mods might not care about this setting
 water_life_maxmobs (Max possible animals in aktive area) int 60

@@ -24,7 +24,7 @@ local function gecko_brain(self)
 	if mobkit.timer(self,60) then
 		local time = water_life.get_game_time()
 		
-		if time == 4 and random(100) < 50 then
+		if time == 4 and random(100) < 15 then
 			mobkit.make_sound(self,"idle")
 		end
 	end
@@ -130,7 +130,7 @@ minetest.register_entity("water_life:gecko",{
 	max_hp = 20,
 	timeout=300,
 	drops = {
-		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
+		{name = "default:diamond", chance = 5, min = 1, max = 1,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
