@@ -61,9 +61,21 @@ end
 
 
 minetest.register_on_joinplayer(function(player)
-
 		if not player then return end
+                               
+          local meta=player:get_meta()
+		meta:set_int("repellant",0)                     
 		local name = player:get_player_name()
+                               
 		water_life.playerhud.poison[name] = player:hud_add(water_life.hud_poison)
 		water_life.playerhud.repellant[name] = player:hud_add(water_life.hud_repellant)
+                               
+		if meta:get_int("snakepoison") > 0 then
+			minetest.after(5, function(player)
+				water_life.change_hud(player,"poison")
+			end, player)
+		end
+                               
 end)
+
+

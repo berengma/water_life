@@ -92,6 +92,25 @@ minetest.register_craft({
 	})
 
 
+-- moskito repellant
+ if water_life.farming and farming.mod == "redo" then
+	 minetest.register_craft({
+			output = "water_life:repellant",
+			recipe = {
+				{"", "farming:mint_leaf", "farming:bottle_ethanol"},
+				{"farming:garlic", "farming:chili_pepper", "farming:onion"},
+				{"", "farming:mortar_pestle", ""}},
+			replacements = {{"group:food_mortar_pestle", "farming:mortar_pestle"}}
+		})
+ else
+	 minetest.register_craft({
+			output = "water_life:repellant",
+			recipe = {
+				{"", "farming:cotton", ""},
+				{"flowers:tulip_black", "flowers:mushroom_red", "flowers:geranium"},
+				{"", "vessels:glass_bottle", ""}}
+		})
+ end
 
 if not water_life.apionly then
 	

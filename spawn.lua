@@ -41,7 +41,7 @@ local function spawnstep(dtime)
 				
 				if meta:get_int("repellant") > 0 then
 					if math.floor(os.clock()) - meta:get_int("repellant") > water_life.repeltime then
-						water_life.change_hud(plyr,"repellant",0)--plyr:hud_remove(water_life.repellant[name])
+						water_life.change_hud(plyr,"repellant",0)
 						meta:set_int("repellant",0)
 					end
 				end

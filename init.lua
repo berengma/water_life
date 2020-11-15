@@ -6,11 +6,12 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "081120"
+water_life.version = "151120"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
+water_life.farming = minetest.get_modpath("farming")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
 water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
 
