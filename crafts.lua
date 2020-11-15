@@ -324,13 +324,14 @@ if not water_life.apionly then
 						if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
 						user:set_hp(score+10)
 						itemstack:take_item()
+		                    water_life.change_hud(user,"poison",0)                                
 					return itemstack
 			end,
 						
 			groups = {vessel = 1},
 		})
 		
-		--[[
+		
 		minetest.register_craftitem("water_life:repellant", {
 			description = ("No moskitos for half a day"),
 			inventory_image = "water_life_repell.png",
@@ -345,14 +346,12 @@ if not water_life.apionly then
 						meta:set_int("repellant",math.floor(os.clock()))
 						itemstack:take_item()
 		                                               
-						if not water_life.repellant[name] then
-							water_life.repellant[name] = user:hud_add(water_life.hud_repellant)
-						end
+						water_life.change_hud(user,"repellant")
 					return itemstack
 			end,
 						
 			groups = {vessel = 1},
-		})]]
+		})
 		
 		minetest.register_craft({
 			type = "shapeless",
