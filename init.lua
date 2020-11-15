@@ -1,16 +1,17 @@
 -----------------------------------------------------------
 --
 -- Water_life copyright 2020 by Gundul
--- see software and media licenses in the licenses folder
+-- see software and media licenses in the doc folder
 -- 
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "081120"
+water_life.version = "151120"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
+water_life.farming = minetest.get_modpath("farming")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
 water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
 
@@ -43,6 +44,7 @@ dofile(path.."/chatcommands.lua")												-- load chatcommands
 dofile(path.."/behaviors.lua")												-- load behaviors
 
 if not water_life.apionly then
+	dofile(path.."/hud.lua")													-- load player hud
 	dofile(path.."/spawn.lua")												-- load spawn function
 	dofile(path.."/animals/whale.lua")											-- load whales	
 	dofile(path.."/animals/riverfish.lua")										-- load riverfish

@@ -92,6 +92,25 @@ minetest.register_craft({
 	})
 
 
+-- moskito repellant
+ if water_life.farming and farming.mod == "redo" then
+	 minetest.register_craft({
+			output = "water_life:repellant",
+			recipe = {
+				{"", "farming:mint_leaf", "farming:bottle_ethanol"},
+				{"farming:garlic", "farming:chili_pepper", "farming:onion"},
+				{"", "farming:mortar_pestle", ""}},
+			replacements = {{"group:food_mortar_pestle", "farming:mortar_pestle"}}
+		})
+ else
+	 minetest.register_craft({
+			output = "water_life:repellant",
+			recipe = {
+				{"", "farming:cotton", ""},
+				{"flowers:tulip_black", "flowers:mushroom_red", "flowers:geranium"},
+				{"", "vessels:glass_bottle", ""}}
+		})
+ end
 
 if not water_life.apionly then
 	
@@ -324,16 +343,14 @@ if not water_life.apionly then
 						if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
 						user:set_hp(score+10)
 						itemstack:take_item()
-						if water_life.poison[name] then
-							user:hud_remove(water_life.poison[name])
-						end
+		                    water_life.change_hud(user,"poison",0)                                
 					return itemstack
 			end,
 						
 			groups = {vessel = 1},
 		})
 		
-		--[[
+		
 		minetest.register_craftitem("water_life:repellant", {
 			description = ("No moskitos for half a day"),
 			inventory_image = "water_life_repell.png",
@@ -348,14 +365,12 @@ if not water_life.apionly then
 						meta:set_int("repellant",math.floor(os.clock()))
 						itemstack:take_item()
 		                                               
-						if not water_life.repellant[name] then
-							water_life.repellant[name] = user:hud_add(water_life.hud_repellant)
-						end
+						water_life.change_hud(user,"repellant")
 					return itemstack
 			end,
 						
 			groups = {vessel = 1},
-		})]]
+		})
 		
 		minetest.register_craft({
 			type = "shapeless",

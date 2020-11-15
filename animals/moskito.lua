@@ -21,7 +21,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	
 	
 	if reason then
-		--minetest.chat_send_all(dump(repel).." : "..dump(water_life.repeltime))
+		--minetest.chat_send_all(dump(repel).."/"..dump(math.floor(os.clock()) - repel).." : "..dump(water_life.repeltime))
 		if reason.type == "node_damage" and reason.node == "water_life:moskito" and repel == 0 then
                                     
 			minetest.sound_play("water_life_moskito", {
@@ -32,7 +32,6 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 		
 		elseif reason.type == "node_damage" and reason.node == "water_life:moskito" and repel ~= 0 then
 			--minetest.chat_send_player(name,"repellant working for another "..dump(math.floor(os.clock())-meta:get_int("repellant")).." seconds")
-			meta:set_int("repellant",0)
 			return 0
 		else
 			return hp_change
@@ -41,10 +40,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 end, true)
 
-minetest.register_on_leaveplayer(function(player)
-		local meta=player:get_meta()
-		meta:set_int("repellant",0)
-end)
+
 
 minetest.register_node("water_life:moskito", {
 	description = ("Moskito"),

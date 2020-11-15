@@ -15,7 +15,7 @@ local deg=math.deg
 local tan = math.tan
 local cos = math.cos
 local atan=math.atan
-water_life.poison = {}
+
 
 
 
@@ -274,7 +274,7 @@ function water_life.lq_jumpattack(self,height,target,extra)
 						local meta = target:get_meta()
 						local name = target:get_player_name()
 						meta:set_int("snakepoison",1)
-						water_life.poison[name] = target:hud_add(water_life.hud_poison)
+						water_life.change_hud(target,"poison")
 					end
 				end
 					-- bounce off
