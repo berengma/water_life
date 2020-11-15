@@ -17,33 +17,6 @@ local cos = math.cos
 local atan=math.atan
 
 
-water_life.hud_poison =   {
-        hud_elem_type = "image",
-
-        position = {x=0.5, y=0.8},
-        -- Left corner position of element
-
-        name = "water_life_poison.png",
-
-        scale = {x = 0.1, y = 0.1},
-
-        text = "water_life_poison.png",
-}
-
-
-water_life.hud_repellant =   {
-        hud_elem_type = "image",
-
-        position = {x=0.55, y=0.8},
-        -- Left corner position of element
-
-        name = "water_life_repellanthud.png",
-
-        scale = {x = 0.1, y = 0.1},
-
-        text = "water_life_repellanthud.png",
-}
-
 
 local neighbors ={
 	{x=1,z=0},

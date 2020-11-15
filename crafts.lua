@@ -324,9 +324,6 @@ if not water_life.apionly then
 						if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
 						user:set_hp(score+10)
 						itemstack:take_item()
-						if water_life.poison[name] then
-							user:hud_remove(water_life.poison[name])
-						end
 					return itemstack
 			end,
 						
