@@ -2,31 +2,19 @@
 water_life.playerhud = {}
 
 
-water_life.hud =   {
-	{
-		hud_elem_type = "text",
+water_life.hud_poison =   {
+        hud_elem_type = "image",
 
-		position = {x=0.5, y=0.8},
-		-- Left corner position of element
+        position = {x=0.5, y=0.8},
+        -- Left corner position of element
 
-		name = "water_life_poison.png",
+        name = "water_life_poison.png",
 
-		scale = {x = 0.1, y = 0.1},
+        scale = {x = 0.1, y = 0.1},
 
-		text = "water_life_poison.png"},
-	
-	--[[{
-		hud_elem_type = "image",
-
-		position = {x=0.55, y=0.8},
-		-- Left corner position of element
-
-		name = "water_life_repellant",
-
-		scale = {x = 0.1, y = 0.1},
-
-		text = "water_life_repellanthud.png"},]]
+        text = "water_life_poison.png",
 }
+
 
 
 
@@ -39,5 +27,5 @@ minetest.register_on_joinplayer(function(player)
 
 		if not player then return end
 		local name = player:get_player_name()
-		water_life.playerhud[name] = player:hud_add(water_life.hud)
+		water_life.playerhud[name] = player:hud_add(water_life.hud_poison)
 end)
