@@ -39,7 +39,7 @@ minetest.register_entity("water_life:clams", {
 			if self.phase >= 3 then
 				self.phase = 0
 			end
-			self.object:setsprite({x=0, y=self.phase})
+			self.object:set_sprite({x=0, y=self.phase})
 			self.object:set_armor_groups(phasearmor[self.phase])
 		end
 	end,
