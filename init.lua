@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "151120"
+water_life.version = "221120"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.petz = minetest.get_modpath("petz")
