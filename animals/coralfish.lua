@@ -170,7 +170,7 @@ minetest.register_entity("water_life:coralfish_tamed",{
 	swarm = {},
 	base = nil,
 	head = 65535,
-    owner = "",
+	owner = "",
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
