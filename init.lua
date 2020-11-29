@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "221120"
+water_life.version = "291120"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.petz = minetest.get_modpath("petz")
@@ -42,6 +42,7 @@ dofile(path.."/crafts.lua")				 									-- load crafts
 dofile(path.."/buoy.lua")													-- load buoy
 dofile(path.."/chatcommands.lua")												-- load chatcommands
 dofile(path.."/behaviors.lua")												-- load behaviors
+dofile(path.."/bio.lua")														-- load bio
 
 if not water_life.apionly then
 	dofile(path.."/hud.lua")													-- load player hud
