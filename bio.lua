@@ -8,7 +8,7 @@ local max = math.max
 local min = math.min
 local pow = math.pow
 local sign = math.sign
-local time = os.clock
+local time = os.clock()
 local rad = math.rad
 local random = water_life.random
 local deg=math.deg
@@ -18,6 +18,7 @@ local atan=math.atan
 
 
 function water_life.init_bio(self)
+	local dna =  water_life.make_dna()
 	mobkit.remember(self,"wl_hunger",100)
 	mobkit.remember(self,"wl_exhaust",100)
 	mobkit.remember(self,"wl_horny",100)
@@ -25,6 +26,15 @@ function water_life.init_bio(self)
 	mobkit.remember(self,"wl_head",random(65535))
 	mobkit.remember(self,"wl_headpos", nil)
 	mobkit.remember(self,"wl_boss", 0)
+	mobkit.remember(self,"wl_parent", 0)
+	mobkit.remember(self,"wl_dna", dna)
+end
+
+
+function water_life.is_parent(self,change)
+	if not self then return 0 end
+	if not change then return mobkit.recall(self,"wl_parent") or 0 end
+	mobkit.remember(self,"wl_parent", change)
 end
 
 
@@ -34,6 +44,20 @@ function water_life.is_boss(self,change)
 	mobkit.remember(self,"wl_boss", change)
 end
 
+
+function water_life.dna(self,change)
+	if not self then return nil end
+	if not change then 
+		local dna = mobkit.recall(self,"wl_dna")
+		if dna then return dna end
+		dna = water_life.make_dna()
+		mobkit.remember(self,"wl_dna", dna)
+		return dna
+	end
+	
+	mobkit.remember(self,"wl_dna", change)
+end
+	
 
 function water_life.headpos(self,change)
 	if not self then return nil end
@@ -105,3 +129,19 @@ function water_life.pregnant(self,change)
 	
 	mobkit.remember(self,"wl_pregnant", change)
 end
+
+
+function water_life.make_dna(length)
+	if not length then length=32 end
+	local component = {"A","T","G","C"}
+	local dna = ""
+	
+	for i = 1,length,1 do
+		dna = dna..component[random(#component)]
+	end
+	
+	return dna
+end
+		
+	
+	
