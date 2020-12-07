@@ -20,6 +20,8 @@ local atan=math.atan
 function water_life.init_bio(self)
 	local dna =  water_life.make_dna()
 	mobkit.remember(self,"wl_hunger",100)
+	mobkit.remember(self,"wl_thirst",100)
+	mobkit.remember(self,"wl_life",self.timeout)
 	mobkit.remember(self,"wl_exhaust",100)
 	mobkit.remember(self,"wl_horny",100)
 	mobkit.remember(self,"wl_pregnant",-1)
@@ -28,6 +30,18 @@ function water_life.init_bio(self)
 	mobkit.remember(self,"wl_boss", 0)
 	mobkit.remember(self,"wl_parent", 0)
 	mobkit.remember(self,"wl_dna", dna)
+end
+
+
+function water_life.is_alive(self,change,set)
+	if not self then return 0 end
+	if not change then return mobkit.recall(self,"wl_life") or 1440 end
+	if set then
+		mobkit.remember(self,"wl_life", change)
+		return 
+	end
+	change = (mobkit.recall(self,"wl_life") or 1440) + change
+	mobkit.remember(self,"wl_life", change)
 end
 
 
@@ -108,6 +122,17 @@ function water_life.exhaust(self,change)
 	if exhaust > 100 then exhaust = 100 end
 	mobkit.remember(self,"wl_exhaust", exhaust)
 	return exhaust
+end
+
+function water_life.thirst(self,change)
+	if not self then return 0 end
+	if not change then change = 0 end
+	local thirst = mobkit.recall(self,"wl_thirst") or 100
+	thirst = thirst + change
+	if thirst < 0 then thirst = 0 end
+	if thirst > 100 then thirst = 100 end
+	mobkit.remember(self,"wl_thirst", thirst)
+	return thirst
 end
 
 
