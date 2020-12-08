@@ -74,9 +74,9 @@ local function gecko_brain(self)
 				mobkit.forget(self,"landlife")
 			end
 			local pred = water_life.get_closest_enemy(self,true)
-			if pred and value < 20 then 
-				water_life.hq_swimfrom(self,20,pred,4,8)
-				water_life.hq_go2land(self,19)
+			if pred and value < 25 then 
+				water_life.hq_swimfrom(self,25,pred,4,8)
+				water_life.hq_go2land(self,24)
 			end
 		end
 		

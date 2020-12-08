@@ -971,8 +971,8 @@ function water_life.hq_snake_move(self,prty,anim)
 		
 		if getpos then
 			
-			water_life.hq_idle(self,prty-1,10,anim)
-			water_life.hq_findpath(self,prty-2,getpos, 1.5,0.1)
+			water_life.hq_idle(self,prty+2,5,anim)
+			water_life.hq_findpath(self,prty+1,getpos, 1.5,0.1)
 			return true
 			
 			
@@ -994,6 +994,8 @@ function water_life.hq_snakerun(self,prty,tgtobj)
 	local func = function(self)
 	
 		if not mobkit.is_alive(tgtobj) then return true end
+		if self.isinliquid then return true end
+		
 		if init then
 			timer = timer-self.dtime
 			if timer <=0 or vector.distance(self.object:get_pos(),tgtobj:get_pos()) < 8 then
