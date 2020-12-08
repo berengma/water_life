@@ -17,6 +17,16 @@ local function gull_brain(self)
 		end
 	end
 	
+	if mobkit.timer(self,5) then
+		local vel = self.object:get_velocity()
+		local speed = vector.length(vel)
+		if speed < 1 and not self.isinliquid then
+			mobkit.clear_queue_high(self)
+			mobkit.hq_die(self)
+		end
+	end
+	
+	
 	if mobkit.is_queue_empty_high(self) then
 		
 		self.object:add_velocity({x=2,y=4,z=2})
