@@ -141,4 +141,19 @@ if minetest.get_modpath("petz") then
 	water_life.register_shark_food("petz:foxy")
 	water_life.register_shark_food("petz:polar_bear")
 	water_life.register_shark_food("petz:tarantula")
+	water_life.register_shark_food("petz:leopard")
+	water_life.register_shark_food("petz:snow_leopard")
+	water_life.register_shark_food("petz:panda")
+	water_life.register_shark_food("petz:santa_killer")
+	water_life.register_shark_food("petz:mr_pumpkin")
+	water_life.register_shark_food("petz:hen")
+	water_life.register_shark_food("petz:rooster")
+end
+
+if minetest.get_modpath("better_fauna") then
+	water_life.register_shark_food("better_fauna:chicken")
+	water_life.register_shark_food("better_fauna:cow")
+	water_life.register_shark_food("better_fauna:pig")
+	water_life.register_shark_food("better_fauna:sheep")
+	water_life.register_shark_food("better_fauna:turkey")
 end
