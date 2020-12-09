@@ -10,7 +10,6 @@ local pow = math.pow
 local sign = math.sign
 local time = os.time
 local rad = math.rad
-local random = water_life.random
 local deg=math.deg
 local tan = math.tan
 local cos = math.cos
@@ -45,7 +44,32 @@ function water_life.random(min,max)
 	return water_life.randomtable:next(min,max)
 end
 
-local random = water_life.random
+--
+local random = water_life.random -- do not delete, this MUST be here!
+--
+
+--checks if entity is in a small water pool
+function water_life.check_for_pool(self,deep,minr)
+	if not self then return nil end
+	if not deep then deep = 3 end
+	if not minr then minr = 3 end
+	
+	local max = 16
+	local pos = self.object:get_pos()
+	local yaw = self.object:get_yaw()
+	local d,t,s = water_life.water_depth(pos,max)
+	local cpos = {}
+	local ispool = 0
+	
+	for i = 0,270,90 do
+		yaw = yaw + rad(i)
+		cpos = mobkit.pos_translate2d(pos,yaw,minr)
+		if water_life.find_collision(pos,cpos,false) then ispool = ispool + 1 end
+	end
+	
+	if ispool > 2 and d < deep then return true end
+	return false
+end
 
 
 -- returns ingame time, 1 = morning, 2 = noon, 3 = afternoon, 4 = night

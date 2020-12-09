@@ -6,12 +6,13 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "081220"
+water_life.version = "091220"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.farming = minetest.get_modpath("farming")
+water_life.swampz = minetest.get_modpath("swaz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
 water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
 
@@ -65,6 +66,9 @@ if not water_life.apionly then
 		dofile(path.."/animals/shark.lua")											-- load sharks
 		dofile(path.."/animals/crocodile.lua")										-- load crocodile
 		dofile(path.."/animals/moskito.lua")										-- load moskitos
+		if water_life.swampz then
+			dofile(path.."/animals/alligator.lua")									-- alligators need swampz mod
+		end
 	end
 end
 
