@@ -67,7 +67,8 @@ local function spawnstep(dtime)
 				if landtimer > landinterval then
 					landpos = water_life.find_node_under_air(pos2)
 					geckopos = water_life.find_node_under_air(pos2,5,{"group:tree","group:leaves","default:junglegrass"})
-					moskitopos = water_life.find_node_under_air(pos2,5,{"default:river_water_source","water_life:muddy_river_water_source","group:flora","default:dirt_with_rainforest_litter"})
+					moskitopos = water_life.find_node_under_air(pos2,5,{"default:river_water_source","water_life:muddy_river_water_source","group:flora","default:dirt_with_rainforest_litter"
+					,"swaz:water_source"})
 				end
 				
 				
@@ -166,6 +167,9 @@ local function spawnstep(dtime)
 				elseif stype == "water_life:muddy_river_water_source" then
 					liquidflag = "muddy"
 					
+				elseif water_life.swampz and stype == "swaz:water_source" then
+					liquidflag = "swamp"
+					
 				end
 		
 				if liquidflag and not toomuch and surface then
@@ -173,6 +177,26 @@ local function spawnstep(dtime)
 					
 					
 					if not water_life.dangerous then
+						
+						
+						if water_life.swampz then
+							
+							local mobname = 'water_life:alligator'
+							local faktor = 100 - getcount(animal[mobname]) * 20
+							if random(100) < faktor then
+								local fits = false
+								if string.match(bdata.name,"swampz") and liquidflag == "swamp" then fits = true end
+								
+								if depth < 4 and fits then      --gator min water depth
+									local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
+									
+								end
+								
+								
+							end
+						end
+						
+						
 						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 						local mobname = 'water_life:croc'
 						local faktor = 100 - getcount(animal[mobname]) * 33
@@ -180,7 +204,7 @@ local function spawnstep(dtime)
 							local fits = false
 							if string.match(bdata.name,"rainforest") or string.match(bdata.name,"savanna") then fits = true end
 							
-							if depth < 4 and fits then      --shark min water depth
+							if depth < 4 and fits then      --croc min water depth
 								local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
 							end
 							

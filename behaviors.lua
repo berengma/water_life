@@ -327,7 +327,26 @@ function water_life.hq_catch_drop(self,prty,tgt)
 end
 
 
-
+function water_life.hq_aquaidle(self,prty,anim)
+	local init = true
+	if not anim then anim = 'def' end
+	
+	local func = function(self)
+		if init then
+			mobkit.animate(self,anim)
+			self.object:set_velocity({x=0,y=0,z=0})
+			init = false
+		end
+		
+		if self.name == "water_life:alligator" then
+			if random(100) < 5 then
+				mobkit.animate(self,'roll')
+			end
+		end
+	end
+	
+	mobkit.queue_high(self,func,prty)
+end
 
 
 -- same as mobkit.hq_aqua_turn but for large mobs

@@ -11,9 +11,7 @@ local rad = math.rad
 
 
 
-
-
-local function croc_brain(self)
+local function alligator_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
 		water_life.handle_drops(self)
@@ -70,8 +68,23 @@ local function croc_brain(self)
 		
         local prty = mobkit.get_queue_priority(self)
 	   
+		if prty < 11 and self.isinliquid then
+			if water_life.check_for_pool(self) then
+				mobkit.clear_queue_high(self)
+				water_life.hq_aquaidle(self,12,"stand")
+			end
+		end
+			
+	   
 		if prty < 20 then 
+			
 			local target = mobkit.get_nearby_player(self)
+			--[[
+			if target and target:is_player() then
+					local name = target:get_player_name()
+					if minetest.check_player_privs(name, {server=true}) then target = nil end
+			end]]
+					
 			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)--mobkit.is_in_deep(target)
 			local corpse = water_life.get_close_drops(self,"meat")
 			local food = water_life.feed_shark(self)
@@ -95,6 +108,8 @@ local function croc_brain(self)
 			end
 			
 			if self.isinliquid then
+				
+				
 				
 				if target and mobkit.is_alive(target)  and target:get_attach() == nil and not water_life.isinliquid(target) then --.is_in_deep(target) then
 					
@@ -172,16 +187,16 @@ end
 
 
 
-minetest.register_entity("water_life:croc",{
+minetest.register_entity("water_life:alligator",{
 											-- common props
 	physical = true,
 	stepheight = 0.1,				--EVIL!
 	collide_with_objects = true,
-	collisionbox = {-0.3, -0.1, -0.3, 0.3, 0.3, 0.3},
+	collisionbox = {-0.25, -0.1, -0.25, 0.25, 0.5, 0.25},
 	visual = "mesh",
-	mesh = "water_life_crocodile.b3d",
-	textures = {"water_life_crocodile.png"},
-	visual_size = {x = 5.5, y = 5.5},
+	mesh = "water_life_alligator.b3d",
+	textures = {"water_life_alligator.png"},
+	visual_size = {x = 8, y = 8},
 	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
@@ -191,7 +206,7 @@ minetest.register_entity("water_life:croc",{
 	springiness=0,
 	buoyancy = 0.98,					-- portion of hitbox submerged
 	max_speed = 9,                        
-	jump_height = 1.26,
+	jump_height = 1.96,
 	view_range = water_life.abo * 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
@@ -218,13 +233,15 @@ minetest.register_entity("water_life:croc",{
 			}
 		},
 	animation = {
-		def={range={x=14,y=25},speed=5,loop=true},
-		stand={range={x=1,y=1},speed=1,loop=false},
-		walk={range={x=1,y=13},speed=5,loop=true},	
-		swim={range={x=14,y=25},speed=5,loop=true},
+		def={range={x=150,y=180},speed=25,loop=true},
+		stand={range={x=1,y=60},speed=25,loop=true},
+		walk={range={x=70,y=100},speed=25,loop=true},	
+		swim={range={x=150,y=180},speed=25,loop=true},
+		bite={range={x=110,y=140},speed=25,loop=false},
+		roll={range={x=190,y=215},speed=25,loop=false},
 		},
 	
-	brainfunc = croc_brain,
+	brainfunc = alligator_brain,
 	
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
