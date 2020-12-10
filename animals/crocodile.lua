@@ -150,7 +150,7 @@ local function croc_brain(self)
 				if corpse and not water_life.inwater(corpse) then
 					
 					local dist = water_life.dist2tgt(self,corpse)
-					if dist < 7 and prty < 23 then
+					if dist < 16 and prty < 23 then
 						mobkit.clear_queue_high(self)
 						mobkit.clear_queue_low(self)
 						water_life.hq_catch_drop(self,23,corpse)
