@@ -128,11 +128,37 @@ end
 --   return a
 -- end
 
-function water_life.find_path(pos, endpos, entity, dtime)
-	-- if dtime > 0.1 then
-	-- 	return
-	-- end
-	-- round positions if not done by former functions
+
+--[[
+minetest.find_path(pos1,pos2,searchdistance,max_jump,max_drop,algorithm)`
+    * returns table containing path that can be walked on
+    * returns a table of 3D points representing a path from `pos1` to `pos2` or
+      `nil` on failure.
+    * Reasons for failure:
+        * No path exists at all
+        * No path exists within `searchdistance` (see below)
+        * Start or end pos is buried in land
+    * `pos1`: start position
+    * `pos2`: end position
+    * `searchdistance`: maximum distance from the search positions to search in.
+      In detail: Path must be completely inside a cuboid. The minimum
+      `searchdistance` of 1 will confine search between `pos1` and `pos2`.
+      Larger values will increase the size of this cuboid in all directions
+    * `max_jump`: maximum height difference to consider walkable
+    * `max_drop`: maximum height difference to consider droppable
+    * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`.
+      Difference between `"A*"` and `"A*_noprefetch"` is that
+      `"A*"` will pre-calculate the cost-data, the other will calculate it
+      on-the-fly]]
+
+
+function water_life.find_path(pos, endpos, entity, dtime, fast)
+	if fast then
+		--minetest.chat_send_all("FAST")
+		return minetest.find_path(pos,endpos,water_life.abr*16,entity.jump_height,1,"A*")
+	end
+	--minetest.chat_send_all("SLOW")
+	
 	pos = {
 			x = math.floor(pos.x + 0.5),
 			y = math.floor(pos.y + 0.5),
@@ -354,9 +380,12 @@ end
 -- Bahaviors and helper functions --
 ------------------------------------
 
+--[[
+function water_life.find_path(pos, endpos, entity, dtime)
+	return minetest.find_path(pos,endpos,water_life.abr*16,entity.jump_height,1,"A*")
+end]]
 
-
-function water_life.hq_findpath(self,prty,tpos, dist,speed)
+function water_life.hq_findpath(self,prty,tpos, dist,speed,fast)
 	if not dist then dist = 1 end
 	if not speed then speed = 1 end
 	
@@ -365,7 +394,7 @@ function water_life.hq_findpath(self,prty,tpos, dist,speed)
 			local pos = self.object:get_pos()
 			if vector.distance(pos,tpos) > dist then
 				
-				if not water_life.gopath(self,tpos,speed) then return true end
+				if not water_life.gopath(self,tpos,speed,fast) then return true end
 				
 			else
 				return true
@@ -377,8 +406,8 @@ end
 
 
 
-function water_life.gopath(self,tpos,speedfactor)
-	local height, pos2 = water_life.go_further(self,tpos)
+function water_life.gopath(self,tpos,speedfactor,fast)
+	local height, pos2 = water_life.go_further(self,tpos,fast)
 	if not speedfactor then speedfactor = 1 end
 	
 	if not height then return false end
@@ -398,10 +427,10 @@ function water_life.gopath(self,tpos,speedfactor)
 end
 
 
-function water_life.go_further(self,tpos)
+function water_life.go_further(self,tpos,fast)
 	local height = 0
 	local pos = mobkit.get_stand_pos(self)--self.object:get_pos()
-	local way = water_life.find_path(pos, tpos, self, self.dtime)
+	local way = water_life.find_path(pos, tpos, self, self.dtime,fast)
 	if not way or #way < 2 then return nil end
 	
 	height = way[2].y - pos.y -0.5
@@ -410,7 +439,7 @@ function water_life.go_further(self,tpos)
 end
 
 
-function water_life.hq_path_attack(self,prty,tgtobj)
+function water_life.hq_path_attack(self,prty,tgtobj,fast)
 	local func = function(self)
 		if not mobkit.is_alive(tgtobj) then return true end
 		if mobkit.is_queue_empty_low(self) then
@@ -418,7 +447,7 @@ function water_life.hq_path_attack(self,prty,tgtobj)
 --			local tpos = tgtobj:get_pos()
 			local tpos = mobkit.get_stand_pos(tgtobj)
 			local dist = vector.distance(pos,tpos)
-			if dist > 3 or not water_life.find_path(pos, tpos, self, self.dtime) then
+			if dist > 3 or not water_life.find_path(pos, tpos, self, self.dtime,fast) then
 				return true
 			else
 				mobkit.lq_turn2pos(self,tpos)
