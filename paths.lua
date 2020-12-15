@@ -4,6 +4,14 @@ local closedSet = {}
 local random = water_life.random
 local abs = math.abs
 
+local function show_path(ptable)
+	if not ptable or #ptable < 1 then return end
+	
+	for i= 1,#ptable,1 do
+		water_life.temp_show(ptable[i],1,1)
+	end
+end
+
 local function get_distance(start_pos, end_pos)
 	local distX = math.abs(start_pos.x - end_pos.x)
 	local distZ = math.abs(start_pos.z - end_pos.z)
@@ -75,6 +83,7 @@ local function walkable(node, pos, current_pos)
 			end
 
 		end
+		
 		if minetest.registered_nodes[node.name] and 
 		minetest.registered_nodes[node.name].walkable then
 			return true
@@ -408,16 +417,17 @@ function water_life.hq_findpath(self,prty,tpos,dist,speed,fast)
 	if not dist then dist = 1 end
 	if not speed then speed = 1 end
 	local way = water_life.find_path(self.object:get_pos(), tpos, self, self.dtime,fast)
-	--minetest.chat_send_all(dump(way))
 	
 	local func = function(self)
 		if not way or #way < 2 then return true end												--no way ? finish
+		--show_path(way)																	--debug visualation
 		
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			local pos = self.object:get_pos()
 			local pos2 = way[2]
-			local height = abs(pos.y - pos2.y) -0.5
-			--water_life.temp_show(pos2,3,5)
+			local height = abs(pos.y - pos2.y)-0.5
+			local node = mobkit.nodeatpos({x=pos2.x, y=pos2.y -1, z = pos2.z})
+			if not node or not node.walkable then return true end									-- something has changed, quit!
 			
 			if vector.distance(pos,tpos) > dist then
 				
@@ -453,8 +463,7 @@ function water_life.gopath(self,tpos,speedfactor,fast)
 	if not speedfactor then speedfactor = 1 end
 	
 	if not height then return false end
-	local node = mobkit.nodeatpos(pos2)
-	if not node or not node.walkable then return nil end
+	
 	
 	if height <= 0.01 then
 		local yaw = self.object:get_yaw()
