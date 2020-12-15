@@ -991,7 +991,7 @@ function water_life.hq_snake_move(self,prty,anim)
 		if getpos then
 			
 			water_life.hq_idle(self,prty+2,5,anim)
-			water_life.hq_findpath(self,prty+1,getpos, 1.5,0.1)
+			water_life.hq_findpath(self,prty+1,getpos, 1.5,0.1,true)
 			return true
 			
 			

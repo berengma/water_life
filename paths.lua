@@ -2,6 +2,15 @@
 local openSet = {}
 local closedSet = {}
 local random = water_life.random
+local abs = math.abs
+
+local function show_path(ptable)
+	if not ptable or #ptable < 1 then return end
+	
+	for i= 1,#ptable,1 do
+		water_life.temp_show(ptable[i],1,1)
+	end
+end
 
 local function get_distance(start_pos, end_pos)
 	local distX = math.abs(start_pos.x - end_pos.x)
@@ -74,6 +83,7 @@ local function walkable(node, pos, current_pos)
 			end
 
 		end
+		
 		if minetest.registered_nodes[node.name] and 
 		minetest.registered_nodes[node.name].walkable then
 			return true
@@ -380,11 +390,8 @@ end
 -- Bahaviors and helper functions --
 ------------------------------------
 
---[[
-function water_life.find_path(pos, endpos, entity, dtime)
-	return minetest.find_path(pos,endpos,water_life.abr*16,entity.jump_height,1,"A*")
-end]]
 
+--[[
 function water_life.hq_findpath(self,prty,tpos, dist,speed,fast)
 	if not dist then dist = 1 end
 	if not speed then speed = 1 end
@@ -402,6 +409,51 @@ function water_life.hq_findpath(self,prty,tpos, dist,speed,fast)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
+end]]
+
+
+function water_life.hq_findpath(self,prty,tpos,dist,speed,fast)
+	mobkit.clear_queue_low(self)
+	if not dist then dist = 1 end
+	if not speed then speed = 1 end
+	local way = water_life.find_path(self.object:get_pos(), tpos, self, self.dtime,fast)
+	
+	local func = function(self)
+		if not way or #way < 2 then return true end												--no way ? finish
+		--show_path(way)																	--debug visualation
+		
+		if mobkit.is_queue_empty_low(self) and self.isonground then
+			local pos = self.object:get_pos()
+			local pos2 = way[2]
+			local height = abs(pos.y - pos2.y)-0.5
+			local node = mobkit.nodeatpos({x=pos2.x, y=pos2.y -1, z = pos2.z})
+			if not node or not node.walkable then return true end									-- something has changed, quit!
+			
+			if vector.distance(pos,tpos) > dist then
+				
+				if height <= 0.01 then
+					local yaw = self.object:get_yaw()
+					local tyaw = minetest.dir_to_yaw(vector.direction(self.object:get_pos(),pos2))
+					if math.abs(tyaw-yaw) > 1 then
+						mobkit.lq_turn2pos(self,pos2) 
+					end
+					mobkit.lq_dumbwalk(self,pos2,speed)
+				else
+					mobkit.lq_turn2pos(self,pos2) 
+					mobkit.lq_dumbjump(self,height) 
+				end
+				
+				if vector.distance(pos,pos2) <= 2 then
+					table.remove(way,2)
+				end
+			else
+				return true
+			end
+		end
+		
+	
+	end
+	mobkit.queue_high(self,func,prty)
 end
 
 
@@ -411,6 +463,7 @@ function water_life.gopath(self,tpos,speedfactor,fast)
 	if not speedfactor then speedfactor = 1 end
 	
 	if not height then return false end
+	
 	
 	if height <= 0.01 then
 		local yaw = self.object:get_yaw()
