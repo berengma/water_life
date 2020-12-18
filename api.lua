@@ -130,6 +130,17 @@ function water_life.get_closest_enemy(self,player)
 end
 
 
+--player knockback from entity
+function water_life.knockback_player(self,target,force)
+	if not target:is_player() then return end
+	if not self.object then return end
+	if not force then force = 10 end
+	local dir = minetest.yaw_to_dir(self.object:get_yaw())
+	dir = vector.multiply(dir, force)
+	dir = {x=dir.x, y=dir.y+force/2, z= dir.z}
+	target:add_player_velocity(dir)
+end
+
 
 --sets an urchin somewhere but not in the center of a node
 function water_life.set_urchin(pos,name)
@@ -731,4 +742,22 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
         
 minetest.register_privilege("god", {description ="unvulnerable"})
 end
+
+
+--check here for antiserum group of eaten food
+minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	if not user or not user:is_player() then return end
+	if not itemstack then return end
+	local name = user:get_player_name()
+	local antiserum = itemstack:get_definition().groups.antiserum
+	if antiserum then
+		local meta = user:get_meta()
+		local score = user:get_hp()
+
+		if meta:get_int("snakepoison") > 0 then meta:set_int("snakepoison",0) end
+		water_life.change_hud(user,"poison",0)
+	end
+                             
+	return
+end)
 
