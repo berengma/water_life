@@ -2,8 +2,8 @@ local timer = 0
 local landtimer = 0
 local pi = math.pi
 local random = water_life.random
-local landinterval = 60						-- check every 60 seconds for spawnpos on land
-local waterinterval = 20						-- check every 20 seconds for spawnpos in water
+local landinterval = 120						-- check every 60 seconds for spawnpos on land
+local waterinterval = 40						-- check every 20 seconds for spawnpos in water
 
 
 local function getcount(name)
@@ -238,7 +238,7 @@ local function spawnstep(dtime)
 							if getcount(animal[mobname]) < water_life.maxsharks and liquidflag == "sea" and not bcheck["water_life:shark_buoy"]
 								and not animal["water_life:croc"] then
 								
-								if depth > 4 then      --shark min water depth
+								if depth > 4 and pool == false then      --shark min water depth
 								local obj=minetest.add_entity(mobkit.pos_shift(ground,{y=2}),mobname)			-- spawn it 2 nodes above sea ground
 								end
 							end

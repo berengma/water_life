@@ -6,9 +6,10 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "181220"
+water_life.version = "271220"
 water_life.shark_food = {}
 water_life.repellant = {}
+water_life.catchNet = "water_life:placeholder"
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.farming = minetest.get_modpath("farming")
@@ -76,6 +77,7 @@ end
 --check which lasso to use
 if water_life.mobsredo then 
 	water_life.catchBA = "mobs:lasso"
+	water_life.catchNet = "mobs:net"
 	if water_life.petz then minetest.unregister_item("petz:lasso") end
 	
 elseif water_life.petz then

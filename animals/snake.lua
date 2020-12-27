@@ -228,13 +228,16 @@ minetest.register_entity("water_life:snake",{
 		if not clicker or not clicker:is_player() then return end
 		local inv = clicker:get_inventory()
 		local item = clicker:get_wielded_item()
+		local name = clicker:get_player_name()
         
-		if not item or item:get_name() ~= "fireflies:bug_net" then return end
+		if not item or (item:get_name() ~= "fireflies:bug_net" and item:get_name() ~= water_life.catchNet) then return end
 		if not inv:room_for_item("main", "water_life:snake_item") then return end
                                             
 		if random(1000) < 333 then
 			inv:add_item("main", "water_life:snake_item")
 			self.object:remove()
+		else
+			minetest.chat_send_player(name,"*** You missed the snake")
 		end
 	end,
 })
