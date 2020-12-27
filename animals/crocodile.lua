@@ -203,7 +203,10 @@ minetest.register_entity("water_life:croc",{
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	sounds = {
-		attack='water_life_crocattack',
+		attack={
+			{name = 'water_life_crocattack',
+			gain = water_life.soundadjust}
+			},
 		idle={
 			{name = "water_life_croc1",
                gain = water_life.soundadjust},

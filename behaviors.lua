@@ -1078,3 +1078,24 @@ function water_life.hq_runfrom(self,prty,tgtobj)
 	end
 	mobkit.queue_high(self,func,prty)
 end
+
+
+-- dying
+function water_life.hq_die(self,anim)
+	local timer = 5
+	local start = true
+	local func = function(self)
+		if start then 
+			if not anim then
+				mobkit.lq_fallover(self)
+			else
+				mobkit.animate(self,anim)
+			end
+			self.logic = function(self) end	-- brain dead as well
+			start=false
+		end
+		timer = timer-self.dtime
+		if timer < 0 then self.object:remove() end
+	end
+	mobkit.queue_high(self,func,100)
+end

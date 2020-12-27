@@ -157,7 +157,7 @@ minetest.register_entity("water_life:clownfish_tamed",{
         local inv = clicker:get_inventory()
         local item = clicker:get_wielded_item()
         
-        if not item or item:get_name() ~= "fireflies:bug_net" then return end
+        if not item or (item:get_name() ~= "fireflies:bug_net" and item:get_name() ~= water_life.catchNet) then return end
         if not inv:room_for_item("main", "water_life:clownfish") then return end
         if self.owner and self.owner ~= clicker:get_player_name() and self.owner ~= "" then return end
                                             

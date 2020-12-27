@@ -73,7 +73,7 @@ minetest.register_entity("water_life:jellyfish",{
         local inv = clicker:get_inventory()
         local item = clicker:get_wielded_item()
         
-        if not item or item:get_name() ~= "fireflies:bug_net" then return end
+        if not item or (item:get_name() ~= "fireflies:bug_net" and item:get_name() ~= water_life.catchNet) then return end
         if not inv:room_for_item("main", "water_life:jellyfish_item") then return end
                                             
         inv:add_item("main", "water_life:jellyfish_item")
