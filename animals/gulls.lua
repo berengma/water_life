@@ -51,8 +51,8 @@ minetest.register_entity("water_life:gull",{
 	collisionbox = {-0.45, -0.15, -0.85, 0.65, 0.15, 0.25},
 	visual = "mesh",
 	mesh = "water_life_gull.b3d",
-	textures = {"water_life_gull_gray.png","water_life_gull_black.png","water_life_gull_grayblue.png"},
-	visual_size = {x = 0.5, y = 0.5, z = 0.5},
+	textures = {"water_life_gull1.png","water_life_gull2.png","water_life_gull3.png"},
+	visual_size = {x = 0.75, y = 0.5, z = 0.75},
 	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
@@ -66,7 +66,7 @@ minetest.register_entity("water_life:gull",{
 	view_range = 16,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
-	timeout=300,
+	timeout=0,
 	wild = true,
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
@@ -86,9 +86,9 @@ minetest.register_entity("water_life:gull",{
 			}
 		},
 	animation = {
-		def={range={x=1,y=95},speed=100,loop=true},
-		fly={range={x=1,y=95},speed=100,loop=true},
-		glide={range={x=75,y=75},speed=40,loop=false},
+		def={range={x=200,y=220},speed=25,loop=true},
+		fly={range={x=200,y=220},speed=25,loop=true},
+		glide={range={x=270,y=290},speed=25,loop=true},
 		--fast={range={x=81,y=155},speed=80,loop=true},
 		},
 	brainfunc = gull_brain,
