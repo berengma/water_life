@@ -55,6 +55,7 @@ minetest.register_entity("water_life:jellyfish",{
 	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
+	timeout = 300,
 	glow = 4,
 	drops = {
 		--{name = "default:diamond", chance = 90, min = 1, max = 1,},		

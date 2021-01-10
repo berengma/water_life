@@ -175,7 +175,7 @@ end
 minetest.register_entity("water_life:croc",{
 											-- common props
 	physical = true,
-	stepheight = 0.1,				--EVIL!
+	stepheight = 0.5,				--EVIL!
 	collide_with_objects = true,
 	collisionbox = {-0.3, -0.1, -0.3, 0.3, 0.3, 0.3},
 	visual = "mesh",

@@ -108,7 +108,7 @@ end
 minetest.register_entity("water_life:gecko",{
 											-- common props
 	physical = true,
-	stepheight = 0.1,				--EVIL!
+	stepheight = 0.5,				--EVIL!
 	collide_with_objects = true,
 	collisionbox = {-0.2, 0, -0.2, 0.2, 0.2, 0.2},
 	visual = "mesh",

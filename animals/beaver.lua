@@ -121,7 +121,7 @@ end
 minetest.register_entity("water_life:beaver",{
 											-- common props
 	physical = true,
-	stepheight = 0.1,				--EVIL!
+	stepheight = 0.5,				--EVIL!
 	collide_with_objects = true,
 	collisionbox = {-0.2, 0, -0.2, 0.2, 0.2, 0.2},
 	visual = "mesh",
@@ -141,7 +141,7 @@ minetest.register_entity("water_life:beaver",{
 	view_range = 8,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 25,
-	--timeout=300,
+	timeout=300,
 	drops = {
 		{name = "water_life:beaver_fur", chance = 5, min = 1, max = 1,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 3,},

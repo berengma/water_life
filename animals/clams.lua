@@ -28,6 +28,7 @@ minetest.register_entity("water_life:clams", {
 	buoyancy = 2,
 	phase = 0,
 	phasetimer = 0,
+	timeout = 300,
 	makes_footstep_sound = true,
 	on_activate = mobkit.actfunc,		-- required
 	get_staticdata = mobkit.statfunc,

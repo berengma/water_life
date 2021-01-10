@@ -94,7 +94,7 @@ minetest.register_entity("water_life:urchin",{
 	mesh = "water_life_urchin.b3d",
 	textures = {"water_life_urchin.png"},
 	visual_size = {x = 1, y = 1}, --2.5
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
