@@ -935,7 +935,79 @@ function water_life.hq_glide(self,prty,fmin,fmax)
 end
 
 
+function water_life.hq_water_takeoff(self,prty,anim)
+	local init = true
+	local startup = true
+	local turned = false
+	local timer = 0
+	if not anim then anim = 'def' end
+	local tyaw = nil
+	local pos2 = {}
+	
+	
+	local func=function(self)
+	
+		local yaw = self.object:get_yaw()
+		local pos = self.object:get_pos()
+		
+		if startup then
+			--water_life.temp_show(pos,5,1)
+			for i = 0,330,30 do
+				pos2 = mobkit.pos_translate2d(pos,yaw+rad(i),self.view_range*2)
+				
+				if not water_life.find_collision(pos,pos2,false) then
+					tyaw = yaw + rad(i)
+					--water_life.temp_show(pos2,5,10)
+					break
+				end
+			end
+			startup = false
+		end
 
+		if not startup then
+			if not tyaw then return true end
+			if mobkit.turn2yaw(self,tyaw,5) then turned = true end
+		end
+		
+		if turned then
+			if init then
+				self.object:set_velocity({x=0, y=0, z=0})
+				minetest.after(2,function()
+					mobkit.animate(self,anim)
+				end)
+				init = false
+			end
+			
+			
+			minetest.after(6,function()
+				mobkit.animate(self,'fly')
+			              end)
+			
+			if timer > 3 then
+				self.object:add_velocity({x=0,y=0.25,z=0})
+			end
+			
+			mobkit.go_forward_horizontal(self,3)
+			timer = timer + self.dtime
+			
+			if timer > 10 then
+				local vec = vector.multiply(minetest.yaw_to_dir(tyaw),2)
+				vec.y = vec.y + 4
+				self.object:add_velocity(vec)
+				mobkit.remember(self,"airlife",os.clock())
+				mobkit.forget(self,"landlife")
+				mobkit.forget(self,"waterlife")
+				return true
+			end
+		end
+	end
+	
+	mobkit.queue_high(self,func,prty)
+end
+	
+	
+
+--snakes
 function water_life.hq_snake_warn(self,target,prty,duration,anim)
 	anim = anim or 'warn'
 	local init = true

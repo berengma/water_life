@@ -250,7 +250,7 @@ local function spawnstep(dtime)
 					local faktor = 100 - getcount(animal[mobname]) * 20
 					if random(100) < faktor and liquidflag == "sea" then
 						if depth > 4 then
-							local spawn = mobkit.pos_shift(surface,{y=12})
+							local spawn = mobkit.pos_shift(surface,{y=1})
 							--spawn.y = spawn.y + 12
 							local obj=minetest.add_entity(spawn,mobname)			-- ok spawn it already damnit
 						end
