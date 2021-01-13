@@ -79,7 +79,7 @@ local function gull_brain(self)
 	
 	
 	if mobkit.timer(self,1) then
-	
+		local enemy = water_life.get_closest_enemy(self)
 		--minetest.chat_send_all(dump(prty)..")  "..dump(self.isinliquid)) --.."    :    "..dump(self.dtime)) --colinfo.collides))
 		
 		if self.isinliquid then
@@ -87,6 +87,15 @@ local function gull_brain(self)
 			mobkit.remember(self,"waterlife",os.clock())
 			mobkit.forget(self,"landlife")
 			mobkit.forget(self,"airlife")
+			
+			if prty > 19 and prty < 22 and enemy then
+				--minetest.chat_send_all("WARNING: "..dump(enemy:get_luaentity().name))
+				local eyaw = enemy:get_yaw()
+				mobkit.clear_queue_high(self)
+				mobkit.clear_queue_low(self)
+				water_life.hq_water_takeoff(self,22,'takeoff',eyaw)
+				water_life.hq_climb(self,15,4,16)
+			end
 			
 			-- anything else from inwater behavior
 			if prty < 20 or prty > 30 then 
@@ -111,11 +120,17 @@ local function gull_brain(self)
 	
 	if mobkit.is_queue_empty_high(self) then
 		
-		--self.object:add_velocity({x=2,y=4,z=2})
-		water_life.hq_climb(self,15,4,16)
-		mobkit.remember(self,"airlife",os.clock())
-		mobkit.forget(self,"landlife")
-		mobkit.forget(self,"waterlife")
+		if not self.isinliquid then
+			self.object:add_velocity({x=2,y=4,z=2})
+			water_life.hq_climb(self,15,4,16)
+			mobkit.remember(self,"airlife",os.clock())
+			mobkit.forget(self,"landlife")
+			mobkit.forget(self,"waterlife")
+		else
+			water_life.hq_idle(self,21,20,'float')
+			water_life.hq_water_takeoff(self,20,'takeoff')
+			water_life.hq_climb(self,15,4,16)
+		end
 		
 	end
 	
@@ -134,7 +149,7 @@ minetest.register_entity("water_life:gull",{
 	physical = true,
 	stepheight = 0.5,				
 	collide_with_objects = false,
-	collisionbox = {-0.45, -0.15, -0.85, 0.65, 0.15, 0.25},
+	collisionbox = {-0.45, -0.25, -0.45, 0.45, 0.15, 0.45},
 	visual = "mesh",
 	mesh = "water_life_gull.b3d",
 	textures = {"water_life_gull1.png","water_life_gull2.png","water_life_gull3.png"},
@@ -149,7 +164,7 @@ minetest.register_entity("water_life:gull",{
 	buoyancy = 0.89,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 1.5,
-	view_range = 16,
+	view_range = 32,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=60,
@@ -157,9 +172,9 @@ minetest.register_entity("water_life:gull",{
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
-	predators = {"water_life:shark",
-                  "water_life:alligator",
-                  "water_life:whale"
+	predators = {["water_life:shark"] = 1,
+                  ["water_life:alligator"] = 1,
+                  ["water_life:whale"] = 1
                   },
 	sounds = {
 		idle={

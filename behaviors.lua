@@ -935,13 +935,12 @@ function water_life.hq_glide(self,prty,fmin,fmax)
 end
 
 
-function water_life.hq_water_takeoff(self,prty,anim)
+function water_life.hq_water_takeoff(self,prty,anim,tyaw)
 	local init = true
 	local startup = true
 	local turned = false
 	local timer = 0
 	if not anim then anim = 'def' end
-	local tyaw = nil
 	local pos2 = {}
 	
 	
@@ -951,6 +950,7 @@ function water_life.hq_water_takeoff(self,prty,anim)
 		local pos = self.object:get_pos()
 		
 		if startup then
+			if tyaw then yaw = tyaw end
 			--water_life.temp_show(pos,5,1)
 			for i = 0,330,30 do
 				pos2 = mobkit.pos_translate2d(pos,yaw+rad(i),self.view_range*2)
@@ -971,7 +971,7 @@ function water_life.hq_water_takeoff(self,prty,anim)
 		
 		if turned then
 			if init then
-				self.object:set_velocity({x=0, y=0, z=0})
+				self.object:set_velocity({x=0, y=0.5, z=0})
 				minetest.after(2,function()
 					mobkit.animate(self,anim)
 				end)
@@ -979,7 +979,7 @@ function water_life.hq_water_takeoff(self,prty,anim)
 			end
 			
 			
-			minetest.after(6,function()
+			minetest.after(4,function()
 				mobkit.animate(self,'fly')
 			              end)
 			
@@ -990,7 +990,7 @@ function water_life.hq_water_takeoff(self,prty,anim)
 			mobkit.go_forward_horizontal(self,3)
 			timer = timer + self.dtime
 			
-			if timer > 10 then
+			if timer > 8 then
 				local vec = vector.multiply(minetest.yaw_to_dir(tyaw),2)
 				vec.y = vec.y + 4
 				self.object:add_velocity(vec)
