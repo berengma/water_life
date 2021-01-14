@@ -98,3 +98,17 @@ minetest.register_chatcommand("wl_test", {
 
 	end
 })
+
+
+minetest.register_chatcommand("wl_showdtime", {
+	params = "",
+	description = "shows everage dtime and max dtime",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		if not player then return false end
+		
+		minetest.chat_send_player(name,core.colorize("#14ee00","AVGdtime= "..dump(water_life.avg_dtime).."      Max dtime= "..dump(water_life.max_dtime)))
+        
+	end
+})

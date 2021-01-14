@@ -60,7 +60,7 @@ local function shark_brain(self)
 				local tbuoy = water_life.count_objects(ppos,10,"water_life:buoy")
 				local dist = water_life.dist2tgt(self,target)
 				if dist > 3 and tbuoy.name == 0 then
-					water_life.hq_water_attack(self,target,20,9)
+					water_life.hq_water_attack(self,target,20,7)
 				end
 			end
 
@@ -69,7 +69,7 @@ local function shark_brain(self)
 								if dist > 3 then
 									mobkit.clear_queue_high(self)
 									--mobkit.hq_aqua_attack(self,30,food,7)
-									water_life.hq_water_attack(self,food,20,9)
+									water_life.hq_water_attack(self,food,20,7)
 								end
                         end
 		end

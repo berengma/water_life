@@ -273,8 +273,20 @@ function water_life.lq_jumpattack(self,height,target,extra)
 					if selfname == "water_life:snake" then
 						local meta = target:get_meta()
 						local name = target:get_player_name()
-						meta:set_int("snakepoison",1)
-						water_life.change_hud(target,"poison")
+						local join = meta:get_int("jointime")
+						if not join or (os.time() - join) > water_life.newplayerbonus * 86400 then
+							meta:set_int("snakepoison",1)
+							water_life.change_hud(target,"poison")
+						else
+							local left = water_life.newplayerbonus - math.floor((os.time() - join)/86400*100)/100
+							minetest.chat_send_player(target:get_player_name(),minetest.colorize('#fd4000',">>> A rattlesnake bit you. New player bonus of "..left..
+							                                                                     " days left. Catch 3 snakes to craft antiserum"))
+							meta:set_int("bitten",1)
+							
+							minetest.after(10,function()
+								meta:set_int("bitten",0)
+								end,meta)
+						end
 					end
 				end
 					-- bounce off
@@ -469,9 +481,10 @@ function water_life.hq_attack(self,prty,tgtobj)
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
 				poison = meta:get_int("snakepoison")
+				noob = meta:get_int("bitten")
 			end
 			
-			if dist > 3 or poison > 0 then 
+			if dist > 3 or poison > 0 or noob > 0 then 
 				return true
 			else
 				mobkit.lq_turn2pos(self,tpos)
@@ -507,9 +520,10 @@ function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
 				poison = meta:get_int("snakepoison")
+				noob = meta:get_int("bitten")
 			end
 			
-			if poison and poison > 0 then return true end
+			if poison > 0 or noob > 0 then return true end
 			
 			if mobkit.is_in_deep(tgtobj) then
 				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)
@@ -935,7 +949,79 @@ function water_life.hq_glide(self,prty,fmin,fmax)
 end
 
 
+function water_life.hq_water_takeoff(self,prty,anim,tyaw)
+	local init = true
+	local startup = true
+	local turned = false
+	local timer = 0
+	if not anim then anim = 'def' end
+	local pos2 = {}
+	
+	
+	local func=function(self)
+	
+		local yaw = self.object:get_yaw()
+		local pos = self.object:get_pos()
+		
+		if startup then
+			if tyaw then yaw = tyaw end
+			--water_life.temp_show(pos,5,1)
+			for i = 0,330,30 do
+				pos2 = mobkit.pos_translate2d(pos,yaw+rad(i),self.view_range*2)
+				
+				if not water_life.find_collision(pos,pos2,false) then
+					tyaw = yaw + rad(i)
+					--water_life.temp_show(pos2,5,10)
+					break
+				end
+			end
+			startup = false
+		end
 
+		if not startup then
+			if not tyaw then return true end
+			if mobkit.turn2yaw(self,tyaw,5) then turned = true end
+		end
+		
+		if turned then
+			if init then
+				self.object:set_velocity({x=0, y=0.5, z=0})
+				minetest.after(2,function()
+					mobkit.animate(self,anim)
+				end)
+				init = false
+			end
+			
+			
+			minetest.after(4,function()
+				mobkit.animate(self,'fly')
+			              end)
+			
+			if timer > 3 then
+				self.object:add_velocity({x=0,y=0.25,z=0})
+			end
+			
+			mobkit.go_forward_horizontal(self,3)
+			timer = timer + self.dtime
+			
+			if timer > 8 then
+				local vec = vector.multiply(minetest.yaw_to_dir(tyaw),2)
+				vec.y = vec.y + 4
+				self.object:add_velocity(vec)
+				mobkit.remember(self,"airlife",os.clock())
+				mobkit.forget(self,"landlife")
+				mobkit.forget(self,"waterlife")
+				return true
+			end
+		end
+	end
+	
+	mobkit.queue_high(self,func,prty)
+end
+	
+	
+
+--snakes
 function water_life.hq_snake_warn(self,target,prty,duration,anim)
 	anim = anim or 'warn'
 	local init = true

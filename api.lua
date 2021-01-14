@@ -763,3 +763,18 @@ minetest.register_on_item_eat(function(hp_change, replace_with_item, itemstack, 
 	return
 end)
 
+
+--new players are immune to snakepoison
+minetest.register_on_newplayer(function(player)
+	if not player or not player:is_player() then return end
+	local meta = player:get_meta()
+	local join = os.time()
+	meta:set_int("jointime",join)
+end)
+
+-- but not forever
+minetest.register_on_joinplayer(function(player)
+	if not player or not player:is_player() then return end
+	local meta = player:get_meta()
+	meta:set_int("bitten",0)
+end)

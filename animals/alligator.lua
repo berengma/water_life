@@ -190,7 +190,7 @@ end
 minetest.register_entity("water_life:alligator",{
 											-- common props
 	physical = true,
-	stepheight = 0.1,				--EVIL!
+	stepheight = 0.5,				--EVIL!
 	collide_with_objects = true,
 	collisionbox = {-0.25, -0.1, -0.25, 0.25, 0.5, 0.25},
 	visual = "mesh",

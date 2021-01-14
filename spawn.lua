@@ -1,5 +1,10 @@
 local timer = 0
 local landtimer = 0
+local dttot=0
+local dtavg=0
+local dtnum=0
+local dtmax=0
+local dttimer = 10
 local pi = math.pi
 local random = water_life.random
 local landinterval = 120						-- check every 60 seconds for spawnpos on land
@@ -16,12 +21,34 @@ end
 
 
 local function spawnstep(dtime)
+	
+	-- dtime measurement by Termos
+	if dtnum < 10001 then
+		dttot=dttot+dtime
+		dtnum=dtnum+1
+		dtmax = dtime>dtmax and dtime or dtmax
+		
+		if dttot>dttimer then
+			dttimer=dttimer+10
+			water_life.avg_dtime = dttot/dtnum
+			water_life.max_dtime = dtmax
+			dtmax=0
+		end
+	else -- reset after 10000 steps
+		dtnum = 0
+		dtavg = 0
+		dttot = 0
+		dtmax = 0
+		dttimer = 10
+	end
+	-- end dtime measurement
 
 	timer = timer + dtime
 	landtimer = landtimer + dtime
 	
 	if timer > waterinterval then
-        
+		
+		
 		for _,plyr in ipairs(minetest.get_connected_players()) do
 			
 			local toomuch = false
@@ -32,7 +59,6 @@ local function spawnstep(dtime)
 				local yaw = plyr:get_look_horizontal()
 				local animal = water_life.count_objects(pos)
 				local meta = plyr:get_meta()
-				
 				
 				if meta:get_int("snakepoison") > 0 then
 					local score = plyr:get_hp()
@@ -250,7 +276,7 @@ local function spawnstep(dtime)
 					local faktor = 100 - getcount(animal[mobname]) * 20
 					if random(100) < faktor and liquidflag == "sea" then
 						if depth > 4 then
-							local spawn = mobkit.pos_shift(surface,{y=12})
+							local spawn = mobkit.pos_shift(surface,{y=-1})
 							--spawn.y = spawn.y + 12
 							local obj=minetest.add_entity(spawn,mobname)			-- ok spawn it already damnit
 						end
