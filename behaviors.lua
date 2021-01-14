@@ -273,8 +273,20 @@ function water_life.lq_jumpattack(self,height,target,extra)
 					if selfname == "water_life:snake" then
 						local meta = target:get_meta()
 						local name = target:get_player_name()
-						meta:set_int("snakepoison",1)
-						water_life.change_hud(target,"poison")
+						local join = meta:get_int("jointime")
+						if not join or (os.time() - join) > water_life.newplayerbonus * 86400 then
+							meta:set_int("snakepoison",1)
+							water_life.change_hud(target,"poison")
+						else
+							local left = water_life.newplayerbonus - math.floor((os.time() - join)/86400*100)/100
+							minetest.chat_send_player(target:get_player_name(),minetest.colorize('#fd4000',">>> A rattlesnake bit you. New player bonus of "..left..
+							                                                                     " days left. Catch 3 snakes to craft antiserum"))
+							meta:set_int("bitten",1)
+							
+							minetest.after(10,function()
+								meta:set_int("bitten",0)
+								end,meta)
+						end
 					end
 				end
 					-- bounce off
@@ -469,9 +481,10 @@ function water_life.hq_attack(self,prty,tgtobj)
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
 				poison = meta:get_int("snakepoison")
+				noob = meta:get_int("bitten")
 			end
 			
-			if dist > 3 or poison > 0 then 
+			if dist > 3 or poison > 0 or noob > 0 then 
 				return true
 			else
 				mobkit.lq_turn2pos(self,tpos)
@@ -507,9 +520,10 @@ function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
 				poison = meta:get_int("snakepoison")
+				noob = meta:get_int("bitten")
 			end
 			
-			if poison and poison > 0 then return true end
+			if poison > 0 or noob > 0 then return true end
 			
 			if mobkit.is_in_deep(tgtobj) then
 				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)

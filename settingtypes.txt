@@ -62,3 +62,7 @@ water_life_muddy_water (muddy water in rainforest and savanna biome) bool false
 #-
 # turn this value to true to see api function debug
 water_life_radar_debug (api function debug shown in chat) bool false
+
+#-
+#number in days where new players are not affected by rattlesnake poison
+water_life_newplayerbonus (days for newplayer immune to rattlesnake) int 5

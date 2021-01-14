@@ -60,7 +60,6 @@ local function spawnstep(dtime)
 				local animal = water_life.count_objects(pos)
 				local meta = plyr:get_meta()
 				
-				
 				if meta:get_int("snakepoison") > 0 then
 					local score = plyr:get_hp()
 					plyr:set_hp(score-1)

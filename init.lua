@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "211301"
+water_life.version = "211401"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.catchNet = "water_life:placeholder"
@@ -35,6 +35,7 @@ water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitol
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)		-- the repellent lasts half a minetest day
+water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5			-- 5 days savety from rattlenakes for new players 
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 

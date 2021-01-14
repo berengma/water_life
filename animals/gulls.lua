@@ -161,7 +161,7 @@ minetest.register_entity("water_life:gull",{
 	get_staticdata = mobkit.statfunc,
 											-- api props
 	springiness=0,
-	buoyancy = 0.89,					-- portion of hitbox submerged
+	buoyancy = 0.59,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 1.5,
 	view_range = 32,
