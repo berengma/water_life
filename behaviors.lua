@@ -71,7 +71,29 @@ end
 ------------------
 -- LQ behaviors --
 ------------------
+--[[
+params:
+lift: [number]
+multiplier for lift. faster objects need less, slower need more. typical value: 0.6 for speeds around 4 m/s
 
+pitch: [degrees]
+angle between the longitudinal axis and horizontal plane. typical range: <-15.15>
+
+aoa:
+[degrees] angle of attack - the angle between the longitudinal axis and velocity vector.
+
+roll: [degrees]
+bank angle. positive is right, negative is left, this is how they turn. if set too large they'll loose height rapidly
+
+acc: [number]
+propulsion. use with positive pitch to make them fly level or climb, set it to 0 with slight negative pitch to make
+them glide. typical value: around 1.0
+
+anim: [string]
+animation.
+The example uses two simple high level behaviors to keep them between 18 and 24 nodes above ground, seems good already for ambient type flying creatures.
+warning: never set_velocity when using these behaviors.
+]]
 
 function water_life.lq_fly_aoa(self,lift,aoa,roll,acc,anim)
 	aoa=rad(aoa)
@@ -851,7 +873,7 @@ end
 end
 
 
--- flying
+--  hq flying behaviors
 
 function water_life.hq_climb(self,prty,fmin,fmax)
 	if not max then max = 30 end
@@ -871,7 +893,9 @@ function water_life.hq_climb(self,prty,fmin,fmax)
 			local pos = self.object:get_pos()
 			local yaw = self.object:get_yaw()
 			
+			--local tim = minetest.get_us_time()
 			local left, right, up, down, under, above = water_life.radar(pos,yaw,32,true)
+			--minetest.chat_send_all(minetest.get_us_time()-tim)
 			
 			if  (down < 3) and (under >= fmax) then 
 				water_life.hq_glide(self,prty,fmin,fmax)
@@ -1020,6 +1044,115 @@ function water_life.hq_water_takeoff(self,prty,anim,tyaw)
 end
 	
 	
+function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
+	
+	local func=function(self)
+			if not break_dist then break_dist = 5 end
+			if not tgt then
+				mobkit.clear_queue_high(self)
+				water_life.hq_climb(self,prty)
+				return true
+			end
+			
+			local wname = ""
+			local roll = 0
+			local pos = self.object:get_pos()
+			local yaw = self.object:get_yaw()
+			local tgtpos = tgt:get_pos()
+			local tgtyaw = tgt:get_yaw()
+			local tgtspeed = math.floor(vector.length(tgt:get_velocity() or {x=0,y=0,z=0}))
+			if tgt:is_player() then
+				tgtyaw = tgt:get_look_horizontal()
+				local stack = tgt:get_wielded_item()
+				wname = stack:get_name()
+			end
+			
+			if wname ~= "farming:bread" and not force then
+				mobkit.clear_queue_high(self)
+				mobkit.clear_queue_low(self)
+				water_life.hq_climb(self,15,4,16)
+				return true
+			end
+			--minetest.chat_send_all(dump(tgtpos).." "..dump(tgtyaw).." "..dump(tgtspeed))
+			if not tgtyaw or not tgtspeed or not mobkit.is_alive(tgt) or self.isonground or self.isinliquid then
+				mobkit.clear_queue_high(self)
+				water_life.hq_climb(self,prty)
+				return true
+			end
+			local turn = 0
+			local diff = 0
+			local lift = 1.2
+			local pitch = 5
+			local acc = 0.6
+			local anim = "fly"
+			local truetpos=mobkit.pos_translate2d(tgtpos,tgtyaw,tgtspeed*3)
+			local ddistance = vector.distance(pos,{x=truetpos.x,y= pos.y, z=truetpos.z})
+			local alpha = atan((pos.y - truetpos.y)/ ddistance)
+			local truetyaw = minetest.dir_to_yaw(vector.subtract(truetpos,pos))
+			local realdistance = vector.distance(pos,tgtpos)
+			local ang2tgt = mobkit.pos_translate2d(pos,truetyaw,15)
+			
+			if yaw < truetyaw then 
+				diff = truetyaw - yaw
+				turn = -1
+			elseif yaw > truetyaw then
+				diff = yaw - truetyaw
+				turn = 1
+			end
+			if abs(diff) <= 0.1 then
+				turn = 0
+			end
+			--minetest.chat_send_all("distance ="..dump(math.floor(ddistance*100)/100).."   yawdiff ="..dump(math.floor((truetyaw-yaw)*100)/100))
+			
+			if ddistance > 32 then
+				roll = 15 * turn
+			elseif ddistance > 22 then
+				roll = 10 * turn
+			elseif ddistance > 12 then
+				roll = 5 * turn
+			elseif ddistance <= 12 then
+				roll = 2 * turn
+			end
+			
+			--water_life.temp_show(truetpos,1,3)
+			--minetest.chat_send_all(dump(minetest.pos_to_string(truetpos,2)).." -- "..dump(minetest.pos_to_string(pos,2)))
+			
+			if pos.y > truetpos.y + 1 and pos.y > 2 and ddistance < 25 then
+				anim = "glide"
+				pitch = -10
+			elseif pos.y < truetpos.y - 1 then
+				pitch = 15
+			else
+				pitch = 5
+			end
+			
+			if water_life.radar_debug then
+				water_life.temp_show(ang2tgt,1)
+				for i = 1,10,1 do
+					water_life.temp_show({x=truetpos.x, y=truetpos.y+i*2, z=truetpos.z},1)
+				end
+				--minetest.chat_send_all("Alpha= "..dump(alpha)..", Hight= "..dump(math.floor(pos.y)).." ###"..dump(yaw).."###   hityaw="..dump(truetyaw))
+				--minetest.chat_send_all("distance ="..dump(math.floor(ddistance*100)/100).."   Alpha ="..dump(math.floor(deg(alpha)*100)/100))
+				--minetest.chat_send_all("distance2prey ="..dump(vector.distance(pos,tgtpos)))
+			end
+               
+				mobkit.clear_queue_low(self)
+				
+				if ddistance < break_dist then
+					mobkit.clear_queue_high(self)
+					mobkit.clear_queue_low(self)
+					water_life.hq_climb(self,15,4,16)
+					return true
+					
+				else
+					water_life.lq_fly_pitch(self,lift,pitch,roll,acc,anim)
+				end
+				
+				
+		
+	end
+	mobkit.queue_high(self,func,prty)
+end
 
 --snakes
 function water_life.hq_snake_warn(self,target,prty,duration,anim)

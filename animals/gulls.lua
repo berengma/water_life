@@ -14,14 +14,37 @@ local function gull_brain(self)
 	--
 	--get prorities !
 	local prty = mobkit.get_queue_priority(self)
+	-- 
+	-- 10-19 fly		20-29 water		30-39 land
 	--
-	--
+	
 	
 	
 	if mobkit.timer(self,10) then
-		if random(100) < 10 then
+		local rnd = random (100)
+		local force = false
+		
+		if rnd < 10 then
 			mobkit.make_sound(self,"idle")
 		end
+		
+		local plyr = mobkit.get_nearby_player(self)
+		local wname = ""
+		
+		if plyr then
+			local stack = plyr:get_wielded_item()
+			wname = stack:get_name()
+			if rnd < 10 then force = true end
+			--minetest.chat_send_all("YOU HOLD a "..dump(wname))
+		end
+		
+		if plyr and prty < 17 and (wname == "farming:bread" or force) then
+			--minetest.chat_send_all("MATCH")
+			mobkit.clear_queue_high(self)
+			mobkit.clear_queue_low(self)
+			water_life.hq_fly2obj(self,18,plyr,2,force)
+		end
+			
 	end
 	
 	-- die if crashed somewhere
