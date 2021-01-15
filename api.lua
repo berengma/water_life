@@ -180,7 +180,9 @@ function water_life.temp_show(pos,time,pillar)
 	for i = 1,pillar,step do
 		
 		local obj = minetest.add_entity({x=pos.x, y=pos.y+i, z=pos.z}, "water_life:pos")
-		minetest.after(time, function(obj) obj:remove() end, obj)
+		if obj then
+			minetest.after(time, function(obj) obj:remove() end, obj)
+		end
 	end
 	
 end
@@ -258,7 +260,7 @@ end
 function water_life.get_close_drops(self,name)
 	
 	
-	local objs = minetest.get_objects_inside_radius(self.object:get_pos(), water_life.abr * 16)
+	local objs = minetest.get_objects_inside_radius(self.object:get_pos(), self.view_range)
 	if #objs < 1 then return nil end
 	
 	for i = #objs,1,-1 do
@@ -349,10 +351,10 @@ end
 
 
 
--- counts animals in specified radius or active_object_send_range_blocks, returns a table containing numbers
+-- counts animals in specified radius or active_block_range, returns a table containing numbers
 function water_life.count_objects(pos,radius,name)
 
-if not radius then radius = water_life.abo * 16 end
+if not radius then radius = water_life.abr * 16 end
 
 local all_objects = minetest.get_objects_inside_radius(pos, radius)
 local hasil = {}
