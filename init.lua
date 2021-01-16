@@ -6,9 +6,10 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "211501"
+water_life.version = "211601"
 water_life.shark_food = {}
 water_life.repellant = {}
+water_life.gull_bait = {}
 water_life.catchNet = "water_life:placeholder"
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
@@ -31,7 +32,7 @@ water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs")) or 60
 water_life.apionly = minetest.settings:get_bool("water_life_apionly") or false
 water_life.dangerous = minetest.settings:get_bool("water_life_dangerous") or false
 water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust")) or 1.0
-water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 300
+water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)		-- the repellent lasts half a minetest day
@@ -166,3 +167,21 @@ if minetest.get_modpath("better_fauna") then
 	water_life.register_shark_food("better_fauna:sheep")
 	water_life.register_shark_food("better_fauna:turkey")
 end
+
+
+-- register gull bait
+
+water_life.register_gull_bait("water_life:clownfish")
+water_life.register_gull_bait("water_life:coralfish")
+water_life.register_gull_bait("water_life:riverfish")
+water_life.register_gull_bait("water_life:piranha")
+water_life.register_gull_bait("water_life:urchin_item")
+water_life.register_gull_bait("water_life:snake_item")
+water_life.register_gull_bait("water_life:meat_raw")
+water_life.register_gull_bait("water_life:meat")
+
+if minetest.get_modpath("farming") then
+	water_life.register_gull_bait("farming:bread")
+end
+
+

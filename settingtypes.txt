@@ -40,8 +40,8 @@ water_life_maxwhales (Max possible whales in aktive area)  int 1
 water_life_maxsharks (Max possible sharks in aktive area) int 5
 
 # -
-# max lifetime of a moskito (default 300 = 5 minutes)
-water_life_moskitolifetime (Max lifetime of a moskito in seconds) int 300
+# max lifetime of a moskito (default 120 = 2 minutes)
+water_life_moskitolifetime (Max lifetime of a moskito in seconds) int 120
 
 
 # -
