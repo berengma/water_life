@@ -3,6 +3,18 @@ local random = water_life.random
 water_life.register_shark_food("water_life:gull")
 
 
+-- locally, no one else uses this so far
+local function is_bait(name)
+	if not name or #water_life.gull_bait < 1 then return false end
+	
+	for i = 1,#water_life.gull_bait,1 do
+		if water_life.gull_bait[i] == name then return true end
+	end
+	return false
+end
+
+
+
 local function gull_brain(self)
 	if not mobkit.is_alive(self) then	
 		mobkit.clear_queue_high(self)
@@ -24,12 +36,22 @@ local function gull_brain(self)
 		local rnd = random (100)
 		local force = false
 		
-		if rnd < 10 then
+		if rnd < 11 then
 			mobkit.make_sound(self,"idle")
 		end
 		
 		local plyr = mobkit.get_nearby_player(self)
+		local whale = mobkit.get_nearby_entity(self,"water_life:whale")
+		
 		local wname = ""
+		
+		if whale and rnd > 10 then
+			--minetest.chat_send_all("WHALES !")
+			mobkit.clear_queue_high(self)
+			mobkit.clear_queue_low(self)
+			water_life.hq_fly2obj(self,18,plyr,3)
+		end
+			
 		
 		if plyr then
 			local stack = plyr:get_wielded_item()
@@ -38,7 +60,7 @@ local function gull_brain(self)
 			--minetest.chat_send_all("YOU HOLD a "..dump(wname))
 		end
 		
-		if plyr and prty < 17 and (wname == "farming:bread" or force) then
+		if plyr and prty < 17 and (is_bait(wname) or force) then
 			--minetest.chat_send_all("MATCH")
 			mobkit.clear_queue_high(self)
 			mobkit.clear_queue_low(self)
@@ -197,7 +219,9 @@ minetest.register_entity("water_life:gull",{
 	--	{name = "water_life:meat_raw", chance = 2, min = 1, max = 1,},
 	predators = {["water_life:shark"] = 1,
                   ["water_life:alligator"] = 1,
-                  ["water_life:whale"] = 1
+                  ["water_life:whale"] = 1,
+                  ["water_life:piranha"] = 1,
+                  ["water_life:snake"] = 1
                   },
 	sounds = {
 		idle={

@@ -241,6 +241,10 @@ function water_life.register_shark_food(name)
     table.insert(water_life.shark_food,name)
 end
 
+function water_life.register_gull_bait(name)
+    if name then table.insert(water_life.gull_bait,name) end
+end
+
 
 function water_life.feed_shark(self)
 	for i = 1,#water_life.shark_food,1 do
@@ -253,6 +257,7 @@ function water_life.feed_shark(self)
 	end
 	return nil
 end
+
 
 
 
