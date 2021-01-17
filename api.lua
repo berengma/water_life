@@ -242,7 +242,7 @@ function water_life.register_shark_food(name)
 end
 
 function water_life.register_gull_bait(name)
-    if name then table.insert(water_life.gull_bait,name) end
+    if name then water_life.gull_bait[name] = 1 end
 end
 
 
@@ -475,6 +475,31 @@ function water_life.find_collision(pos1,pos2,water)
             return nil
 end
 
+
+-- fast radar, less accurate
+-- yaw-x to the right, yaw + x to the left !
+-- sonar = true water is no obstacle
+
+function water_life.radar_fast(self,dist,sonar)
+	local water = not sonar 
+	if not dist then dist = self.view_range end
+	local angel = atan(3/dist)
+	local yaw = self.object:get_yaw()
+	local tpos = self.object:get_pos()
+	local tapos = mobkit.pos_translate2d(tpos,(yaw-angel),dist)
+	local tbpos = mobkit.pos_translate2d(tpos,yaw,dist)
+	local tcpos = mobkit.pos_translate2d(tpos,(yaw+angel),dist)
+	local tupos = mobkit.pos_shift(tbpos,{y=2})
+	local tdpos = mobkit.pos_shift(tbpos,{y=-2})
+	local right = water_life.find_collision(tpos,tapos,water)
+	local left  = water_life.find_collision(tpos,tcpos,water)
+	local center = water_life.find_collision(tpos,tbpos,water)
+	local up = water_life.find_collision(tpos,tupos,water)
+	local down = water_life.find_collision(tpos,tdpos,water)
+	
+	return left,right,center,up,down
+	
+end
 
 -- radar function for obstacles lying in front of an entity 
 -- use water = true if water should be an obstacle

@@ -88,6 +88,7 @@ local function spawnstep(dtime)
 				local landpos = nil
 				local geckopos = nil
 				local moskitopos = nil
+				local mobname = ""
 				
 				-- no need of so many postions on land
 				if landtimer > landinterval then
@@ -122,7 +123,7 @@ local function spawnstep(dtime)
 					
 					if not water_life.dangerous then
 						-- the snake
-						local mobname = 'water_life:snake'
+						 mobname = 'water_life:snake'
 						local faktor = (100 - getcount(animal[mobname]) * 50) 
 						if random(100) < faktor then
 							local fits = minetest.is_protected(landpos,mobname)
@@ -140,7 +141,7 @@ local function spawnstep(dtime)
 					
 					
 					--the beaver
-					local mobname = 'water_life:beaver'
+					 mobname = 'water_life:beaver'
 					local faktor = (100 - getcount(animal[mobname]) * 25) 
 					if random(100) < faktor then
 						
@@ -155,7 +156,7 @@ local function spawnstep(dtime)
 				if geckopos then
 					local landdata =  water_life_get_biome_data(geckopos)
 					
-					local mobname = 'water_life:gecko'
+					 mobname = 'water_life:gecko'
 					local faktor = (100 - getcount(animal[mobname]) * 50)
 					if random(100) < faktor then
 						
@@ -211,7 +212,7 @@ local function spawnstep(dtime)
 						
 						if water_life.swampz then
 							
-							local mobname = 'water_life:alligator'
+							 mobname = 'water_life:alligator'
 							local faktor = 100 - getcount(animal[mobname]) * 20
 							if random(100) < faktor then
 								local fits = false
@@ -228,7 +229,7 @@ local function spawnstep(dtime)
 						
 						
 						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
-						local mobname = 'water_life:croc'
+						 mobname = 'water_life:croc'
 						local faktor = 100 - getcount(animal[mobname]) * 33
 						if random(100) < faktor then
 							local fits = false
@@ -243,7 +244,7 @@ local function spawnstep(dtime)
 						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
 						
 						
-						local mobname = 'water_life:snake'
+						 mobname = 'water_life:snake'
 						local faktor = (100 - getcount(animal[mobname]) * 50) +25
 						if random(100) < faktor then
 							local fits = false
@@ -257,7 +258,7 @@ local function spawnstep(dtime)
 						end
 						--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))   
 							
-						local mobname = 'water_life:shark'
+						 mobname = 'water_life:shark'
 						if water_life.shark_spawn_rate >= random(1000) then
 								
 							local bcheck = water_life.count_objects(pos2,12)
@@ -272,13 +273,13 @@ local function spawnstep(dtime)
 						end
 					end
 					
-					local mobname = "water_life:gull"
+					 mobname = "water_life:gull"
 					local faktor = 100 - getcount(animal[mobname]) * 20
-					if random(100) < faktor and liquidflag == "sea" then
-						if depth > 4 then
-							local spawn = mobkit.pos_shift(surface,{y=-1})
+					if random(100) < faktor and (liquidflag == "sea" or liquidflag == "river") then
+						if depth > 2 and not water_life.check_for_pool(nil,2,10,surface)then
+							--local spawn = mobkit.pos_shift(surface,{y=-1})
 							--spawn.y = spawn.y + 12
-							local obj=minetest.add_entity(spawn,mobname)			-- ok spawn it already damnit
+							local obj=minetest.add_entity(surface,mobname)			-- ok spawn it already damnit
 						end
 					end
 						

@@ -1,17 +1,7 @@
 local random = water_life.random
+local rad = math.rad
 
 water_life.register_shark_food("water_life:gull")
-
-
--- locally, no one else uses this so far
-local function is_bait(name)
-	if not name or #water_life.gull_bait < 1 then return false end
-	
-	for i = 1,#water_life.gull_bait,1 do
-		if water_life.gull_bait[i] == name then return true end
-	end
-	return false
-end
 
 
 
@@ -49,7 +39,7 @@ local function gull_brain(self)
 			--minetest.chat_send_all("WHALES !")
 			mobkit.clear_queue_high(self)
 			mobkit.clear_queue_low(self)
-			water_life.hq_fly2obj(self,18,plyr,3)
+			water_life.hq_fly2obj(self,18,whale,4,true)
 		end
 			
 		
@@ -57,10 +47,10 @@ local function gull_brain(self)
 			local stack = plyr:get_wielded_item()
 			wname = stack:get_name()
 			if rnd < 10 then force = true end
-			--minetest.chat_send_all("YOU HOLD a "..dump(wname))
+			--minetest.chat_send_all("YOU HOLD bait "..dump(water_life.gull_bait[wname]))
 		end
 		
-		if plyr and prty < 17 and (is_bait(wname) or force) then
+		if plyr and prty < 17 and (water_life.gull_bait[wname] or force) then
 			--minetest.chat_send_all("MATCH")
 			mobkit.clear_queue_high(self)
 			mobkit.clear_queue_low(self)
@@ -132,6 +122,8 @@ local function gull_brain(self)
 			mobkit.remember(self,"waterlife",os.clock())
 			mobkit.forget(self,"landlife")
 			mobkit.forget(self,"airlife")
+			
+			
 			
 			if prty > 19 and prty < 22 and enemy then
 				--minetest.chat_send_all("WARNING: "..dump(enemy:get_luaentity().name))
@@ -209,7 +201,7 @@ minetest.register_entity("water_life:gull",{
 	buoyancy = 0.59,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 1.5,
-	view_range = 32,
+	view_range = water_life.abr*16,		-- max what server can handle, birds need good eyes !
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=60,
