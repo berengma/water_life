@@ -1059,15 +1059,21 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 			local pos = self.object:get_pos()
 			local yaw = self.object:get_yaw()
 			local tgtpos = tgt:get_pos()
-			local tgtyaw = tgt:get_yaw()
+			local tgtyaw = tgt:get_yaw() --water_life.get_yaw_to_object(self,tgt)
 			local tgtspeed = math.floor(vector.length(tgt:get_velocity() or {x=0,y=0,z=0}))
+			if not tgt:is_player() and tgt:get_luaentity().name == "water_life:whale" then tgtyaw = tgtyaw + rad(180) end -- whales moving backwards XD
+			
 			if tgt:is_player() then
 				tgtyaw = tgt:get_look_horizontal()
 				local stack = tgt:get_wielded_item()
 				wname = stack:get_name()
 			end
 			
-			if wname ~= "farming:bread" and not force then
+			if tgtpos.y < 0 then tgtpos.y = 1 end
+			
+			
+			
+			if not water_life.gull_bait[wname] and not force then
 				mobkit.clear_queue_high(self)
 				mobkit.clear_queue_low(self)
 				water_life.hq_climb(self,15,4,16)
@@ -1088,20 +1094,30 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 			local truetpos=mobkit.pos_translate2d(tgtpos,tgtyaw,tgtspeed*3)
 			local ddistance = vector.distance(pos,{x=truetpos.x,y= pos.y, z=truetpos.z})
 			local alpha = atan((pos.y - truetpos.y)/ ddistance)
-			local truetyaw = minetest.dir_to_yaw(vector.subtract(truetpos,pos))
+			local truetyaw = water_life.get_yaw_to_pos(self,truetpos)
 			local realdistance = vector.distance(pos,tgtpos)
 			local ang2tgt = mobkit.pos_translate2d(pos,truetyaw,15)
 			
+			--chose right or left turn
 			if yaw < truetyaw then 
-				diff = truetyaw - yaw
 				turn = -1
 			elseif yaw > truetyaw then
-				diff = yaw - truetyaw
 				turn = 1
 			end
-			if abs(diff) <= 0.1 then
+			
+			diff = abs(truetyaw - yaw)
+			
+			-- or chose straight ahead
+			if ddistance > 30 and diff <= 0.5 then
 				turn = 0
 			end
+			if ddistance > 20 and diff <= 0.3 then
+				turn = 0
+			end
+			if diff <= 0.1 then
+				turn = 0
+			end
+			--minetest.chat_send_all(">>> "..dump(math.floor(diff*100)/100).." <<<")
 			--minetest.chat_send_all("distance ="..dump(math.floor(ddistance*100)/100).."   yawdiff ="..dump(math.floor((truetyaw-yaw)*100)/100))
 			
 			if ddistance > 32 then
@@ -1126,6 +1142,23 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 				pitch = 5
 			end
 			
+			
+			--tim = minetest.get_us_time()
+			local left,right,center,up,down = water_life.radar_fast(self,20)
+			--minetest.chat_send_all(minetest.get_us_time()-tim)
+			
+			if down and down < 16 then pitch = 15 end
+			if up and not down and not center then pitch = -10 end
+			if right and not center then roll = 10 end
+			if left and not center then roll = -10 end
+			if left and right and not center then roll = 0 end
+			if center and down and center < 5 then
+				mobkit.clear_queue_high(self)
+				mobkit.clear_queue_low(self)
+				water_life.hq_climb(self,15,4,16)
+				return true
+			end
+			
 			if water_life.radar_debug then
 				water_life.temp_show(ang2tgt,1)
 				for i = 1,10,1 do
@@ -1138,7 +1171,17 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
                
 				mobkit.clear_queue_low(self)
 				
-				if ddistance < break_dist then
+				
+				if realdistance < break_dist+0.5 then 					-- steal bait from players
+					-- minetest.chat_send_all(">>> "..dump(math.floor(ddistance*100)/100).."<<< ###"..dump(math.floor(realdistance*100)/100).." ###")
+					if tgt:is_player() then
+						local bstack = tgt:get_wielded_item()
+						local bait  = bstack:get_name()
+						if water_life.gull_bait[bait] then
+							bstack:take_item(1)
+							tgt:set_wielded_item(bstack)
+						end
+					end
 					mobkit.clear_queue_high(self)
 					mobkit.clear_queue_low(self)
 					water_life.hq_climb(self,15,4,16)
