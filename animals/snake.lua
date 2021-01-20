@@ -31,7 +31,7 @@ local function snake_brain(self)
 		local water = mobkit.recall(self,"waterlife")
 		
 		if land then
-			land = math.floor(os.clock()-land)
+			land = math.floor(os.time()-land)
 			--minetest.chat_send_all(dump(land))
 			if random(240,360) < land then
 				--minetest.chat_send_all("Go to water")
@@ -42,7 +42,7 @@ local function snake_brain(self)
 		end
 		
 		if water then
-			water = math.floor(os.clock()-water)
+			water = math.floor(os.time()-water)
 			if random (60,120) < water then
 				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
@@ -58,19 +58,19 @@ local function snake_brain(self)
 	if mobkit.timer(self,1) then
 			
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
-			mobkit.remember(self,"waterlife",os.clock())
+			mobkit.remember(self,"waterlife",os.time())
 		end
 			
 		if self.isinliquid then
 			if mobkit.recall(self,"landlife") then
-				mobkit.remember(self,"waterlife",os.clock())
+				mobkit.remember(self,"waterlife",os.time())
 				mobkit.forget(self,"landlife")
 			end
 		end
 		
 		if self.isonground then
 			if mobkit.recall(self,"waterlife") then
-				mobkit.remember(self,"landlife",os.clock())
+				mobkit.remember(self,"landlife",os.time())
 				mobkit.forget(self,"waterlife")
 			end
 		end

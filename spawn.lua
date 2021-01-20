@@ -53,11 +53,7 @@ local function spawnstep(dtime)
 			
 			local toomuch = false
 			
-			if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 150 then	-- each player gets a spawn chance every 10s on average
-		
-				local pos = plyr:get_pos()
-				local yaw = plyr:get_look_horizontal()
-				local animal = water_life.count_objects(pos)
+			if plyr and plyr:is_player() then
 				local meta = plyr:get_meta()
 				
 				if meta:get_int("snakepoison") > 0 then
@@ -66,12 +62,20 @@ local function spawnstep(dtime)
 				end
 				
 				if meta:get_int("repellant") > 0 then
-					if math.floor(os.clock()) - meta:get_int("repellant") > water_life.repeltime then
+					if math.floor(os.time()) - meta:get_int("repellant") > water_life.repeltime then
 						water_life.change_hud(plyr,"repellant",0)
 						meta:set_int("repellant",0)
 					end
 				end
-						
+			end
+				
+			if plyr and plyr:is_player() and plyr:get_pos().y > -50 and plyr:get_pos().y < 150 then	-- each player gets a spawn chance every 10s on average
+		
+				local pos = plyr:get_pos()
+				local yaw = plyr:get_look_horizontal()
+				local animal = water_life.count_objects(pos)
+				local meta = plyr:get_meta()
+				
 				if animal.all > water_life.maxmobs then toomuch = true end
 				
 																							-- find a pos randomly in look direction of player
@@ -94,23 +98,24 @@ local function spawnstep(dtime)
 				if landtimer > landinterval then
 					landpos = water_life.find_node_under_air(pos2)
 					geckopos = water_life.find_node_under_air(pos2,5,{"group:tree","group:leaves","default:junglegrass"})
-					moskitopos = water_life.find_node_under_air(pos2,5,{"default:river_water_source","water_life:muddy_river_water_source","group:flora","default:dirt_with_rainforest_litter"
-					,"swaz:water_source"})
+					if not water_life.ihateinsects then
+						moskitopos = water_life.find_node_under_air(pos2,5,{"group:water","group:flora","group:crumbly"})
+					end
 				end
 				
 				
-				if moskitopos and not water_life.dangerous then
+				if moskitopos and not water_life.dangerous and moskitopos.y > -10 and moskitopos.y < 100 then
 							local mlevel = minetest.get_node_light(moskitopos)
 							local ptime = water_life.get_game_time()
 							local mdata = water_life_get_biome_data(moskitopos)
 							--minetest.chat_send_all("MOSKITO: "..dump(moskitopos).." : "..dump(mdata.temp).." : "..dump(ptime).." : "..dump(mlevel))
-							
-							if ((ptime and ptime > 2) or mlevel < 8) and mdata.temp > 16 then			--from 3pm to 5am or in shadows all day long
+							--minetest.chat_send_all(">>> Bzzzz  ... SPAWN")
+							if ((ptime and ptime > 2) or mlevel < 8) and mdata.temp > 20 then			--from 3pm to 5am or in shadows all day long
 								
 									minetest.set_node(moskitopos, {name = "water_life:moskito"})
 									minetest.get_node_timer(moskitopos):start(random(15,45))
 									local pmeta = minetest.get_meta(moskitopos)
-									pmeta:set_int("mlife",math.floor(os.clock()))
+									pmeta:set_int("mlife",math.floor(os.time()))
 								
 							end
 				end

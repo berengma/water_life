@@ -21,7 +21,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	
 	
 	if reason then
-		--minetest.chat_send_all(dump(repel).."/"..dump(math.floor(os.clock()) - repel).." : "..dump(water_life.repeltime))
+		--minetest.chat_send_all(dump(repel).."/"..dump(math.floor(os.time()) - repel).." : "..dump(water_life.repeltime))
 		if reason.type == "node_damage" and reason.node == "water_life:moskito" and repel == 0 then
                                     
 			minetest.sound_play("water_life_moskito", {
@@ -31,7 +31,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 			return hp_change
 		
 		elseif reason.type == "node_damage" and reason.node == "water_life:moskito" and repel ~= 0 then
-			--minetest.chat_send_player(name,"repellant working for another "..dump(math.floor(os.clock())-meta:get_int("repellant")).." seconds")
+			--minetest.chat_send_player(name,"repellant working for another "..dump(math.floor(os.time())-meta:get_int("repellant")).." seconds")
 			return 0
 		else
 			return hp_change
@@ -78,7 +78,7 @@ minetest.register_node("water_life:moskito", {
 					minetest.set_node(pos, {name = "water_life:moskito"})
 					minetest.get_node_timer(pos):start(1)
 					local pmeta = minetest.get_meta(pos)
-					pmeta:set_int("mlife",math.floor(os.clock()))
+					pmeta:set_int("mlife",math.floor(os.time()))
 					itemstack:take_item()
 		end
 		return itemstack
@@ -87,8 +87,9 @@ minetest.register_node("water_life:moskito", {
 		local ptime = water_life.get_game_time()
 		local level = minetest.get_node_light(pos)
 		local mmeta = minetest.get_meta(pos)
-		local killer = math.floor(os.clock()) - mmeta:get_int("mlife")
-		--minetest.chat_send_all("liftime : "..dump(killer).." seconds")
+		local killer = math.floor(os.time()) - mmeta:get_int("mlife")
+                                             
+		--minetest.chat_send_all(">>> "..dump(water_life.moskitolifetime - killer).." seconds left")
                                              
 		if  (ptime and ptime < 3 and level and level > 7) or killer > water_life.moskitolifetime then
 			minetest.set_node(pos, {name = "air"})
@@ -100,12 +101,13 @@ minetest.register_node("water_life:moskito", {
 				local rnd = random (200)
 				--minetest.chat_send_all(dump(bdata.temp).." : "..dump(bdata.humid).." : "..dump(rnd).." : "..dump(spos))
 										
-				if bdata.temp > 16 and spos then
+				if bdata.temp > 20 and spos and spos.y > -10 and spos.y < 100 and not water_life.ihateinsects then
 						if rnd < bdata.humid then
+							--minetest.chat_send_all("Bzzzz ... children")
 							minetest.set_node(spos, {name = "water_life:moskito"})
 							minetest.get_node_timer(spos):start(random(15,45))
 							local pmeta = minetest.get_meta(spos)
-							pmeta:set_int("mlife",math.floor(os.clock()))
+							pmeta:set_int("mlife",math.floor(os.time()))
 						end
 				end
 			end

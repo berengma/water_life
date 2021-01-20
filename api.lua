@@ -501,10 +501,49 @@ function water_life.radar_fast(self,dist,sonar)
 	
 end
 
+function water_life.radar_fast_cols(obj,dist)
+	if not dist then dist = 3 end
+	local pos = obj:get_pos()
+	local yaw = 0
+	local box = {}
+	local counter = 1
+	
+	if obj:is_player() then
+		yaw = obj:get_look_horizontal()
+		box = obj:get_properties().collisionbox
+	else
+		yaw = obj:get_yaw()
+		if obj:get_luaentity().name == "water_life:whale" then yaw = yaw + rad(180) end
+		box = obj:get_luaentity().collisionbox
+	end
+	
+	local vec = minetest.yaw_to_dir(yaw)
+	local crasha = mobkit.get_box_displace_cols(pos,box,vec,dist)
+	
+	if crasha then
+		
+		
+		for i = #crasha,1,-1 do
+			for j = #crasha[i],1,-1 do
+				local cpos ={x=crasha[i][j].x, y= pos.y, z= crasha[i][j].z}
+				--water_life.temp_show(cpos,1)
+				local node = minetest.get_node(cpos)
+				if node.name == "air" then
+					table.remove(crash[i],j)
+				else 
+					water_life.temp_show(cpos,1)
+				end
+			end
+			
+		end
+	end
+	
+end
+
 -- radar function for obstacles lying in front of an entity 
 -- use water = true if water should be an obstacle
 
-function water_life.radar(pos, yaw, radius, water)
+function water_life.radar(pos, yaw, radius, water,fast)
     
     if not radius or radius < 1 then radius = 16 end
     local left = 0
@@ -525,18 +564,20 @@ function water_life.radar(pos, yaw, radius, water)
     end
     local up =0
     local down = 0
-    for j = -4,4,1 do
-        for i = -3,3,1 do
-            local k = i
-            local pos2 = mobkit.pos_translate2d(pos,yaw+(i*pi/16),radius)
-            local collide = water_life.find_collision(pos,{x=pos2.x, y=pos2.y + j, z=pos2.z}, water)
-            if k < 0 then k = k * -1 end
-            if collide and j <= 0 then 
-                down = down + math.floor((7+j-k)*collide/radius*2)
-            elseif collide and j >= 0 then
-                up = up + math.floor((7-j-k)*collide/radius*2)
-            end
-        end
+    if not fast then
+	for j = -4,4,1 do
+		for i = -3,3,1 do
+			local k = i
+			local pos2 = mobkit.pos_translate2d(pos,yaw+(i*pi/16),radius)
+			local collide = water_life.find_collision(pos,{x=pos2.x, y=pos2.y + j, z=pos2.z}, water)
+			if k < 0 then k = k * -1 end
+			if collide and j <= 0 then 
+				down = down + math.floor((7+j-k)*collide/radius*2)
+			elseif collide and j >= 0 then
+				up = up + math.floor((7-j-k)*collide/radius*2)
+			end
+		end
+	end
     end
     local under = water_life.find_collision(pos,{x=pos.x, y=pos.y - radius, z=pos.z}, water)
     if not under then under = radius end
@@ -809,4 +850,5 @@ minetest.register_on_joinplayer(function(player)
 	if not player or not player:is_player() then return end
 	local meta = player:get_meta()
 	meta:set_int("bitten",0)
+	meta:set_int("repellant",0)
 end)

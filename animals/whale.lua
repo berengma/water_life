@@ -54,6 +54,8 @@ local function whale_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
+	
+	
     
     -- check every 2 seconds what is under whale's belly
 	if mobkit.timer(self,2) then
@@ -73,6 +75,7 @@ local function whale_brain(self)
     
     
 	if mobkit.timer(self,1) then
+		
 		local remember = mobkit.recall(self,"time")
 		if remember then
 			if self.time_total - remember > 59 then
@@ -84,7 +87,7 @@ local function whale_brain(self)
 		local yaw =  self.object:get_yaw() + pi
 		local pos = mobkit.get_stand_pos(self)
         
-		local kiri, kanan = water_life.radar(pos,yaw,25)
+		local kiri, kanan = water_life.radar(pos,yaw,25,nil,true)
         
 		local hpos = mobkit.pos_translate2d(pos,yaw,6)
 		local head = mobkit.pos_shift(hpos,{y=4})
@@ -168,7 +171,7 @@ minetest.register_entity("water_life:whale",{
 			local yaw =  self.object:get_yaw() + pi
 			local obj = self.object
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
-			local left, right, up, down, under, above = water_life.radar(pos, yaw)
+			local left, right, up, down, under, above = water_life.radar(pos, yaw,nil,nil,true)
 			local attach = puncher:get_attach()
                                              
 			if attach and random(100) > (self.hp/5) then

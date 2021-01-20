@@ -66,3 +66,7 @@ water_life_radar_debug (api function debug shown in chat) bool false
 #-
 #number in days where new players are not affected by rattlesnake poison
 water_life_newplayerbonus (days for newplayer immune to rattlesnake) int 5
+
+#-
+#I really hate insects, kill 'em all
+water_life_hate_insects (no spawning of insects if true) bool false
