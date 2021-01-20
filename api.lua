@@ -523,18 +523,16 @@ function water_life.radar_fast_cols(obj,dist)
 	if crasha then
 		
 		
-		for i = 1,#crasha,1 do
-			for j = 1,#crasha[i],1 do
+		for i = #crasha,1,-1 do
+			for j = #crasha[i],1,-1 do
 				local cpos ={x=crasha[i][j].x, y= pos.y, z= crasha[i][j].z}
-				water_life.temp_show(cpos,1)
-				--local node = minetest.get_node(cpos)
-				--[[if minetest.registered_nodes[node.name] then
-					if not minetest.registered_nodes[node.name][walkable] --and 
-						  --minetest.registered_nodes[node.name]["liquidtype"] ~= "none" and
-						   then--node.name ~= "air" then
-						water_life.temp_show(cpos,1)
-					end
-				end]]
+				--water_life.temp_show(cpos,1)
+				local node = minetest.get_node(cpos)
+				if node.name == "air" then
+					table.remove(crash[i],j)
+				else 
+					water_life.temp_show(cpos,1)
+				end
 			end
 			
 		end
