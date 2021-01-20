@@ -362,7 +362,7 @@ if not water_life.apionly then
 						local name = user:get_player_name()
 						local meta = user:get_meta()
 						
-						meta:set_int("repellant",math.floor(os.clock()))
+						meta:set_int("repellant",math.floor(os.time()))
 						itemstack:take_item()
 		                                               
 						water_life.change_hud(user,"repellant")

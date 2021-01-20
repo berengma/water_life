@@ -37,7 +37,7 @@ local function gecko_brain(self)
 		
 		
 		if land then
-			land = math.floor(os.clock()-land)
+			land = math.floor(os.time()-land)
 			
 			if random(1000) < land then
 				--minetest.chat_send_all("Go to water")
@@ -48,7 +48,7 @@ local function gecko_brain(self)
 		end
 		
 		if water then
-			water = math.floor(os.clock()-water)
+			water = math.floor(os.time()-water)
 			if random (500) < water then
 				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
@@ -65,12 +65,12 @@ local function gecko_brain(self)
 		local value = mobkit.get_queue_priority(self)
 		
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
-			mobkit.remember(self,"waterlife",os.clock())
+			mobkit.remember(self,"waterlife",os.time())
 		end
 			
 		if self.isinliquid then
 			if mobkit.recall(self,"landlife") then
-				mobkit.remember(self,"waterlife",os.clock())
+				mobkit.remember(self,"waterlife",os.time())
 				mobkit.forget(self,"landlife")
 			end
 			local pred = water_life.get_closest_enemy(self,true)
@@ -82,7 +82,7 @@ local function gecko_brain(self)
 		
 		if self.isonground then
 			if mobkit.recall(self,"waterlife") then
-				mobkit.remember(self,"landlife",os.clock())
+				mobkit.remember(self,"landlife",os.time())
 				mobkit.forget(self,"waterlife")
 			end
 			local pred = water_life.get_closest_enemy(self,true)

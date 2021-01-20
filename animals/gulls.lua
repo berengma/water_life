@@ -33,6 +33,8 @@ local function gull_brain(self)
 		local plyr = mobkit.get_nearby_player(self)
 		local whale = mobkit.get_nearby_entity(self,"water_life:whale")
 		
+		
+		
 		local wname = ""
 		
 		if whale and rnd > 10 then
@@ -78,7 +80,7 @@ local function gull_brain(self)
 		local air = mobkit.recall(self,"airlife")
 		
 		if air then
-			air = math.floor(os.clock()-air)
+			air = math.floor(os.time()-air)
 			if random(500) < air then
 				--minetest.chat_send_all("Time to land")
 				mobkit.clear_queue_high(self)
@@ -88,7 +90,7 @@ local function gull_brain(self)
 		end
 		
 		if land then
-			land = math.floor(os.clock()-land)
+			land = math.floor(os.time()-land)
 			if random(500) < land then
 				--minetest.chat_send_all("Land takeoff")
 				mobkit.clear_queue_high(self)
@@ -99,7 +101,7 @@ local function gull_brain(self)
 		end
 		
 		if water then
-			water = math.floor(os.clock()-water)
+			water = math.floor(os.time()-water)
 			if random (500) < water then
 				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
@@ -119,7 +121,7 @@ local function gull_brain(self)
 		
 		if self.isinliquid then
 			
-			mobkit.remember(self,"waterlife",os.clock())
+			mobkit.remember(self,"waterlife",os.time())
 			mobkit.forget(self,"landlife")
 			mobkit.forget(self,"airlife")
 			
@@ -147,7 +149,7 @@ local function gull_brain(self)
 		
 		if self.isonground then
 			
-			mobkit.remember(self,"landlife",os.clock())
+			mobkit.remember(self,"landlife",os.time())
 			mobkit.forget(self,"waterlife")
 			mobkit.forget(self,"airlife")
 			
@@ -160,7 +162,7 @@ local function gull_brain(self)
 		if not self.isinliquid then
 			self.object:add_velocity({x=2,y=4,z=2})
 			water_life.hq_climb(self,15,4,16)
-			mobkit.remember(self,"airlife",os.clock())
+			mobkit.remember(self,"airlife",os.time())
 			mobkit.forget(self,"landlife")
 			mobkit.forget(self,"waterlife")
 		else

@@ -1032,7 +1032,7 @@ function water_life.hq_water_takeoff(self,prty,anim,tyaw)
 				local vec = vector.multiply(minetest.yaw_to_dir(tyaw),2)
 				vec.y = vec.y + 4
 				self.object:add_velocity(vec)
-				mobkit.remember(self,"airlife",os.clock())
+				mobkit.remember(self,"airlife",os.time())
 				mobkit.forget(self,"landlife")
 				mobkit.forget(self,"waterlife")
 				return true
