@@ -501,12 +501,16 @@ function water_life.radar_fast(self,dist,sonar)
 	
 end
 
-function water_life.radar_fast_cols(obj,dist)
+
+-- WIP radar, not ready to use !
+function water_life.radar_fast_cols(obj,dist,sonar,rev)		--sonar = true, water no obstacle  :: rev = true array contains possible positions
 	if not dist then dist = 3 end
 	local pos = obj:get_pos()
 	local yaw = 0
 	local box = {}
 	local counter = 1
+	local rarray = {}
+	
 	
 	if obj:is_player() then
 		yaw = obj:get_look_horizontal()
@@ -520,24 +524,40 @@ function water_life.radar_fast_cols(obj,dist)
 	local vec = minetest.yaw_to_dir(yaw)
 	local crasha = mobkit.get_box_displace_cols(pos,box,vec,dist)
 	
+	
 	if crasha then
-		
-		
 		for i = #crasha,1,-1 do
 			for j = #crasha[i],1,-1 do
 				local cpos ={x=crasha[i][j].x, y= pos.y, z= crasha[i][j].z}
-				--water_life.temp_show(cpos,1)
+				--local cyaw = abs(math.floor(minetest.dir_to_yaw(vector.direction(pos,cpos))*10))
 				local node = minetest.get_node(cpos)
-				if node.name == "air" then
-					table.remove(crash[i],j)
-				else 
-					water_life.temp_show(cpos,1)
+				if minetest.registered_nodes[node.name] then
+					local kill = false
+					if minetest.registered_nodes[node.name]["drawtype"] == "airlike" then kill = true end
+					if minetest.registered_nodes[node.name]["buildable_to"] then kill = true end
+					if minetest.registered_nodes[node.name]["drawtype"] == "liquid" then kill = sonar end
+					
+					if kill then
+						if not rev then
+							table.remove(crasha[i],j)
+						else
+							rarray[counter] = cpos
+							counter = counter +1
+						end
+					else 
+						if not rev then
+							rarray[counter] = cpos
+							counter = counter +1
+						else
+							table.remove(crasha[i],j)
+						end
+					end
 				end
 			end
 			
 		end
 	end
-	
+	return rarray
 end
 
 -- radar function for obstacles lying in front of an entity 
