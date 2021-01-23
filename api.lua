@@ -501,12 +501,16 @@ function water_life.radar_fast(self,dist,sonar)
 	
 end
 
-function water_life.radar_fast_cols(obj,dist)
+
+-- WIP radar, not ready to use !
+function water_life.radar_fast_cols(obj,dist,sonar,rev)		--sonar = true, water no obstacle  :: rev = true array contains possible positions
 	if not dist then dist = 3 end
 	local pos = obj:get_pos()
 	local yaw = 0
 	local box = {}
 	local counter = 1
+	local rarray = {}
+	
 	
 	if obj:is_player() then
 		yaw = obj:get_look_horizontal()
@@ -520,24 +524,40 @@ function water_life.radar_fast_cols(obj,dist)
 	local vec = minetest.yaw_to_dir(yaw)
 	local crasha = mobkit.get_box_displace_cols(pos,box,vec,dist)
 	
+	
 	if crasha then
-		
-		
 		for i = #crasha,1,-1 do
 			for j = #crasha[i],1,-1 do
 				local cpos ={x=crasha[i][j].x, y= pos.y, z= crasha[i][j].z}
-				--water_life.temp_show(cpos,1)
+				--local cyaw = abs(math.floor(minetest.dir_to_yaw(vector.direction(pos,cpos))*10))
 				local node = minetest.get_node(cpos)
-				if node.name == "air" then
-					table.remove(crash[i],j)
-				else 
-					water_life.temp_show(cpos,1)
+				if minetest.registered_nodes[node.name] then
+					local kill = false
+					if minetest.registered_nodes[node.name]["drawtype"] == "airlike" then kill = true end
+					if minetest.registered_nodes[node.name]["buildable_to"] then kill = true end
+					if minetest.registered_nodes[node.name]["drawtype"] == "liquid" then kill = sonar end
+					
+					if kill then
+						if not rev then
+							table.remove(crasha[i],j)
+						else
+							rarray[counter] = cpos
+							counter = counter +1
+						end
+					else 
+						if not rev then
+							rarray[counter] = cpos
+							counter = counter +1
+						else
+							table.remove(crasha[i],j)
+						end
+					end
 				end
 			end
 			
 		end
 	end
-	
+	return rarray
 end
 
 -- radar function for obstacles lying in front of an entity 
@@ -787,6 +807,31 @@ function water_life.get_next_waypoint(self,tpos)
 	-- stuck condition here
 	table.remove(self.pos_history,2)
 	self.path_dir = self.path_dir*-1	-- subtle change in pathfinding
+end
+
+
+-- blood effects
+function water_life.spilltheblood(object,size)
+	if not size then size = 1 end
+	local particlespawner_id = minetest.add_particlespawner({
+				amount = 50,
+				time = 1,
+				minpos = vector.new(-0.3, size/2, -0.3),
+				maxpos = vector.new( 0.3,   size,  0.3),
+				minvel = {x = -1, y = 0, z = -1},
+				maxvel = {x =  1, y = 1, z =  1},
+				minacc = {x =  0, y = 2, z =  0},
+				maxacc = {x =  0, y = 3, z =  0},
+				minexptime = 0.5,
+				maxexptime = 1,
+				minsize = 1,
+				maxsize = 2,
+				texture = "water_life_bloodeffect1.png",
+				collisiondetection = true,
+				collision_removal = true,
+				object_collision = true,
+				attached = object,
+			})
 end
 
 
