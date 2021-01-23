@@ -810,6 +810,31 @@ function water_life.get_next_waypoint(self,tpos)
 end
 
 
+-- blood effects
+function water_life.spilltheblood(object,size)
+	if not size then size = 1 end
+	local particlespawner_id = minetest.add_particlespawner({
+				amount = 50,
+				time = 1,
+				minpos = vector.new(-0.3, size/2, -0.3),
+				maxpos = vector.new( 0.3,   size,  0.3),
+				minvel = {x = -1, y = 0, z = -1},
+				maxvel = {x =  1, y = 1, z =  1},
+				minacc = {x =  0, y = 2, z =  0},
+				maxacc = {x =  0, y = 3, z =  0},
+				minexptime = 0.5,
+				maxexptime = 1,
+				minsize = 1,
+				maxsize = 2,
+				texture = "water_life_bloodeffect1.png",
+				collisiondetection = true,
+				collision_removal = true,
+				object_collision = true,
+				attached = object,
+			})
+end
+
+
 -- Entity definitions
 
 -- entity for showing positions in debug

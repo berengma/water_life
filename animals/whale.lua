@@ -184,6 +184,7 @@ minetest.register_entity("water_life:whale",{
 			end
 			
 			if time_from_last_punch > 2 then
+				if water_life.bloody then water_life.spilltheblood(self.object,4) end
 				mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 			else
 				if puncher:is_player() then

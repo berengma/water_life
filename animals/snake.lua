@@ -210,7 +210,7 @@ minetest.register_entity("water_life:snake",{
 		if mobkit.is_alive(self) then
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
 			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
-			
+			if water_life.bloody then water_life.spilltheblood(self.object) end
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 
 			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player

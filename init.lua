@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "212001"
+water_life.version = "212301"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -38,6 +38,7 @@ water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)		-- the repellent lasts half a minetest day
 water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5			-- 5 days savety from rattlenakes for new players
 water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") or false
+water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true						-- let there be blood !
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
@@ -46,7 +47,7 @@ dofile(path.."/api.lua")               											-- load water_life api
 dofile(path.."/paths.lua")													-- load pathfinding
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
-dofile(path.."/buoy.lua")													-- load buoy
+dofile(path.."/tools/buoy.lua")												-- load buoy
 dofile(path.."/chatcommands.lua")												-- load chatcommands
 dofile(path.."/behaviors.lua")												-- load behaviors
 dofile(path.."/bio.lua")														-- load bio data handles

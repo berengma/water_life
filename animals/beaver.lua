@@ -163,6 +163,7 @@ minetest.register_entity("water_life:beaver",{
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
                                               
 		if mobkit.is_alive(self) then
+			if water_life.bloody then water_life.spilltheblood(self.object) end
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 		end
 	end,
