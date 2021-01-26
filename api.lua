@@ -464,8 +464,8 @@ end
 -- water = true means water = obstacle
 -- returns distance to obstacle in nodes or nil
 
-function water_life.find_collision(pos1,pos2,water)
-    local ray = minetest.raycast(pos1, pos2, false, water)
+function water_life.find_collision(pos1,pos2,water,objects)
+    local ray = minetest.raycast(pos1, pos2, objects, water)
             for pointed_thing in ray do
                 if pointed_thing.type == "node" then
                     local dist = math.floor(vector.distance(pos1,pointed_thing.under))
@@ -812,6 +812,7 @@ end
 
 -- blood effects
 function water_life.spilltheblood(object,size)
+	if not water_life.bloody then return end
 	if not size then size = 1 end
 	local particlespawner_id = minetest.add_particlespawner({
 				amount = 50,

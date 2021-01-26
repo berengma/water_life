@@ -215,7 +215,8 @@ minetest.register_entity("water_life:gull",{
                   ["water_life:alligator"] = 1,
                   ["water_life:whale"] = 1,
                   ["water_life:piranha"] = 1,
-                  ["water_life:snake"] = 1
+                  ["water_life:snake"] = 1,
+                  ["water_life:croc"] = 1
                   },
 	sounds = {
 		idle={
