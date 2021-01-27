@@ -22,56 +22,57 @@ local function shark_brain(self)
 	end
 	
 	if mobkit.timer(self,1) then
-		
-        local whale =  mobkit.get_closest_entity(self,"water_life:whale")
+		local prty = mobkit.get_queue_priority(self)
+		local whale =  mobkit.get_closest_entity(self,"water_life:whale")
 		local buoy = mobkit.get_closest_entity(self,"water_life:buoy")
+		local spos = self.object:get_pos()
+		local nearwhale = false
 		
-        if whale then
-            local spos = self.object:get_pos()
-            local wpos = whale:get_pos()
-            local distance =  math.floor(vector.distance(spos,wpos))
-            if distance < 15 then
-                local yaw = self.object:get_yaw()
-                mobkit.clear_queue_high(self)
-                mobkit.hq_aqua_turn(self,40,yaw+(pi/2),5)
-            end
-        end
 		
+		if whale then
+			
+			local wpos = whale:get_pos()
+			local distance =  math.floor(vector.distance(spos,wpos))
+			if distance < 15 then
+				local yaw = self.object:get_yaw()
+				mobkit.clear_queue_high(self)
+				mobkit.hq_aqua_turn(self,40,yaw+rad(180),5)
+			end
+		end
+			
 		if buoy then
-            local spos = self.object:get_pos()
-            local wpos = buoy:get_pos()
-            local distance =  math.floor(vector.distance(spos,wpos))
-            if distance < 10 then
-                local yaw = self.object:get_yaw()
-                mobkit.clear_queue_high(self)
-                mobkit.hq_aqua_turn(self,45,yaw+rad(30),5)
-            end
-        end
+			local wpos = buoy:get_pos()
+			local distance =  math.floor(vector.distance(spos,wpos))
+			if distance < 10 then
+				local yaw = self.object:get_yaw()
+				mobkit.clear_queue_high(self)
+				mobkit.hq_aqua_turn(self,45,yaw+rad(135),5)
+			end
+		end
 		
-        local prty = mobkit.get_queue_priority(self)
+		
+        
 		if prty < 20 then
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and mobkit.is_in_deep(target)
 			local food = water_life.feed_shark(self)
 			
 			if target and mobkit.is_alive(target) and mobkit.is_in_deep(target) and target:get_attach() == nil then
-				--mobkit.hq_aqua_attack(self,20,target,9)
 				local ppos = target:get_pos()
+				if whale and vector.distance(ppos,whale:get_pos()) < 10 then nearwhale = true end
 				local tbuoy = water_life.count_objects(ppos,10,"water_life:buoy")
 				local dist = water_life.dist2tgt(self,target)
-				if dist > 3 and tbuoy.name == 0 then
-					water_life.hq_water_attack(self,target,20,7)
+				if dist > 3 and not tbuoy["water_life:buoy"] and not nearwhale then
+					water_life.hq_water_attack(self,target,20,7)				-- take a bite
 				end
 			end
 
 			if food and mobkit.is_in_deep(food) and not aliveinwater then
-								local dist = water_life.dist2tgt(self,food)
-								if dist > 3 then
-									mobkit.clear_queue_high(self)
-									--mobkit.hq_aqua_attack(self,30,food,7)
-									water_life.hq_water_attack(self,food,20,7)
-								end
-                        end
+				local dist = water_life.dist2tgt(self,food)
+				if dist > 3 then
+					water_life.hq_water_attack(self,food,25,7)				-- food tastes better
+				end
+			end
 		end
 	end
 	if mobkit.is_queue_empty_high(self) then mobkit.hq_aqua_roam(self,10,5) end
@@ -99,7 +100,7 @@ minetest.register_entity("water_life:shark",{
 	buoyancy = 0.98,					-- portion of hitbox submerged
 	max_speed = 9,                        
 	jump_height = 1.26,
-	view_range = water_life.abo * 12,
+	view_range = water_life.abr * 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
 	timeout=60,

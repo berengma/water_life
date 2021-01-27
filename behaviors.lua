@@ -832,19 +832,20 @@ function water_life.hq_water_attack(self,tgtobj,prty,speed,shallow)
 		local entity = nil
 		if not tgtobj:is_player() then entity = tgtobj:get_luaentity() end
 		
+		
 		if vector.distance(pos,endpos) > selfbox[5]+tgtbox[5] then
 					--minetest.chat_send_all(dump(vector.distance(pos,endpos)).."   "..dump(selfbox[5]+tgtbox[5]))
-					if endpos.y > pos.y +tgtbox[5] then
-						local vel = self.object:get_velocity()
-						vel.y = vel.y+0.4
+					if endpos.y > pos.y+selfbox[5] then
+						local vel = vector.add(self.object:get_velocity(),{x=0,y=0.5,z=0})
 						self.object:set_velocity(vel)
 					end
-					if endpos.y < pos.y  then
-						local vel = self.object:get_velocity()
-						vel.y = vel.y-0.1
+					if endpos.y < pos.y-selfbox[5]  then
+						local vel = vector.add(self.object:get_velocity(),{x=0,y=-0.5,z=0})
 						self.object:set_velocity(vel)
 					end
+					
 					mobkit.hq_aqua_turn(self,prty+5,yaw,speed)
+					
 					
 		else
 			if mobkit.is_alive(tgtobj) then
