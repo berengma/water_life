@@ -136,7 +136,7 @@ minetest.register_entity("water_life:whale",{
 		{name = "default:diamond", chance = 5, min = 10, max = 50,},		
 		{name = "water_life:meat_raw", chance = 1, min = 15, max = 65,},
 	},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -149,7 +149,7 @@ minetest.register_entity("water_life:whale",{
 	view_range = 32,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 500,
-	timeout=300,
+	timeout=30,
 	attack={range=4.5,damage_groups={fleshy=15}},
 	sounds = {
       random = "water_life_whale.ogg",

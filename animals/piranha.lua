@@ -86,7 +86,7 @@ minetest.register_entity("water_life:piranha",{
 	mesh = "water_life_piranha.b3d",
 	textures = {"water_life_piranha.png"},
 	visual_size = {x = 0.3, y = 0.3}, --2.5
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required

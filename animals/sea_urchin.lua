@@ -94,7 +94,7 @@ minetest.register_entity("water_life:urchin",{
 	mesh = "water_life_urchin.b3d",
 	textures = {"water_life_urchin.png"},
 	visual_size = {x = 1, y = 1}, --2.5
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -108,7 +108,7 @@ minetest.register_entity("water_life:urchin",{
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
 	timeout=180,
-    wild = true,
+	wild = true,
 	attack={range=0.1,damage_groups={fleshy=5}},
 	drops = {
 		{name = "default:diamond", chance = 20, min = 1, max = 1,},		
