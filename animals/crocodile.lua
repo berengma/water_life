@@ -192,10 +192,10 @@ minetest.register_entity("water_life:croc",{
 	buoyancy = 0.98,					-- portion of hitbox submerged
 	max_speed = 9,                        
 	jump_height = 1.26,
-	view_range = water_life.abo * 12,
+	view_range = water_life.abr * 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
-	timeout=30,
+	timeout=-30,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},

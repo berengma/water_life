@@ -180,7 +180,7 @@ minetest.register_entity("water_life:snake",{
 	view_range = 7,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 20,
-	timeout=300,
+	timeout=-300,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 2,},
