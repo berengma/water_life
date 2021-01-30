@@ -21,7 +21,7 @@ function water_life.init_bio(self)
 	local dna =  water_life.make_dna()
 	mobkit.remember(self,"wl_hunger",100)
 	mobkit.remember(self,"wl_thirst",100)
-	mobkit.remember(self,"wl_life",self.timeout)
+	mobkit.remember(self,"wl_life",abs(self.timeout))
 	mobkit.remember(self,"wl_exhaust",100)
 	mobkit.remember(self,"wl_horny",100)
 	mobkit.remember(self,"wl_pregnant",-1)
@@ -42,6 +42,8 @@ function water_life.is_alive(self,change,set)
 	end
 	change = (mobkit.recall(self,"wl_life") or 1440) + change
 	mobkit.remember(self,"wl_life", change)
+	self.timeout = change * -1
+	minetest.chat_send_all(dump(change))
 end
 
 
