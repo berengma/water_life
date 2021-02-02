@@ -43,7 +43,6 @@ function water_life.is_alive(self,change,set)
 	change = (mobkit.recall(self,"wl_life") or 1440) + change
 	mobkit.remember(self,"wl_life", change)
 	self.timeout = change * -1
-	minetest.chat_send_all(dump(change))
 end
 
 
