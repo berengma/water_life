@@ -54,7 +54,7 @@ minetest.register_entity("water_life:fish",{
 	mesh = "water_life_riverfish.b3d",
 	textures = {"water_life_riverfish.png"},
 	visual_size = {x = 2.5, y = 2.5}, --2.5
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -124,7 +124,7 @@ minetest.register_entity("water_life:fish_tamed",{
 	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
---	timeout=60,
+	timeout=0,
     wild = false,
     owner = "",
 	drops = {

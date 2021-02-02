@@ -128,7 +128,7 @@ minetest.register_entity("water_life:beaver",{
 	mesh = "water_life_beaver.b3d",
 	textures = {"water_life_beaver.png"},
 	visual_size = {x = 0.2, y = 0.2},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -141,7 +141,7 @@ minetest.register_entity("water_life:beaver",{
 	view_range = 8,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 25,
-	timeout=300,
+	timeout=-30,
 	drops = {
 		{name = "water_life:beaver_fur", chance = 5, min = 1, max = 1,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 3,},

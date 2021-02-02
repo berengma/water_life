@@ -93,7 +93,7 @@ minetest.register_entity("water_life:coralfish",{
 	mesh = "water_life_coralfish.b3d",
 	textures = {"water_life_coralfish.png","water_life_coralfish2.png","water_life_coralfish3.png"},
 	visual_size = {x = 0.2, y = 0.2, z = 0.2}, --2.5
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -165,7 +165,7 @@ minetest.register_entity("water_life:coralfish_tamed",{
 	view_range = 3,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
---	timeout=60,
+	timeout=0,
 	wild = false,
 	swarm = {},
 	base = nil,

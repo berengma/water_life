@@ -115,7 +115,7 @@ minetest.register_entity("water_life:gecko",{
 	mesh = "water_life_gecko.b3d",
 	textures = {"water_life_geckoskin.png"},
 	visual_size = {x = 0.15, y = 0.15},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -128,7 +128,7 @@ minetest.register_entity("water_life:gecko",{
 	view_range = 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 20,
-	timeout=300,
+	timeout=-300,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 1,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},

@@ -1063,7 +1063,7 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 			local tgtpos = tgt:get_pos()
 			local tgtyaw = tgt:get_yaw() --water_life.get_yaw_to_object(self,tgt)
 			local tgtspeed = math.floor(vector.length(tgt:get_velocity() or {x=0,y=0,z=0}))
-			if not tgt:is_player() and tgt:get_luaentity().name == "water_life:whale" then tgtyaw = tgtyaw + rad(180) end -- whales moving backwards XD
+			if not tgt:is_player() and tgt:get_luaentity() and tgt:get_luaentity().name == "water_life:whale" then tgtyaw = tgtyaw + rad(180) end -- whales moving backwards XD
 			
 			if tgt:is_player() then
 				tgtyaw = tgt:get_look_horizontal()
@@ -1350,6 +1350,7 @@ function water_life.hq_die(self,anim)
 	local start = true
 	local func = function(self)
 		if start then 
+			
 			if not anim then
 				mobkit.lq_fallover(self)
 			else

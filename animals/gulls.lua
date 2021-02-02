@@ -9,7 +9,8 @@ local function gull_brain(self)
 	if not mobkit.is_alive(self) then	
 		mobkit.clear_queue_high(self)
 		water_life.handle_drops(self)
-		mobkit.hq_die(self)
+		--mobkit.hq_die(self)
+		water_life.hq_die(self,'float')
 		return
 	end
 	
@@ -67,7 +68,8 @@ local function gull_brain(self)
 		local speed = vector.length(vel)
 		if speed < 1 and not self.isinliquid then
 			mobkit.clear_queue_high(self)
-			mobkit.hq_die(self)
+			--mobkit.hq_die(self)
+			water_life.hq_die(self,'float')
 		end
 	end
 	
@@ -193,7 +195,7 @@ minetest.register_entity("water_life:gull",{
 	mesh = "water_life_gull.b3d",
 	textures = {"water_life_gull1.png","water_life_gull2.png","water_life_gull3.png"},
 	visual_size = {x = 0.75, y = 0.5, z = 0.75},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -206,7 +208,7 @@ minetest.register_entity("water_life:gull",{
 	view_range = water_life.abr*16,		-- max what server can handle, birds need good eyes !
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
-	timeout=60,
+	timeout=-10,
 	wild = true,
 	drops = {},
 	--	{name = "default:diamond", chance = 20, min = 1, max = 1,},		

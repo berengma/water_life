@@ -42,7 +42,7 @@ minetest.register_entity("water_life:jellyfish",{
 	mesh = "water_life_jellyfish.b3d",
 	textures = {"water_life_jellyfish.png"},
 	visual_size = {x = 1.5, y = 1.5}, --2.5
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -55,7 +55,7 @@ minetest.register_entity("water_life:jellyfish",{
 	view_range = 4,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 10,
-	timeout = 300,
+	timeout = 30,
 	glow = 4,
 	drops = {
 		--{name = "default:diamond", chance = 90, min = 1, max = 1,},		

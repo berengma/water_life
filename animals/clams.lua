@@ -21,14 +21,14 @@ minetest.register_entity("water_life:clams", {
 	textures = {"water_life_clams.png^[makealpha:128,128,0"},
 	spritediv = {x=1, y=3},
 	initial_sprite_basepos = {x=0, y=0},
-	static_save = false,
+	static_save = true,
 	drops = {
 		{name = "water_life:meat_raw", chance = 1, min = 1, max = 1},
 	},
 	buoyancy = 2,
 	phase = 0,
 	phasetimer = 0,
-	timeout = 300,
+	timeout = 0,
 	makes_footstep_sound = true,
 	on_activate = mobkit.actfunc,		-- required
 	get_staticdata = mobkit.statfunc,

@@ -90,7 +90,7 @@ minetest.register_entity("water_life:shark",{
 	mesh = "water_life_shark.b3d",
 	textures = {"water_life_shark3tex.png"},
 	visual_size = {x = 1.5, y = 1.5},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -103,7 +103,7 @@ minetest.register_entity("water_life:shark",{
 	view_range = water_life.abr * 12,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
-	timeout=60,
+	timeout=5,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 5,},

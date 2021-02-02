@@ -167,7 +167,7 @@ minetest.register_entity("water_life:snake",{
 	mesh = "water_life_snake.b3d",
 	textures = {"water_life_snake.png"},
 	visual_size = {x = 0.05, y = 0.05},
-	static_save = false,
+	static_save = true,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,	-- required
 	on_activate = mobkit.actfunc,		-- required
@@ -180,7 +180,7 @@ minetest.register_entity("water_life:snake",{
 	view_range = 7,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 20,
-	timeout=300,
+	timeout=-300,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 2,},
