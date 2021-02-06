@@ -1061,6 +1061,8 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 			local pos = self.object:get_pos()
 			local yaw = self.object:get_yaw()
 			local tgtpos = tgt:get_pos()
+			if not tgtpos then return true end
+			
 			local tgtyaw = tgt:get_yaw() --water_life.get_yaw_to_object(self,tgt)
 			local tgtspeed = math.floor(vector.length(tgt:get_velocity() or {x=0,y=0,z=0}))
 			if not tgt:is_player() and tgt:get_luaentity() and tgt:get_luaentity().name == "water_life:whale" then tgtyaw = tgtyaw + rad(180) end -- whales moving backwards XD
@@ -1070,6 +1072,7 @@ function water_life.hq_fly2obj(self,prty,tgt,break_dist,force)
 				local stack = tgt:get_wielded_item()
 				wname = stack:get_name()
 			end
+			
 			
 			if tgtpos.y < 0 then tgtpos.y = 1 end
 			
