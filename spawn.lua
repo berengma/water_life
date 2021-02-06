@@ -8,7 +8,7 @@ local dttimer = 10
 local pi = math.pi
 local random = water_life.random
 local landinterval = 120						-- check every 60 seconds for spawnpos on land
-local waterinterval = 40						-- check every 20 seconds for spawnpos in water
+local waterinterval = 30						-- check every 20 seconds for spawnpos in water
 
 
 local function getcount(name)
@@ -190,7 +190,7 @@ local function spawnstep(dtime)
 				
 				local liquidflag = nil
 				
-				if stype == "default:water_source" then 
+				if stype == "default:water_source" or stype == "islands:water_source" then 
 					liquidflag = "sea"
 					
 				elseif stype == "default:river_water_source" then
