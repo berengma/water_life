@@ -98,6 +98,18 @@ function water_life_get_biome_data(pos)
 	return biome
 end
 
+-- get list of biome names
+function water_life.get_biomes()
+			
+			local biomes = {}
+			
+			for k,v in pairs(minetest.registered_biomes) do
+				table.insert(biomes, k)
+			end
+			
+			if #biomes > 0 then return biomes else return nil end
+			
+end
 
 
 -- returns closest enemy or player, if player is true    enemies must be in entity definition: predators = {[name1]=1,[name2]=1,.....}

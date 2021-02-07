@@ -379,11 +379,13 @@ local function spawnstep(dtime)
 					--minetest.chat_send_all(dump(minetest.pos_to_string(surface)).." "..dump(minetest.pos_to_string(ground)))
 					mobname = 'water_life:fish'
 						--local nearlife = water_life.count_objects(pos2,24,"water_life:piranha")
-						if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or getcount(animal[mobname]) < 5) and (liquidflag == "river" or liquidflag == "muddy") then
+						if water_life.fish_spawn_rate >= random(1000) and ((animal.all < (water_life.maxmobs-5)) or getcount(animal[mobname]) < 5) and (((liquidflag == "river" or liquidflag == "muddy")) or (water_life.spawn_on_islands and not water_life.check_for_pool(nil,2,3,pos2) and
+						water_life.check_for_pool(nil,2,16,pos2))) then
 						
 							local table = minetest.get_biome_data(pos)
 							
-							if not water_life.dangerous and table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)] then
+							if not water_life.dangerous and ((table and water_life.piranha_biomes[minetest.get_biome_name(table.biome)])
+							or water_life.spawn_on_islands) then
 								mobname = "water_life:piranha"
 							end
 							

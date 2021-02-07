@@ -49,6 +49,7 @@ local function croc_brain(self)
 	end
 	
 	if mobkit.timer(self,1) then
+	local prty = mobkit.get_queue_priority(self)
 		
 	if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 		mobkit.remember(self,"waterlife",os.time())
@@ -68,7 +69,7 @@ local function croc_brain(self)
 		end
 	end
 		
-        local prty = mobkit.get_queue_priority(self)
+        
 	   
 		if prty < 20 then 
 			local target = mobkit.get_nearby_player(self)

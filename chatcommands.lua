@@ -73,6 +73,26 @@ minetest.register_chatcommand("wl_kill", {
 	end
 })
 
+
+minetest.register_chatcommand("wl_lb", {
+	params = "",
+	description = "list biomes",
+	privs = {interact = true},
+	func = function()
+		
+		
+		local biom = water_life.get_biomes()
+                                      
+		if not biom then return end
+                                      
+		for i=1,#biom,1 do
+			minetest.chat_send_all(dump(i)..") "..dump(biom[i]))
+
+		end
+
+	end
+})
+
 minetest.register_chatcommand("wl_test", {
 	params = "<mob_name>",
 	description = "test",
