@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "210206"
+water_life.version = "210207"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -43,7 +43,9 @@ water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true					
 local path = minetest.get_modpath(minetest.get_current_modname())
 
 
+
 dofile(path.."/api.lua")               											-- load water_life api
+dofile(path.."/compat.lua")
 dofile(path.."/paths.lua")													-- load pathfinding
 if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
 dofile(path.."/crafts.lua")				 									-- load crafts
