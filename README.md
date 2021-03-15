@@ -1,6 +1,7 @@
 # water_life
 [![ContentDB](https://content.minetest.net/packages/Gundul/water_life/shields/title/)](https://content.minetest.net/packages/Gundul/water_life/)
 [![ContentDB](https://content.minetest.net/packages/Gundul/water_life/shields/downloads/)](https://content.minetest.net/packages/Gundul/water_life/)
+[![Codewars](https://www.codewars.com/users/Gundul/badges/micro)](https://codewars.com)
 
 water mobs for mobkit/minetest
 
