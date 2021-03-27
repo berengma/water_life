@@ -440,8 +440,10 @@ end
 -- returns 2D angle from self to target in radians
 function water_life.get_yaw_to_object(self,target)
 
-    local pos = mobkit.get_stand_pos(self)
-    local tpos = target:get_pos()
+	if not self or not target then return 0 end
+	
+	local pos = mobkit.get_stand_pos(self)
+	local tpos = target:get_pos()
 	local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
     return tyaw
 end
@@ -449,8 +451,9 @@ end
 -- returns 2D angle from self to pos in radians
 function water_life.get_yaw_to_pos(self,tpos)
 
-    local pos = mobkit.get_stand_pos(self)
-    local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
+	if not self then return 0 end
+	local pos = mobkit.get_stand_pos(self)
+	local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
     
     return tyaw
 end
