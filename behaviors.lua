@@ -497,13 +497,15 @@ function water_life.hq_attack(self,prty,tgtobj)
 			local meta = nil
 			local poison = 0
 			local pos = mobkit.get_stand_pos(self)
---			local tpos = tgtobj:get_pos()
 			local tpos = mobkit.get_stand_pos(tgtobj)
 			local dist = vector.distance(pos,tpos)
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
-				poison = meta:get_int("snakepoison")
-				noob = meta:get_int("bitten")
+				poison = meta:get_int("snakepoison") or 1
+				noob = meta:get_int("bitten") or 1
+			else
+				poison = 1
+				noob = 1
 			end
 			
 			if dist > 3 or poison > 0 or noob > 0 then 
