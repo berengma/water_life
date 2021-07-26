@@ -444,7 +444,10 @@ function water_life.get_yaw_to_object(self,target)
 	
 	local pos = mobkit.get_stand_pos(self)
 	local tpos = target:get_pos()
-	local tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
+	local tyaw = 0
+	if pos and tpos then
+		tyaw = minetest.dir_to_yaw(vector.direction(pos, tpos))
+	end
     return tyaw
 end
 

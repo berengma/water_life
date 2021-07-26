@@ -496,6 +496,7 @@ function water_life.hq_attack(self,prty,tgtobj)
 		if mobkit.is_queue_empty_low(self) then
 			local meta = nil
 			local poison = 0
+			local noob = 0
 			local pos = mobkit.get_stand_pos(self)
 			local tpos = mobkit.get_stand_pos(tgtobj)
 			local dist = vector.distance(pos,tpos)
@@ -508,7 +509,7 @@ function water_life.hq_attack(self,prty,tgtobj)
 				noob = 1
 			end
 			
-			if dist > 3 or poison > 0 or noob > 0 then 
+			if (dist and dist > 3) or poison > 0 or noob > 0 then 
 				return true
 			else
 				mobkit.lq_turn2pos(self,tpos)
