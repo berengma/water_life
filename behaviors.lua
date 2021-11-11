@@ -1218,10 +1218,13 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 			end,anim)
 			init=false
 		end
+		if not target then
+			return true
+		end
 		local yaw = water_life.get_yaw_to_object(self,target)
+		local dist = water_life.dist2tgt(self,target)
 		self.object:set_yaw(yaw)
 		duration = duration-self.dtime
-		local dist = water_life.dist2tgt(self,target)
 		if  dist > self.view_range then
 			minetest.after(3,function()
 				return true
