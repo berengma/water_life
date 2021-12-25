@@ -245,12 +245,11 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 		local pos = mobkit.get_stand_pos(self)
 		local y = self.object:get_velocity().y
 		local dir = vector.normalize(vector.direction({x=pos.x,y=0,z=pos.z},
-											{x=dest.x,y=0,z=dest.z}))
+			{x=dest.x,y=0,z=dest.z}))
 		dir = vector.multiply(dir,self.max_speed*speed_factor)
 		mobkit.turn2yaw(self,minetest.dir_to_yaw(dir))
 		dir.y = y
 		self.object:set_velocity(dir)
-
 	end
 	mobkit.queue_low(self,func)
 end
@@ -300,21 +299,22 @@ function water_life.lq_jumpattack(self,height,target,extra)
 							meta:set_int("snakepoison",1)
 							water_life.change_hud(target,"poison")
 						else
-							local left = water_life.newplayerbonus - math.floor((os.time() - join)/86400*100)/100
-							minetest.chat_send_player(target:get_player_name(),minetest.colorize('#fd4000',">>> A rattlesnake bit you. New player bonus of "..left..
-							                                                                     " days left. Catch 3 snakes to craft antiserum"))
-							meta:set_int("bitten",1)
-							
+							local left = water_life.newplayerbonus - 
+								math.floor((os.time() - join) / 86400 * 100) / 100
+							minetest.chat_send_player(target:get_player_name(),
+								minetest.colorize('#fd4000', 
+								">>> A rattlesnake bit you. New player bonus of "..left..
+								" days left. Catch 3 snakes to craft antiserum"))
+							meta:set_int("bitten", 1)
 							minetest.after(10,function()
 								meta:set_int("bitten",0)
 								end,meta)
 						end
 					end
 				end
-					-- bounce off
+				-- bounce off
 				local vy = self.object:get_velocity().y
 				self.object:set_velocity({x=dir.x*-3,y=vy,z=dir.z*-3})	
-					-- play attack sound if defined
 				mobkit.make_sound(self,'attack')
 				phase=4
 			end
@@ -527,13 +527,12 @@ function water_life.hq_attack(self,prty,tgtobj)
 end
 
 
-function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
+function water_life.hq_hunt(self, prty, tgtobj, lost, anim)
 	if not lost then lost = self.view_range end
 	if random(100) < 20 then mobkit.make_sound(self,"attack") end
 	
-	
 	local func = function(self)
-		if not mobkit.is_alive(tgtobj) then return true end
+		if not mobkit.is_alive(tgtobj) or not tgtobj then return true end
 		if self.isinliquid then return true end
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			local pos = mobkit.get_stand_pos(self)
@@ -552,7 +551,7 @@ function water_life.hq_hunt(self,prty,tgtobj,lost,anim)
 			if poison > 0 or noob > 0 then return true end
 			
 			if mobkit.is_in_deep(tgtobj) then
-				return true --water_life.hq_water_attack(self,tgtobj,prty+1,7)
+				return true
 			end
 			if dist > lost or math.abs(pos.y - opos.y) > 5 then
 				return true
@@ -1211,6 +1210,7 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 	local init = true
 	
 	local func=function(self)
+		local dist = 100
 		if init then 
 			mobkit.make_sound(self,"warn")
 			minetest.after(1,function(anim)
@@ -1222,7 +1222,11 @@ function water_life.hq_snake_warn(self,target,prty,duration,anim)
 			return true
 		end
 		local yaw = water_life.get_yaw_to_object(self,target)
-		local dist = water_life.dist2tgt(self,target)
+		if (not target:get_pos()) then 
+			return true
+		else
+			dist = water_life.dist2tgt(self,target)
+		end
 		self.object:set_yaw(yaw)
 		duration = duration-self.dtime
 		if  dist > self.view_range then

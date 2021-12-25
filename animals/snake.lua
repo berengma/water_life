@@ -9,10 +9,6 @@ local pow = math.pow
 local sign = math.sign
 local rad = math.rad
 
-
-
-
-
 local function snake_brain(self)
 	
 	-- handling death
@@ -23,7 +19,6 @@ local function snake_brain(self)
 		return
 	end
 	
-	
 	-- handling life in water and on land
 	if mobkit.timer(self,5) then
 		
@@ -31,46 +26,39 @@ local function snake_brain(self)
 		local water = mobkit.recall(self,"waterlife")
 		
 		if land then
-			land = math.floor(os.time()-land)
-			--minetest.chat_send_all(dump(land))
+			land = math.floor(os.time() - land)
 			if random(240,360) < land then
-				--minetest.chat_send_all("Go to water")
 				mobkit.clear_queue_high(self)
-				water_life.hq_go2water(self,15)
-				
+				water_life.hq_go2water(self, 15)
 			end
 		end
 		
 		if water then
 			water = math.floor(os.time()-water)
 			if random (60,120) < water then
-				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
-				water_life.hq_go2land(self,25)
+				water_life.hq_go2land(self, 25)
 			end
 		end
-		
-		--minetest.chat_send_all("Land: "..dump(land).." :  Water: "..dump(water))
 	end
-	
-	
 	
 	if mobkit.timer(self,1) then
 			
-		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
-			mobkit.remember(self,"waterlife",os.time())
+		if not mobkit.recall(self,"landlife") and 
+			not mobkit.recall(self,"waterlife") then
+				mobkit.remember(self,"waterlife", os.time())
 		end
 			
 		if self.isinliquid then
 			if mobkit.recall(self,"landlife") then
-				mobkit.remember(self,"waterlife",os.time())
+				mobkit.remember(self,"waterlife", os.time())
 				mobkit.forget(self,"landlife")
 			end
 		end
 		
 		if self.isonground then
 			if mobkit.recall(self,"waterlife") then
-				mobkit.remember(self,"landlife",os.time())
+				mobkit.remember(self,"landlife", os.time())
 				mobkit.forget(self,"waterlife")
 			end
 		end
@@ -79,10 +67,12 @@ local function snake_brain(self)
 		
 			if prty < 20 then 
 				local target = mobkit.get_nearby_player(self)
-				local aliveinwater = target and mobkit.is_alive(target) and mobkit.is_in_deep(target)
+				local aliveinwater = target and mobkit.is_alive(target)
+					and mobkit.is_in_deep(target)
 				
-				
-				if target and mobkit.is_alive(target)  and target:get_attach() == nil and aliveinwater then
+				if target and mobkit.is_alive(target) 
+					and target:get_attach() == nil 
+					and aliveinwater then
 					
 					local dist = water_life.dist2tgt(self,target)
 					if dist < self.view_range then
@@ -92,22 +82,9 @@ local function snake_brain(self)
 				
 				
 				if self.isinliquid then
-					
 					mobkit.clear_queue_high(self)
 					mobkit.clear_queue_low(self)
-					water_life.hq_aqua_roam(self,21,1,"swim")
-					
-					 --[[
-					if target and mobkit.is_alive(target)  and target:get_attach() == nil and not water_life.isinliquid(target) then --.is_in_deep(target) then
-						
-						local dist = water_life.dist2tgt(self,target)
-						if dist < 10 then
-							mobkit.clear_queue_high(self)
-							water_life.hq_go2land(self,20,target)
-						end
-						
-					end]]
-					
+					water_life.hq_aqua_roam(self, 21, 1, "swim")
 				end
 				
 				if self.isonground then
@@ -115,52 +92,42 @@ local function snake_brain(self)
 					if target and mobkit.is_alive(target)  then
 						local action = mobkit.recall(self,"warned")
 						local pname = target:get_player_name()
-						local dist = water_life.dist2tgt(self,target)
+						local dist = water_life.dist2tgt(self, target)
 						
 						if  dist > 4 and dist < self.view_range and not action then
 							mobkit.clear_queue_high(self)
 							mobkit.clear_queue_low(self)
-							water_life.hq_snake_warn(self,target,30,8)
+							water_life.hq_snake_warn(self, target, 30, 8)
 						elseif dist < 5 or action == pname then
-							mobkit.forget(self,"warned")
+							mobkit.forget(self, "warned")
 							
 							local meta = target:get_meta()
-							--minetest.chat_send_all(dump(action).." "..pname.."   poison level = "..dump(meta:get_int("snakepoison")).." : "..
-							--                       dump(meta:get_int("bitten")))
 							if meta:get_int("snakepoison") > 0 or meta:get_int("bitten") > 0 then
-								water_life.hq_snakerun(self,31,target)
+								water_life.hq_snakerun(self, 31, target)
 							else
-								water_life.hq_hunt(self,31,target)
+								water_life.hq_hunt(self, 31, target)
 							end
 						end
 					end
-					
 				end
-				
 		end
 	end
 	
 	if mobkit.is_queue_empty_high(self) then
-		if self.isinliquid then water_life.hq_aqua_roam(self,21,1,"swim") end
+		if self.isinliquid then water_life.hq_aqua_roam(self, 21, 1, "swim") end
 		if self.isonground then
-			
-			water_life.hq_snake_move(self,10)
-			water_life.hq_idle(self,9,random(60,180),"sleep")
-			
-			
+			water_life.hq_snake_move(self, 10)
+			water_life.hq_idle(self, 9, random(60,180), "sleep")
 		end
 	end
-	
-	
-	
 end
 
 
 
 minetest.register_entity("water_life:snake",{
-											-- common props
+								-- common props
 	physical = true,
-	stepheight = 0.1,				--EVIL!
+	stepheight = 0.1,
 	collide_with_objects = false,
 	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
 	visual = "mesh",
@@ -169,16 +136,14 @@ minetest.register_entity("water_life:snake",{
 	visual_size = {x = 0.05, y = 0.05},
 	static_save = true,
 	makes_footstep_sound = false,
-	on_step = mobkit.stepfunc,	-- required
-	on_activate = mobkit.actfunc,		-- required
+	on_step = mobkit.stepfunc,
+	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
-											-- api props
 	springiness=0,
-	buoyancy = 0.99,					-- portion of hitbox submerged
+	buoyancy = 0.99,
 	max_speed = 7,                        
-	jump_height = 2.5, --1.26,
+	jump_height = 2.5,
 	view_range = 7,
---	lung_capacity = 0, 		-- seconds
 	max_hp = 20,
 	timeout=-300,
 	drops = {
@@ -213,8 +178,8 @@ minetest.register_entity("water_life:snake",{
 			if water_life.bloody then water_life.spilltheblood(self.object) end
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
 
-			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
-				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
+			if type(puncher)=='userdata' and puncher:is_player() then
+				mobkit.clear_queue_high(self)
 				if self.isinliquid then
 					water_life.hq_water_attack(self,puncher,31,4,true)
 				end
@@ -231,9 +196,13 @@ minetest.register_entity("water_life:snake",{
 		local item = clicker:get_wielded_item()
 		local name = clicker:get_player_name()
         
-		if not item or (item:get_name() ~= "fireflies:bug_net" and item:get_name() ~= water_life.catchNet) then return end
-		if not inv:room_for_item("main", "water_life:snake_item") then return end
-                                            
+		if not item or (item:get_name() ~= "fireflies:bug_net" 
+			and item:get_name() ~= water_life.catchNet) then
+				return
+		end
+		if not inv:room_for_item("main", "water_life:snake_item") then
+			return
+		end
 		if random(1000) < 333 then
 			inv:add_item("main", "water_life:snake_item")
 			self.object:remove()

@@ -211,7 +211,11 @@ end
 function water_life.dist2tgt(self,tgt)
 	local pos = mobkit.get_stand_pos(self)
 	local tpos = tgt:get_pos()
-	return vector.distance(pos,tpos)
+	if (not tgt or not self) then
+		return 100
+	else
+		return vector.distance(pos,tpos)
+	end
 end
 
 
