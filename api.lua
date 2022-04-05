@@ -115,7 +115,7 @@ end
 -- returns closest enemy or player, if player is true    enemies must be in entity definition: predators = {[name1]=1,[name2]=1,.....}
 function water_life.get_closest_enemy(self,player)	
 	local cobj = nil
-	local dist = water_life.abr*64
+	local dist = water_life.abo * 16
 	local pos = self.object:get_pos()
 	local otable = minetest.get_objects_inside_radius(pos, self.view_range)
 	
@@ -375,7 +375,7 @@ end
 -- counts animals in specified radius or active_block_range, returns a table containing numbers
 function water_life.count_objects(pos,radius,name)
 
-if not radius then radius = water_life.abr * 16 end
+if not radius then radius = water_life.abo * 16 end
 
 local all_objects = minetest.get_objects_inside_radius(pos, radius)
 local hasil = {}
