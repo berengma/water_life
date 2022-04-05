@@ -205,7 +205,7 @@ minetest.register_entity("water_life:gull",{
 	buoyancy = 0.59,					-- portion of hitbox submerged
 	max_speed = 3,                     
 	jump_height = 1.5,
-	view_range = water_life.abr*16,		-- max what server can handle, birds need good eyes !
+	view_range = water_life.abo * 16,		-- max what server can handle, birds need good eyes !
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 5,
 	timeout=10,

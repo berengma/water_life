@@ -149,7 +149,7 @@ minetest.register_entity("water_life:whale",{
 	view_range = 32,
 --	lung_capacity = 0, 		-- seconds
 	max_hp = 500,
-	timeout=30,
+	timeout = 30,
 	attack={range=4.5,damage_groups={fleshy=15}},
 	sounds = {
       random = "water_life_whale.ogg",
