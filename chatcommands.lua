@@ -40,6 +40,7 @@ minetest.register_chatcommand("wl_objects", {
 		local pos = player:get_pos()
 		
 		local showit = water_life.count_objects(pos)
+		minetest.chat_send_player(name, "ABO = "..water_life.abo..",   ABR = "..water_life.abr);
 		minetest.chat_send_player(name,dump(showit))
           
 		
