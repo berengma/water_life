@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "211225"
+water_life.version = "220406"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -21,7 +21,7 @@ water_life.avg_dtime = 0
 water_life.max_dtime = 0
 
 -- settingtypes
-water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100     
+water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100
 water_life.shark_spawn_rate =  tonumber(minetest.settings:get("water_life_shark_spawn_rate")) or 100
 water_life.urchin_spawn_rate =  tonumber(minetest.settings:get("water_life_urchin_spawn_rate")) or 700
 water_life.clams_spawn_rate = tonumber(minetest.settings:get("water_life_clams_spawn_rate")) or 500
@@ -32,51 +32,65 @@ water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs")) or 60
 water_life.apionly = minetest.settings:get_bool("water_life_apionly") or false
 water_life.dangerous = minetest.settings:get_bool("water_life_dangerous") or false
 water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust")) or 1.0
-water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120		-- lifetime in sec. ( <15 = no reproducing)
+
+-- lifetime in sec. ( <15 = no reproducing)
+water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
-water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)		-- the repellent lasts half a minetest day
-water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5			-- 5 days savety from rattlenakes for new players
+
+-- the repellent lasts half a minetest day
+water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
+
+-- 5 days savety from rattlenakes for new players
+water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5
 water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") or false
-water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true						-- let there be blood !
+
+-- let there be blood !
+water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
+
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
 
-
-dofile(path.."/api.lua")               											-- load water_life api
+-- load water_life api
+dofile(path.."/api.lua")
 dofile(path.."/compat.lua")
-dofile(path.."/paths.lua")													-- load pathfinding
-if water_life.muddy_water then dofile(path.."/mapgen.lua") end						-- load muddy_water
-dofile(path.."/crafts.lua")				 									-- load crafts
-dofile(path.."/tools/buoy.lua")												-- load buoy
-dofile(path.."/chatcommands.lua")												-- load chatcommands
-dofile(path.."/behaviors.lua")												-- load behaviors
-dofile(path.."/bio.lua")														-- load bio data handles
+
+-- load pathfinding
+dofile(path.."/paths.lua")
+
+-- load muddy_water
+if water_life.muddy_water then dofile(path.."/mapgen.lua") end
+
+dofile(path.."/crafts.lua")
+dofile(path.."/tools/buoy.lua")
+dofile(path.."/chatcommands.lua")
+dofile(path.."/behaviors.lua")
+dofile(path.."/bio.lua")
 
 if not water_life.apionly then
-	dofile(path.."/hud.lua")													-- load player hud
-	dofile(path.."/spawn.lua")												-- load spawn function
-	dofile(path.."/animals/whale.lua")											-- load whales	
-	dofile(path.."/animals/riverfish.lua")										-- load riverfish
-	dofile(path.."/animals/sea_urchin.lua")										-- load sea urchin
-	dofile(path.."/animals/clams.lua")											-- load clams
-	dofile(path.."/flora/plants.lua")											-- load water plants
-	dofile(path.."/flora/corals.lua")											-- load corals
-	dofile(path.."/animals/jellyfish.lua")										-- load jellyfish
-	dofile(path.."/animals/coralfish.lua")										-- load coralfish
-	dofile(path.."/animals/clownfish.lua")										-- load clownfish
-	dofile(path.."/animals/gulls.lua")											-- load gulls
-	dofile(path.."/animals/gecko.lua")											-- load tokays
-	dofile(path.."/animals/beaver.lua")										-- load beavers
+	dofile(path.."/hud.lua")
+	dofile(path.."/spawn.lua")
+	dofile(path.."/animals/whale.lua")
+	dofile(path.."/animals/riverfish.lua")
+	dofile(path.."/animals/sea_urchin.lua")
+	dofile(path.."/animals/clams.lua")
+	dofile(path.."/flora/plants.lua")
+	dofile(path.."/flora/corals.lua")
+	dofile(path.."/animals/jellyfish.lua")
+	dofile(path.."/animals/coralfish.lua")
+	dofile(path.."/animals/clownfish.lua")
+	dofile(path.."/animals/gulls.lua")
+	dofile(path.."/animals/gecko.lua")
+	dofile(path.."/animals/beaver.lua")
 	if not water_life.dangerous then
-		dofile(path.."/animals/snake.lua")											-- load snakes
-		dofile(path.."/animals/piranha.lua")										-- load piranha
-		dofile(path.."/animals/shark.lua")											-- load sharks
-		dofile(path.."/animals/crocodile.lua")										-- load crocodile
-		dofile(path.."/animals/moskito.lua")										-- load moskitos
+		dofile(path.."/animals/snake.lua")
+		dofile(path.."/animals/piranha.lua")
+		dofile(path.."/animals/shark.lua")
+		dofile(path.."/animals/crocodile.lua")
+		dofile(path.."/animals/moskito.lua")
 		if water_life.swampz then
-			dofile(path.."/animals/alligator.lua")									-- alligators need swampz mod
+			dofile(path.."/animals/alligator.lua")
 		end
 	end
 end
