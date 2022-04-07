@@ -191,7 +191,7 @@ minetest.register_entity("water_life:croc",{
 											-- api props
 	springiness=0,
 	buoyancy = 0.98,					-- portion of hitbox submerged
-	max_speed = 8,                        
+	max_speed = 6,                        
 	jump_height = 1.26,
 	view_range = water_life.abr * 12,
 --	lung_capacity = 0, 		-- seconds

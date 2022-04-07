@@ -81,7 +81,12 @@ local function spawnstep(dtime)
 				local radius = (water_life.abo * 12)
 				radius = random(7,radius)
 				local angel = math.rad(random(75))
-				if water_life.leftorright() then yaw = yaw + angel else yaw = yaw - angel end
+				if water_life.leftorright() then 
+					yaw = yaw + angel 
+					
+				else 
+					yaw = yaw - angel 
+				end
 				local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
 				local depth, stype, surface = water_life.water_depth(pos2,25)
 				local bdata =  water_life_get_biome_data(pos2)
@@ -110,13 +115,16 @@ local function spawnstep(dtime)
 					local ptime = water_life.get_game_time()
 					local mdata = water_life_get_biome_data(moskitopos)
 					--minetest.chat_send_all("MOSKITO: "..dump(moskitopos)..
-					--" : "..dump(mdata.temp).." : "..dump(ptime).." : "..dump(mlevel))
+					--" : "..dump(mdata.temp).." : "..dump(ptime)..
+					--" : "..dump(mlevel))
 					--minetest.chat_send_all(">>> Bzzzz  ... SPAWN")
 					----from 3pm to 5am or in shadows all day long
 					if ((ptime and ptime > 2) or mlevel < 8) 
 						and mdata.temp > 20 then			
-						minetest.set_node(moskitopos, {name = "water_life:moskito"})
-						minetest.get_node_timer(moskitopos):start(random(15,45))
+						minetest.set_node(moskitopos, 
+							{name = "water_life:moskito"})
+						minetest.get_node_timer(moskitopos):start(
+							random(15,45))
 						local pmeta = minetest.get_meta(moskitopos)
 						pmeta:set_int("mlife",math.floor(os.time()))
 					end
@@ -128,11 +136,14 @@ local function spawnstep(dtime)
 						mobname = 'water_life:snake'
 						local faktor = (100 - getcount(animal[mobname]) * 50) 
 						if random(100) < faktor then
-							local fits = minetest.is_protected(landpos,mobname)
+							local fits = minetest.is_protected(
+								landpos,mobname)
 							if (string.match(landdata.name,"desert") or 
 								string.match(landdata.name,"savanna"))
-								and not fits and landdata.temp > 15 then
-									local obj=minetest.add_entity(landpos,mobname)
+								and not fits and 
+								landdata.temp > 15 then
+								local obj=minetest.add_entity(
+									landpos,mobname)
 							end
 						end
 					end
