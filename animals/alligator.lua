@@ -9,8 +9,6 @@ local pow = math.pow
 local sign = math.sign
 local rad = math.rad
 
-
-
 local function alligator_brain(self)
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
@@ -18,131 +16,84 @@ local function alligator_brain(self)
 		mobkit.hq_die(self)
 		return
 	end
-	
 	if mobkit.timer(self,5) then
-		
 		local land = mobkit.recall(self,"landlife")
 		local water = mobkit.recall(self,"waterlife")
-		
 		if land then
 			land = math.floor(os.time()-land)
 			if random(500) < land then
-				--minetest.chat_send_all("Go to water")
 				mobkit.clear_queue_high(self)
 				water_life.hq_go2water(self,15)
 				
 			end
 		end
-		
 		if water then
 			water = math.floor(os.time()-water)
 			if random (500) < water then
-				--minetest.chat_send_all("Go to land")
 				mobkit.clear_queue_high(self)
 				water_life.hq_go2land(self,15)
 			end
 		end
-		
-		--minetest.chat_send_all("Land: "..dump(land).." :  Water: "..dump(water))
 	end
-	
 	if mobkit.timer(self,1) then
-		
-	if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
-		mobkit.remember(self,"waterlife",os.time())
-	end
-		
-	if self.isinliquid then
-		if mobkit.recall(self,"landlife") then
+		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.time())
-			mobkit.forget(self,"landlife")
 		end
-	end
-	
-	if self.isonground then
-		if mobkit.recall(self,"waterlife") then
-			mobkit.remember(self,"landlife",os.time())
-			mobkit.forget(self,"waterlife")
+		if self.isinliquid then
+			if mobkit.recall(self,"landlife") then
+				mobkit.remember(self,"waterlife",os.time())
+				mobkit.forget(self,"landlife")
+			end
 		end
-	end
-		
+		if self.isonground then
+			if mobkit.recall(self,"waterlife") then
+				mobkit.remember(self,"landlife",os.time())
+				mobkit.forget(self,"waterlife")
+			end
+		end
         local prty = mobkit.get_queue_priority(self)
-	   
 		if prty < 11 and self.isinliquid then
 			if water_life.check_for_pool(self) then
 				mobkit.clear_queue_high(self)
 				water_life.hq_aquaidle(self,12,"stand")
 			end
 		end
-			
-	   
 		if prty < 20 then 
-			
 			local target = mobkit.get_nearby_player(self)
-			--[[
-			if target and target:is_player() then
-					local name = target:get_player_name()
-					if minetest.check_player_privs(name, {server=true}) then target = nil end
-			end]]
-					
-			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)--mobkit.is_in_deep(target)
+			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
 			local corpse = water_life.get_close_drops(self,"meat")
 			local food = water_life.feed_shark(self)
-			
-			if target and mobkit.is_alive(target)  and target:get_attach() == nil and water_life.isinliquid(target) then --.is_in_deep(target) then
-				
-				local dist = water_life.dist2tgt(self,target)
-				if dist > 3 then
-					water_life.hq_water_attack(self,target,24,7,true)
-				end
-			end
-			
-			
-
-			if food and mobkit.is_in_deep(food) and not aliveinwater then
-								local dist = water_life.dist2tgt(self,food)
-								if dist > 3 then
-									mobkit.clear_queue_high(self)
-									water_life.hq_water_attack(self,food,25,7,true)
-								end
-			end
-			
-			if self.isinliquid then
-				
-				
-				
-				if target and mobkit.is_alive(target)  and target:get_attach() == nil and not water_life.isinliquid(target) then --.is_in_deep(target) then
-					
+			if target and mobkit.is_alive(target)  and target:get_attach() == nil
+				and water_life.isinliquid(target) then
 					local dist = water_life.dist2tgt(self,target)
-					if dist < 10 then
-						mobkit.clear_queue_high(self)
-						water_life.hq_go2land(self,20,target)
+					if dist > 3 then
+						water_life.hq_water_attack(self,target,24,7,true)
 					end
-					
+			end
+			if food and mobkit.is_in_deep(food) and not aliveinwater then
+				local dist = water_life.dist2tgt(self,food)
+				if dist > 3 then
+					mobkit.clear_queue_high(self)
+					water_life.hq_water_attack(self,food,25,7,true)
 				end
-				
+			end
+			if self.isinliquid then
+				if target and mobkit.is_alive(target)  and target:get_attach() == nil
+					and not water_life.isinliquid(target) then
+						local dist = water_life.dist2tgt(self,target)
+						if dist < 10 then
+							mobkit.clear_queue_high(self)
+							water_life.hq_go2land(self,20,target)
+						end
+				end
 				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
-					
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 10 then
 						mobkit.clear_queue_high(self)
 						water_life.hq_go2land(self,20,food)
 					end
-					
 				end
-				
-				--[[ not working yet
-				if corpse and water_life.inwater(corpse) then
-					
-					local dist = water_life.dist2tgt(self,corpse)
-					if dist < 7 and prty < 23 then
-						mobkit.clear_queue_high(self)
-						mobkit.clear_queue_low(self)
-						water_life.hq_swimto(self,23,1,nil,corpse:get_pos())--water_life.hq_catch_drop(self,23,corpse)
-					end
-				end]]
 			end
-			
 			if self.isonground then
 				local rnd = random(1000)
 				if rnd < 30 then
@@ -154,16 +105,13 @@ local function alligator_brain(self)
 						water_life.hq_hunt(self,24,target)
 					end
 				end
-				
 				if food and mobkit.is_alive(food) then
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 7 then
 						water_life.hq_hunt(self,25,food)
 					end
 				end
-				
 				if corpse and not water_life.inwater(corpse) then
-					
 					local dist = water_life.dist2tgt(self,corpse)
 					if dist < 16 and prty < 23 then
 						mobkit.clear_queue_high(self)
@@ -172,7 +120,6 @@ local function alligator_brain(self)
 					end
 				end
 			end
-				
 		end
 	end
 	
@@ -188,9 +135,8 @@ end
 
 
 minetest.register_entity("water_life:alligator",{
-											-- common props
 	physical = true,
-	stepheight = 0.5,				--EVIL!
+	stepheight = 0.5,
 	collide_with_objects = true,
 	collisionbox = {-0.25, -0.1, -0.25, 0.25, 0.5, 0.25},
 	visual = "mesh",
@@ -199,16 +145,14 @@ minetest.register_entity("water_life:alligator",{
 	visual_size = {x = 8, y = 8},
 	static_save = true,
 	makes_footstep_sound = true,
-	on_step = mobkit.stepfunc,	-- required
-	on_activate = mobkit.actfunc,		-- required
+	on_step = mobkit.stepfunc,
+	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
-											-- api props
 	springiness=0,
-	buoyancy = 0.98,					-- portion of hitbox submerged
+	buoyancy = 0.98,
 	max_speed = 9,                        
 	jump_height = 1.96,
 	view_range = water_life.abo * 12,
---	lung_capacity = 0, 		-- seconds
 	max_hp = 50,
 	timeout=30,
 	drops = {
@@ -240,18 +184,15 @@ minetest.register_entity("water_life:alligator",{
 		bite={range={x=110,y=140},speed=25,loop=false},
 		roll={range={x=190,y=215},speed=25,loop=false},
 		},
-	
 	brainfunc = alligator_brain,
-	
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
 			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
 			if water_life.bloody then water_life.spilltheblood(self.object) end
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
-
-			if type(puncher)=='userdata' and puncher:is_player() then	-- if hit by a player
-				mobkit.clear_queue_high(self)							-- abandon whatever they've been doing
+			if type(puncher)=='userdata' and puncher:is_player() then
+				mobkit.clear_queue_high(self)
 				water_life.hq_water_attack(self,puncher,20,6,true)
 			end
 		end
