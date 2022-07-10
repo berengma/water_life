@@ -1,15 +1,10 @@
-
 local phasearmor = {
 	[0]={fleshy=0},
 	[1]={fleshy=30},
 	[2]={fleshy=70}
 }
 
---spawning:
 water_life.clams_spawn = {"water_life:seagrassgreen","water_life:seagrassred"}
-
-
---entity def
 
 minetest.register_entity("water_life:clams", {
 	description="White shelled clams",
@@ -30,7 +25,7 @@ minetest.register_entity("water_life:clams", {
 	phasetimer = 0,
 	timeout = 0,
 	makes_footstep_sound = true,
-	on_activate = mobkit.actfunc,		-- required
+	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
 	on_step = function(self, dtime)
 		self.phasetimer = self.phasetimer + dtime
@@ -44,14 +39,10 @@ minetest.register_entity("water_life:clams", {
 			self.object:set_armor_groups(phasearmor[self.phase])
 		end
 	end,
-
 	on_punch = function(self, hitter)
-			
 			if self.object:get_hp() <= 5 then					
-			  
 			  minetest.add_item(self.object:getpos(), "water_life:meat_raw")
 			  self.object:set_hp(0)
 			end
 		end,
 })
-
