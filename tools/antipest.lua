@@ -1,8 +1,5 @@
-
 local car = 20                        -- cleanup_action_radius
 local chatmessage             = true
-
-      
 
 local function cleanup_dig(pos, current_charge, user)
 	local name = user:get_player_name()
@@ -25,9 +22,6 @@ local function cleanup_dig(pos, current_charge, user)
 				
 end
 
-
-
-
 minetest.register_tool("antipest:cleanup", {
 	description = ("Antipest - get rid of insects"),
 	inventory_image = "water_life_antipest.png",
@@ -35,20 +29,13 @@ minetest.register_tool("antipest:cleanup", {
 	wear_represents = "technic_RE_charge",
 	on_refill = technic.refill_RE_charge,
 	on_use = function(itemstack, user, pointed_thing)
-	   local name = user:get_player_name()
-	   
-	      if pointed_thing.under ~= nil then
-	        
+		local name = user:get_player_name()
+		if pointed_thing.under ~= nil then
 		local meta = minetest.deserialize(itemstack:get_metadata())
 		if not meta or not meta.charge or
 				meta.charge < cleanup_charge_per_node then
 			return
 		end
-
-		
-
-		-- Send current charge to digging function so that the
-		-- cleanup will stop after digging a number of nodes
 		meta.charge = cleanup_dig(pointed_thing.under, meta.charge, user)
 		if not technic.creative_mode then
 			technic.set_RE_wear(itemstack, meta.charge, cleanup_max_charge)
@@ -57,29 +44,16 @@ minetest.register_tool("antipest:cleanup", {
 	    end
 	   
    	   return itemstack
-	   
-	        
 	end,
-
 	on_place = function(itemstack, placer, pointed_thing)
-
 		local name = placer:get_player_name()
-		
-
 		chatmessage = not chatmessage
 		if chatmessage then 
-
 			minetest.chat_send_player(name,">>> Antipest report is ON")
-
 		else
-
 			minetest.chat_send_player(name,">>> Antipest report is OFF")
-
 		end
-
 	end,
-
-
 })
 
 minetest.register_craft({
@@ -90,4 +64,3 @@ minetest.register_craft({
 		{"technic:stainless_steel_ingot", "technic:red_energy_crystal", "technic:stainless_steel_ingot"},
 	}
 })
-
