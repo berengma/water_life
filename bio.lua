@@ -1,4 +1,3 @@
-
 local abs = math.abs
 local pi = math.pi
 local floor = math.floor
@@ -16,7 +15,6 @@ local tan = math.tan
 local cos = math.cos
 local atan=math.atan
 
-
 function water_life.init_bio(self)
 	local dna =  water_life.make_dna()
 	mobkit.remember(self,"wl_hunger",100)
@@ -32,7 +30,6 @@ function water_life.init_bio(self)
 	mobkit.remember(self,"wl_dna", dna)
 end
 
-
 function water_life.is_alive(self,change,set)
 	if not self then return 0 end
 	if not change then return mobkit.recall(self,"wl_life") or 1440 end
@@ -45,20 +42,17 @@ function water_life.is_alive(self,change,set)
 	self.timeout = change * -1
 end
 
-
 function water_life.is_parent(self,change)
 	if not self then return 0 end
 	if not change then return mobkit.recall(self,"wl_parent") or 0 end
 	mobkit.remember(self,"wl_parent", change)
 end
 
-
 function water_life.is_boss(self,change)
 	if not self then return 0 end
 	if not change then return mobkit.recall(self,"wl_boss") or 0 end
 	mobkit.remember(self,"wl_boss", change)
 end
-
 
 function water_life.dna(self,change)
 	if not self then return nil end
@@ -72,7 +66,6 @@ function water_life.dna(self,change)
 	
 	mobkit.remember(self,"wl_dna", change)
 end
-	
 
 function water_life.headpos(self,change)
 	if not self then return nil end
@@ -84,11 +77,9 @@ function water_life.headpos(self,change)
 			return nil
 		end
 	end
-	
 	mobkit.remember(self,"wl_headpos", minetest.serialize(change))
 end
 
-	
 function water_life.head(self)
 	if not self then return 0 end
 	local boss = mobkit.recall(self,"wl_head")
@@ -101,7 +92,6 @@ function water_life.head(self)
 	end
 end
 
-
 function water_life.hunger(self,change)
 	if not self then return 0 end
 	if not change then change = 0 end
@@ -112,7 +102,6 @@ function water_life.hunger(self,change)
 	mobkit.remember(self,"wl_hunger", hunger)
 	return hunger
 end
-
 
 function water_life.exhaust(self,change)
 	if not self then return 0 end
@@ -136,7 +125,6 @@ function water_life.thirst(self,change)
 	return thirst
 end
 
-
 function water_life.horny(self,change)
 	if not self then return 0 end
 	if not change then change = 0 end
@@ -148,14 +136,12 @@ function water_life.horny(self,change)
 	return horny
 end
 
-
 function water_life.pregnant(self,change)
 	if not self then return -1 end
 	if not change then return mobkit.recall(self,"wl_pregnant") or -1 end
 	
 	mobkit.remember(self,"wl_pregnant", change)
 end
-
 
 function water_life.make_dna(length)
 	if not length then length=32 end
@@ -168,6 +154,3 @@ function water_life.make_dna(length)
 	
 	return dna
 end
-		
-	
-	
