@@ -48,9 +48,7 @@ water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") 
 -- let there be blood !
 water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
 
-
 local path = minetest.get_modpath(minetest.get_current_modname())
-
 
 -- load water_life api
 dofile(path.."/api.lua")
@@ -101,20 +99,13 @@ if water_life.mobsredo then
 	water_life.catchBA = "mobs:lasso"
 	water_life.catchNet = "mobs:net"
 	if water_life.petz then minetest.unregister_item("petz:lasso") end
-	
 elseif water_life.petz then
 	water_life.catchBA = "petz:lasso"
-	
 else
 	water_life.catchBA = "water_life:lasso"
 end
 
-
-
-
 math.randomseed(os.time()) --init random seed
-
-
 
 --remove old sharks
 minetest.register_entity(":sharks:shark", {
@@ -129,11 +120,7 @@ minetest.register_entity(":zombiestrd:shark", {
 	end,
 })
 
-
-
 -- register shark food
-
-
 if minetest.get_modpath("wildlife") then
 	water_life.register_shark_food("wildlife:deer")
 	water_life.register_shark_food("wildlife:deer_tamed")
@@ -186,9 +173,7 @@ if minetest.get_modpath("better_fauna") then
 	water_life.register_shark_food("better_fauna:turkey")
 end
 
-
 -- register gull bait
-
 water_life.register_gull_bait("water_life:clownfish")
 water_life.register_gull_bait("water_life:coralfish")
 water_life.register_gull_bait("water_life:riverfish")
@@ -201,5 +186,3 @@ water_life.register_gull_bait("water_life:meat")
 if minetest.get_modpath("farming") then
 	water_life.register_gull_bait("farming:bread")
 end
-
-
