@@ -7,9 +7,8 @@ local dtmax=0
 local dttimer = 10
 local pi = math.pi
 local random = water_life.random
-local landinterval = 120		-- check every 60 seconds for spawnpos on land
-local waterinterval = 30		-- check every 20 seconds for spawnpos in water
-
+local landinterval = 120
+local waterinterval = 30
 
 local function getcount(name)
 	if not name then
@@ -19,9 +18,7 @@ local function getcount(name)
 	end
 end
 
-
 local function spawnstep(dtime)
-	
 	-- dtime measurement by Termos
 	if dtnum < 10001 then
 		dttot=dttot+dtime
@@ -45,14 +42,9 @@ local function spawnstep(dtime)
 
 	timer = timer + dtime
 	landtimer = landtimer + dtime
-	
 	if timer > waterinterval then
-		
-		
 		for _,plyr in ipairs(minetest.get_connected_players()) do
-			
 			local toomuch = false
-			
 			if plyr and plyr:is_player() then
 				local meta = plyr:get_meta()
 				if meta:get_int("snakepoison") > 0 then
@@ -67,23 +59,19 @@ local function spawnstep(dtime)
 					end
 				end
 			end
-			
 			-- spawn only between -50 < y < 150
 			if plyr and plyr:is_player() and plyr:get_pos().y > -50 
 				and plyr:get_pos().y < 150 and not water_life.apionly then
-		
 				local pos = plyr:get_pos()
 				local yaw = plyr:get_look_horizontal()
 				local animal = water_life.count_objects(pos)
 				local meta = plyr:get_meta()
-				
 				if animal.all > water_life.maxmobs then toomuch = true end
 				local radius = (water_life.abo * 12)
 				radius = random(7,radius)
 				local angel = math.rad(random(75))
 				if water_life.leftorright() then 
 					yaw = yaw + angel 
-					
 				else 
 					yaw = yaw - angel 
 				end
@@ -114,11 +102,6 @@ local function spawnstep(dtime)
 					local mlevel = minetest.get_node_light(moskitopos)
 					local ptime = water_life.get_game_time()
 					local mdata = water_life_get_biome_data(moskitopos)
-					--minetest.chat_send_all("MOSKITO: "..dump(moskitopos)..
-					--" : "..dump(mdata.temp).." : "..dump(ptime)..
-					--" : "..dump(mlevel))
-					--minetest.chat_send_all(">>> Bzzzz  ... SPAWN")
-					----from 3pm to 5am or in shadows all day long
 					if ((ptime and ptime > 2) or mlevel < 8) 
 						and mdata.temp > 20 then			
 						minetest.set_node(moskitopos, 
