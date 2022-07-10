@@ -2,23 +2,19 @@ local function coral_on_place(itemstack, placer, pointed_thing)
 	if pointed_thing.type ~= "node" or not placer then
 		return itemstack
 	end
-
 	local player_name = placer:get_player_name()
 	local pos_under = pointed_thing.under
 	local pos_above = pointed_thing.above
 	local node_under = minetest.get_node(pos_under)
 	local def_under = minetest.registered_nodes[node_under.name]
-
 	if def_under and def_under.on_rightclick and not placer:get_player_control().sneak then
 		return def_under.on_rightclick(pos_under, node_under,
 				placer, itemstack, pointed_thing) or itemstack
 	end
-
 	if node_under.name ~= "default:coral_skeleton" or
 			minetest.get_node(pos_above).name ~= "default:water_source" then
 		return itemstack
 	end
-
 	if minetest.is_protected(pos_under, player_name) or
 			minetest.is_protected(pos_above, player_name) then
 		minetest.log("action", player_name
@@ -28,13 +24,11 @@ local function coral_on_place(itemstack, placer, pointed_thing)
 		minetest.record_protection_violation(pos_under, player_name)
 		return itemstack
 	end
-
 	node_under.name = itemstack:get_name()
 	minetest.set_node(pos_under, node_under)
 	if not (creative and creative.is_enabled_for(player_name)) then
 		itemstack:take_item()
 	end
-
 	return itemstack
 end
 
