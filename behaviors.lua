@@ -319,9 +319,9 @@ function water_life.lq_jumpattack(self,height,target,extra)
 							minetest.chat_send_player(
 								target:get_player_name(),
 								minetest.colorize('#fd4000', 
-								">>> A rattlesnake bit you. New player
-								bonus of "..left.. " days left. Catch 
-								3 snakes to craft antiserum"))
+								">>> A rattlesnake bit you. New player"..
+								"bonus of "..left.. " days left. Catch "..
+								"3 snakes to craft antiserum"))
 							meta:set_int("bitten", 1)
 							minetest.after(10,function()
 								meta:set_int("bitten",0)
