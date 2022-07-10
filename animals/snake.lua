@@ -10,21 +10,15 @@ local sign = math.sign
 local rad = math.rad
 
 local function snake_brain(self)
-	
-	-- handling death
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
 		water_life.handle_drops(self)
 		mobkit.hq_die(self)
 		return
 	end
-	
-	-- handling life in water and on land
 	if mobkit.timer(self,5) then
-		
 		local land = mobkit.recall(self,"landlife")
 		local water = mobkit.recall(self,"waterlife")
-		
 		if land then
 			land = math.floor(os.time() - land)
 			if random(240,360) < land then
@@ -32,7 +26,6 @@ local function snake_brain(self)
 				water_life.hq_go2water(self, 15)
 			end
 		end
-		
 		if water then
 			water = math.floor(os.time()-water)
 			if random (60,120) < water then
@@ -41,78 +34,63 @@ local function snake_brain(self)
 			end
 		end
 	end
-	
 	if mobkit.timer(self,1) then
-			
 		if not mobkit.recall(self,"landlife") and 
 			not mobkit.recall(self,"waterlife") then
 				mobkit.remember(self,"waterlife", os.time())
 		end
-			
 		if self.isinliquid then
 			if mobkit.recall(self,"landlife") then
 				mobkit.remember(self,"waterlife", os.time())
 				mobkit.forget(self,"landlife")
 			end
 		end
-		
 		if self.isonground then
 			if mobkit.recall(self,"waterlife") then
 				mobkit.remember(self,"landlife", os.time())
 				mobkit.forget(self,"waterlife")
 			end
 		end
-			
 		local prty = mobkit.get_queue_priority(self)
-		
-			if prty < 20 then 
-				local target = mobkit.get_nearby_player(self)
-				local aliveinwater = target and mobkit.is_alive(target)
-					and mobkit.is_in_deep(target)
-				
-				if target and mobkit.is_alive(target) 
-					and target:get_attach() == nil 
-					and aliveinwater then
-					
-					local dist = water_life.dist2tgt(self,target)
-					if dist < self.view_range then
-						-- snakes do not attack when in water
-					end
+		if prty < 20 then 
+			local target = mobkit.get_nearby_player(self)
+			local aliveinwater = target and mobkit.is_alive(target)
+				and mobkit.is_in_deep(target)
+			if target and mobkit.is_alive(target) 
+				and target:get_attach() == nil 
+				and aliveinwater then
+				local dist = water_life.dist2tgt(self,target)
+				if dist < self.view_range then
+					-- snakes do not attack when in water
 				end
-				
-				
-				if self.isinliquid then
-					mobkit.clear_queue_high(self)
-					mobkit.clear_queue_low(self)
-					water_life.hq_aqua_roam(self, 21, 1, "swim")
-				end
-				
-				if self.isonground then
-					
-					if target and mobkit.is_alive(target)  then
-						local action = mobkit.recall(self,"warned")
-						local pname = target:get_player_name()
-						local dist = water_life.dist2tgt(self, target)
-						
-						if  dist > 4 and dist < self.view_range and not action then
-							mobkit.clear_queue_high(self)
-							mobkit.clear_queue_low(self)
-							water_life.hq_snake_warn(self, target, 30, 8)
-						elseif dist < 5 or action == pname then
-							mobkit.forget(self, "warned")
-							
-							local meta = target:get_meta()
-							if meta:get_int("snakepoison") > 0 or meta:get_int("bitten") > 0 then
-								water_life.hq_snakerun(self, 31, target)
-							else
-								water_life.hq_hunt(self, 31, target)
-							end
+			end
+			if self.isinliquid then
+				mobkit.clear_queue_high(self)
+				mobkit.clear_queue_low(self)
+				water_life.hq_aqua_roam(self, 21, 1, "swim")
+			end
+			if self.isonground then
+				if target and mobkit.is_alive(target)  then
+					local action = mobkit.recall(self,"warned")
+					local pname = target:get_player_name()
+					local dist = water_life.dist2tgt(self, target)
+					if  dist > 4 and dist < self.view_range and not action then
+						mobkit.clear_queue_high(self)
+						mobkit.clear_queue_low(self)
+						water_life.hq_snake_warn(self, target, 30, 8)
+					elseif dist < 5 or action == pname then
+						mobkit.forget(self, "warned")
+						local meta = target:get_meta()
+						if meta:get_int("snakepoison") > 0 or meta:get_int("bitten") > 0 then
+							water_life.hq_snakerun(self, 31, target)
+						else
+							water_life.hq_hunt(self, 31, target)
 						end
 					end
 				end
+			end
 		end
 	end
-	
 	if mobkit.is_queue_empty_high(self) then
 		if self.isinliquid then water_life.hq_aqua_roam(self, 21, 1, "swim") end
 		if self.isonground then
@@ -122,10 +100,7 @@ local function snake_brain(self)
 	end
 end
 
-
-
 minetest.register_entity("water_life:snake",{
-								-- common props
 	physical = true,
 	stepheight = 0.1,
 	collide_with_objects = false,
@@ -151,7 +126,6 @@ minetest.register_entity("water_life:snake",{
 		{name = "water_life:meat_raw", chance = 2, min = 1, max = 2,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
-	
 	animation = {
 		def={range={x=80,y=100},speed=20,loop=true},
 		stand={range={x=80,y=100},speed=20,loop=false},
@@ -162,7 +136,6 @@ minetest.register_entity("water_life:snake",{
 		sleep={range={x=1504,y=2652},speed=20,loop=false},
 		look={range={x=2660,y=2920},speed=20,loop=false},
 		},
-
 	sounds = {
 		warn={
                 name='water_life_snake',
@@ -170,14 +143,12 @@ minetest.register_entity("water_life:snake",{
                 }
 		},                                  
 	brainfunc = snake_brain,
-	
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then
 			local hvel = vector.multiply(vector.normalize({x=dir.x,y=0,z=dir.z}),4)
 			self.object:set_velocity({x=hvel.x,y=2,z=hvel.z})
 			if water_life.bloody then water_life.spilltheblood(self.object) end
 			mobkit.hurt(self,tool_capabilities.damage_groups.fleshy or 1)
-
 			if type(puncher)=='userdata' and puncher:is_player() then
 				mobkit.clear_queue_high(self)
 				if self.isinliquid then
@@ -189,13 +160,11 @@ minetest.register_entity("water_life:snake",{
 			end
 		end
 	end,
-                                             
 	on_rightclick = function(self, clicker)
 		if not clicker or not clicker:is_player() then return end
 		local inv = clicker:get_inventory()
 		local item = clicker:get_wielded_item()
 		local name = clicker:get_player_name()
-        
 		if not item or (item:get_name() ~= "fireflies:bug_net" 
 			and item:get_name() ~= water_life.catchNet) then
 				return
