@@ -11,6 +11,8 @@ local rad = math.rad
 
 local function croc_brain(self)
 
+	local prty = mobkit.get_queue_priority(self)
+
 	--die
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
@@ -23,13 +25,13 @@ local function croc_brain(self)
 	if mobkit.timer(self,10) then
 		local land = mobkit.recall(self,"landlife")
 		local water = mobkit.recall(self,"waterlife")
-		if land then
+		if land and prty < 15 then
 			land = math.floor(os.time() - land)
 			if random(500) < land then
 				water_life.hq_go2water(self,15)
 			end
 		end
-		if water then
+		if water and prty < 15 then
 			water = math.floor(os.time() - water)
 			if random (500) < water then
 				water_life.hq_go2land(self,15)
@@ -39,7 +41,6 @@ local function croc_brain(self)
 
 	--every other action check each second
 	if mobkit.timer(self,1) then
-		local prty = mobkit.get_queue_priority(self)
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.time())
 		end
@@ -79,14 +80,13 @@ local function croc_brain(self)
 					and not water_life.isinliquid(target) then
 						local dist = water_life.dist2tgt(self,target)
 						if dist < 10 then
-							water_life.hq_go2land(self,20,target)
+							water_life.hq_go2land(self,15,target)
 						end
 				end
 				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 10 then
-						mobkit.clear_queue_high(self)
-						water_life.hq_go2land(self,20,food)
+						water_life.hq_go2land(self,15,food)
 					end
 				end
 			end
@@ -116,12 +116,14 @@ local function croc_brain(self)
 					end
 				end
 			end
-				
 		end
 	end
 	if mobkit.is_queue_empty_high(self) then
-		if self.isinliquid then water_life.hq_aqua_roam(self,10,1) end
-		if self.isonground then  water_life.hq_slow_roam(self,10) end
+		if self.isinliquid then 
+			water_life.hq_aqua_roam(self,10,1) 
+		else
+			water_life.hq_slow_roam(self,12) 
+		end
 	end
 end
 
@@ -129,7 +131,7 @@ minetest.register_entity("water_life:croc",{
 	physical = true,
 	stepheight = 0.5,
 	collide_with_objects = true,
-	collisionbox = {-0.5, -0.2, -0.5, 0.5, 0.2, 0.5},
+	collisionbox = {-0.5, 0, -0.5, 0.5, 0.3, 0.5},
 	visual = "mesh",
 	mesh = "water_life_crocodile.b3d",
 	textures = {"water_life_crocodile.png"},

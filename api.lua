@@ -655,6 +655,31 @@ function water_life.get_next_waypoint_fast(self,tpos,nogopos)
 	end
 end
 
+function water_life.getLandPos(self, start)
+	local target = nil
+	local fpos = nil
+	local pos = mobkit.get_stand_pos(self)
+
+	for i = start,359,15 do
+		local yaw = rad(i)
+		target = mobkit.pos_translate2d(pos,yaw,self.view_range)
+		fpos = water_life.find_collision(pos,target,false)
+		if fpos then
+			target = mobkit.pos_translate2d(pos,yaw,fpos+0.5)
+			local node=minetest.get_node({x=target.x,y=target.y+1,
+				z=target.z})
+			 if node.name == "air" then
+				return target	
+			 else
+				 target = nil
+			 end
+		else
+			target = nil
+		end
+	end
+	return target
+end
+
 function water_life.goto_next_waypoint(self,tpos)
 	local height, pos2 = water_life.get_next_waypoint_fast(self,tpos)
 	if not height then return false end
