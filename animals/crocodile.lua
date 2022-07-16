@@ -10,30 +10,34 @@ local sign = math.sign
 local rad = math.rad
 
 local function croc_brain(self)
+
+	--die
 	if self.hp <= 0 then	
 		mobkit.clear_queue_high(self)
 		water_life.handle_drops(self)
 		mobkit.hq_die(self)
 		return
 	end
-	if mobkit.timer(self,5) then
+
+	--chose between land and water
+	if mobkit.timer(self,10) then
 		local land = mobkit.recall(self,"landlife")
 		local water = mobkit.recall(self,"waterlife")
 		if land then
-			land = math.floor(os.time()-land)
+			land = math.floor(os.time() - land)
 			if random(500) < land then
-				mobkit.clear_queue_high(self)
 				water_life.hq_go2water(self,15)
 			end
 		end
 		if water then
-			water = math.floor(os.time()-water)
+			water = math.floor(os.time() - water)
 			if random (500) < water then
-				mobkit.clear_queue_high(self)
 				water_life.hq_go2land(self,15)
 			end
 		end
 	end
+
+	--every other action check each second
 	if mobkit.timer(self,1) then
 		local prty = mobkit.get_queue_priority(self)
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
@@ -51,6 +55,7 @@ local function croc_brain(self)
 				mobkit.forget(self,"waterlife")
 			end
 		end
+
 		if prty < 20 then 
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
@@ -59,14 +64,13 @@ local function croc_brain(self)
 			if target and mobkit.is_alive(target)  and target:get_attach() == nil 
 				and water_life.isinliquid(target) then
 				local dist = water_life.dist2tgt(self,target)
-				if dist > 3 then
+				if dist > 2 then
 					water_life.hq_water_attack(self,target,24,7,true)
 				end
 			end
 			if food and mobkit.is_in_deep(food) and not aliveinwater then
 				local dist = water_life.dist2tgt(self,food)
-				if dist > 3 then
-					mobkit.clear_queue_high(self)
+				if dist > 2 then
 					water_life.hq_water_attack(self,food,25,7,true)
 				end
 			end
@@ -75,7 +79,6 @@ local function croc_brain(self)
 					and not water_life.isinliquid(target) then
 						local dist = water_life.dist2tgt(self,target)
 						if dist < 10 then
-							mobkit.clear_queue_high(self)
 							water_life.hq_go2land(self,20,target)
 						end
 				end
@@ -87,6 +90,8 @@ local function croc_brain(self)
 					end
 				end
 			end
+
+			--on land
 			if self.isonground then
 				local rnd = random(1000)
 				if rnd < 30 then
@@ -95,20 +100,18 @@ local function croc_brain(self)
 				if target and mobkit.is_alive(target)  then
 					local dist = water_life.dist2tgt(self,target)
 					if dist < 7 then
-						water_life.hq_hunt(self,24,target)
+						water_life.hq_hunt(self,24,target,7)
 					end
 				end
 				if food and mobkit.is_alive(food) then
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 7 then
-						water_life.hq_hunt(self,25,food)
+						water_life.hq_hunt(self,25,food,7)
 					end
 				end
 				if corpse and not water_life.inwater(corpse) then
 					local dist = water_life.dist2tgt(self,corpse)
 					if dist < 16 and prty < 23 then
-						mobkit.clear_queue_high(self)
-						mobkit.clear_queue_low(self)
 						water_life.hq_catch_drop(self,23,corpse)
 					end
 				end
@@ -126,7 +129,7 @@ minetest.register_entity("water_life:croc",{
 	physical = true,
 	stepheight = 0.5,
 	collide_with_objects = true,
-	collisionbox = {-0.3, -0.1, -0.3, 0.3, 0.3, 0.3},
+	collisionbox = {-0.5, -0.2, -0.5, 0.5, 0.2, 0.5},
 	visual = "mesh",
 	mesh = "water_life_crocodile.b3d",
 	textures = {"water_life_crocodile.png"},
@@ -137,6 +140,7 @@ minetest.register_entity("water_life:croc",{
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
 	springiness=0,
+	buoyancy = 0.99,
 	max_speed = 6,                        
 	jump_height = 1.26,
 	view_range = water_life.abr * 12,
