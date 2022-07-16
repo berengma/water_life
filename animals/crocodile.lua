@@ -78,7 +78,6 @@ local function croc_brain(self)
 							mobkit.clear_queue_high(self)
 							water_life.hq_go2land(self,20,target)
 						end
-					
 				end
 				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
 					local dist = water_life.dist2tgt(self,food)
