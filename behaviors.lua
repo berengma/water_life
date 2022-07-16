@@ -487,7 +487,7 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 			end	
 			if yaw ~= nyaw then
 				tyaw=nyaw
-				mobkit.turn2yaw(self,yaw) --mobkit.hq_aqua_turn(self,prty + 1,tyaw,speed)
+				mobkit.hq_aqua_turn(self,prty + 1,tyaw,speed)
 				--return
 			end
 		end
@@ -643,6 +643,7 @@ function water_life.hq_go2land(self,prty,tgt)
 		end
 		if self.isonground then
 				mobkit.clear_queue_low(self)
+				mobkit.clear_queue_high(self)
 				return true 
 		end
 		if target then
