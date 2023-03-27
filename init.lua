@@ -10,6 +10,7 @@ water_life.version = "220710"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
+water_life.no_spawn_table = {}
 water_life.catchNet = "water_life:placeholder"
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")

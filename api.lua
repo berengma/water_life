@@ -219,12 +219,25 @@ function water_life.handle_drops(self)
     end
 end
 
+function water_life.no_spawn_of(mobname)
+	if not mobname then
+		return
+	end
+	table.insert(water_life.no_spawn_table, mobname)
+end
+
 function water_life.register_shark_food(name)
-    table.insert(water_life.shark_food,name)
+	if not name then
+		return
+	end
+    table.insert(water_life.shark_food, name)
 end
 
 function water_life.register_gull_bait(name)
-    if name then water_life.gull_bait[name] = 1 end
+    if not name then 
+		return
+	end
+	water_life.gull_bait[name] = 1
 end
 
 function water_life.feed_shark(self)

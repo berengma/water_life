@@ -66,8 +66,12 @@ local function repel_insects(player)
 end
 
 local function spawn_it_here(pos, mobname)
-	
-	minetest.chat_send_all("Spawned: "..mobname);
+
+	for i = 0, #water_life.no_spawn_table, 1 do
+		if water_life.no_spawn_table[i] == mobname then
+			return
+		end
+	end
 	minetest.add_entity(pos,mobname)
 end
 	
