@@ -598,7 +598,7 @@ function water_life.hq_slow_roam(self,prty,idle)
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(
 				self,neighbor)
 			if height and not liquidflag then 
-				mobkit.dumbstep(self,height,tpos,1,idle)
+				water_life.dumbstep(self,height,tpos,1,idle)
 			end
 		end
 	end

@@ -72,6 +72,9 @@ local function spawn_it_here(pos, mobname)
 			return
 		end
 	end
+	if water_life.radar_debug then
+		minetest.chat_send_all(mobname.." spawned.")
+	end
 	minetest.add_entity(pos,mobname)
 end
 	
@@ -86,29 +89,12 @@ local function spawnstep(dtime)
 		return
 	end
 	for _,plyr in ipairs(minetest.get_connected_players()) do
-		local toomuch = false
 		local pos = plyr:get_pos()
 		local yaw = plyr:get_look_horizontal()
 		local animal = water_life.count_objects(pos)
 		local meta = plyr:get_meta()
-
-		if not plyr or not plyr:is_player() then
-			goto continue
-		end
-		poison_player(plyr)
-		repel_insects(plyr)
-		if pos.y < -50 or pos.y > 150 then
-			goto continue
-		end
-		if animal.all > water_life.maxmobs then toomuch = true end
 		local radius = (water_life.abo * 12)
-		radius = random(7,radius)
 		local angel = math.rad(random(75))
-		if water_life.leftorright() then 
-			yaw = yaw + angel 
-		else 
-			yaw = yaw - angel 
-		end
 		local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
 		local depth, stype, surface = water_life.water_depth(pos2,25)
 		local bdata =  water_life_get_biome_data(pos2)
@@ -118,7 +104,21 @@ local function spawnstep(dtime)
 		local geckopos = nil
 		local moskitopos = nil
 		local mobname = ""
-		
+
+		if not plyr or not plyr:is_player() then
+			goto continue
+		end
+		poison_player(plyr)
+		repel_insects(plyr)
+		if pos.y < -50 or pos.y > 150 or animal.all > water_life.maxmobs then
+			goto continue
+		end
+		radius = random(7,radius)
+		if water_life.leftorright() then 
+			yaw = yaw + angel 
+		else 
+			yaw = yaw - angel 
+		end
 		-- no need of so many postions on land
 		if landtimer > landinterval then
 			landpos = water_life.find_node_under_air(pos2)
@@ -128,8 +128,8 @@ local function spawnstep(dtime)
 				moskitopos = water_life.find_node_under_air(pos2,5,
 					{"group:water","group:flora","group:crumbly"})
 			end
+			landtimer = 0 
 		end
-		
 		-- mosqitos only bettween -10 < y < 100
 		if moskitopos and not water_life.dangerous 
 			and moskitopos.y > -10 and moskitopos.y < 100 then
@@ -188,7 +188,6 @@ local function spawnstep(dtime)
 		end
 		
 		--water spawn
-			
 		if depth and depth > 0 then									
 			if water_life.radar_debug then
 				water_life.temp_show(surface,9,5)
@@ -210,7 +209,7 @@ local function spawnstep(dtime)
 			liquidflag = "swamp"
 		end
 	
-		if liquidflag and not toomuch and surface then
+		if liquidflag and surface then
 			ground = mobkit.pos_shift(surface,{y=(dalam*-1)})
 			local pool = water_life.check_for_pool(nil,4,8,surface)
 			if water_life.radar_debug then
@@ -242,7 +241,8 @@ local function spawnstep(dtime)
 						spawn_it_here(surface,mobname)
 					end
 				end
-				
+			
+				--[[
 				mobname = 'water_life:snake'
 				local faktor = (100 - getcount(animal[mobname]) * 50) +25
 				if random(100) < faktor then
@@ -255,6 +255,7 @@ local function spawnstep(dtime)
 						spawn_it_here(surface,mobname)
 					end
 				end
+				--]]
 					
 				mobname = 'water_life:shark'
 				if water_life.shark_spawn_rate >= random(1000) then
@@ -271,14 +272,6 @@ local function spawnstep(dtime)
 				end
 			end
 			
-			mobname = "water_life:gull"
-			local faktor = 100 - getcount(animal[mobname]) * 20
-			if random(100) < faktor and (liquidflag == "sea" or liquidflag == "river") then
-				if depth > 2 and not water_life.check_for_pool(nil,2,10,surface)then
-					spawn_it_here(surface,mobname)
-				end
-			end
-			
 			mobname = "water_life:urchin"
 			if water_life.urchin_spawn_rate >= random(1000) then
 				local upos1 = mobkit.pos_shift(ground,{x=-5,y=-2,z=-5})
@@ -291,8 +284,9 @@ local function spawnstep(dtime)
 					local coralpos = coraltable[random(#coraltable)]
 					coralpos.y = coralpos.y +1
 					local node = minetest.get_node(coralpos)
-					if node.name == "default:water_source" then
-						local obj= water_life.set_urchin(coralpos)
+					if node.name == "default:water_source" or
+					node.name == "islands:water_source" then
+						water_life.set_urchin(coralpos)
 					end
 				end
 			end
@@ -311,9 +305,9 @@ local function spawnstep(dtime)
 					local coralpos = mobkit.pos_shift(
 						coraltable[random(#coraltable)],{y=1})
 					local node = minetest.get_node(coralpos)
-					if node.name == "default:water_source" then
-						local obj= water_life.set_urchin(
-						coralpos,"water_life:clams")
+					if node.name == "default:water_source" or
+						node.name == "islands:water_source" then
+						water_life.set_urchin(coralpos,"water_life:clams")
 					end
 				end
 			end
@@ -335,7 +329,7 @@ local function spawnstep(dtime)
 			if random(100) < faktor and liquidflag == "sea" and 
 				#coraltable > 1 then
 				local cfish = coraltable[random(#coraltable)]
-				cfish.y = cfish.y +1
+				cfish.y = cfish.y + 1
 				local maxfish = random(3,7)
 				for i = 1,maxfish,1 do
 					spawn_it_here(cfish,mobname)
@@ -409,13 +403,18 @@ local function spawnstep(dtime)
 					end
 				end
 			end
+
+			mobname = "water_life:gull"
+			local faktor = 100 - getcount(animal[mobname]) * 20
+			if random(100) < faktor and (liquidflag == "sea" or liquidflag == "river") then
+				if depth > 2 and not water_life.check_for_pool(nil,2,10,surface)then
+					spawn_it_here(surface,mobname)
+				end
+			end
 		end
 		::continue::
 	end
 	timer = 0
-	if landtimer > landinterval then 
-		landtimer = 0 
-	end
 end
 
 
