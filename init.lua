@@ -17,7 +17,7 @@ water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.farming = minetest.get_modpath("farming")
 water_life.swampz = minetest.get_modpath("swaz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
-water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
+water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 2
 water_life.avg_dtime = 0
 water_life.max_dtime = 0
 
@@ -36,6 +36,8 @@ water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust"
 
 -- lifetime in sec. ( <15 = no reproducing)
 water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
+water_life.moskito_minpos = tonumber(minetest.settings:get("water_life_moskito_minpos")) or -10
+water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_maxpos")) or 100
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 

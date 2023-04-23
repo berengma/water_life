@@ -7,8 +7,8 @@ local dtmax=0
 local dttimer = 10
 local pi = math.pi
 local random = water_life.random
-local landinterval = 120
-local waterinterval = 30
+local landinterval = 20
+local waterinterval = 10
 
 
 local function getcount(name)
@@ -97,7 +97,7 @@ local function spawnstep(dtime)
 		local angel = math.rad(random(75))
 		local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
 		local depth, stype, surface = water_life.water_depth(pos2,25)
-		local bdata =  water_life_get_biome_data(pos2)
+		local bdata =  water_life.get_biome_data(pos2)
 		local ground = {}
 		local dalam = depth
 		local landpos = nil
@@ -128,27 +128,28 @@ local function spawnstep(dtime)
 				moskitopos = water_life.find_node_under_air(pos2,5,
 					{"group:water","group:flora","group:crumbly"})
 			end
-			landtimer = 0 
 		end
 		-- mosqitos only bettween -10 < y < 100
 		if moskitopos and not water_life.dangerous 
-			and moskitopos.y > -10 and moskitopos.y < 100 then
+			and moskitopos.y > water_life.moskito_minpos and moskitopos.y < water_life.moskito_maxpos then
 			local mlevel = minetest.get_node_light(moskitopos)
 			local ptime = water_life.get_game_time()
-			local mdata = water_life_get_biome_data(moskitopos)
+			local mdata = water_life.get_biome_data(moskitopos)
+			local mmintime = water_life.moskitolifetime / 3
+			local mmaxtime = water_life.moskitolifetime
 			if ((ptime and ptime > 2) or mlevel < 8) 
 				and mdata.temp > 20 then			
 				minetest.set_node(moskitopos, 
 					{name = "water_life:moskito"})
 				minetest.get_node_timer(moskitopos):start(
-					random(15,45))
+					random(mmintime, mmaxtime))
 				local pmeta = minetest.get_meta(moskitopos)
 				pmeta:set_int("mlife",math.floor(os.time()))
 			end
 		end
 		
 		if landpos then
-			local landdata =  water_life_get_biome_data(landpos)
+			local landdata =  water_life.get_biome_data(landpos)
 			if not water_life.dangerous then
 				mobname = 'water_life:snake'
 				local faktor = (100 - getcount(animal[mobname]) * 50) 
@@ -175,7 +176,7 @@ local function spawnstep(dtime)
 		end
 		
 		if geckopos then
-			local landdata =  water_life_get_biome_data(geckopos)
+			local landdata =  water_life.get_biome_data(geckopos)
 			mobname = 'water_life:gecko'
 			local faktor = (100 - getcount(animal[mobname]) * 50)
 			if random(100) < faktor then
@@ -413,6 +414,9 @@ local function spawnstep(dtime)
 			end
 		end
 		::continue::
+	end
+	if landtimer > landinterval then
+		landtimer = 0
 	end
 	timer = 0
 end

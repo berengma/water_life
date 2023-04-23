@@ -598,7 +598,7 @@ function water_life.hq_slow_roam(self,prty,idle)
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(
 				self,neighbor)
 			if height and not liquidflag then 
-				water_life.dumbstep(self,height,tpos,1,idle)
+				mobkit.dumbstep(self,height,tpos,1,idle)
 			end
 		end
 	end
@@ -616,7 +616,7 @@ function water_life.hq_go2water(self,prty,speed)
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			pos = mobkit.get_stand_pos(self)
 			local height = target.y - pos.y
-			water_life.dumbstep(self,height,target,speed,0)
+			mobkit.dumbstep(self,height,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)

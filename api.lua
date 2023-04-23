@@ -75,8 +75,12 @@ function water_life.get_game_time()
 	if hour > 20 or hour < 5 then return 4 end
 end
 
-
+--compatibility function
 function water_life_get_biome_data(pos)
+	return water_life.get_biome_data(pos)
+end
+
+function water_life.get_biome_data(pos)
 	if not pos then return nil end
 	local table = minetest.get_biome_data(pos)
 	if not table then return nil end

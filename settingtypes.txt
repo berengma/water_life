@@ -43,6 +43,13 @@ water_life_maxsharks (Max possible sharks in aktive area) int 5
 # max lifetime of a moskito (default 120 = 2 minutes)
 water_life_moskitolifetime (Max lifetime of a moskito in seconds) int 120
 
+# -
+# moskitos do not spawn in heights below this value (default -10)
+water_life_water_life_moskito_minpos (no moskitos in heights smaller than this) int -10
+
+# -
+# moskitos do not spawn in heights larger than this value (default 100)
+water_life_water_life_moskito_maxpos (no moskitos in heights larger than this) int 100
 
 # -
 # total max number of animals in an aktive area
