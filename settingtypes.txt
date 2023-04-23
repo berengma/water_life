@@ -52,6 +52,18 @@ water_life_water_life_moskito_minpos (no moskitos in heights smaller than this) 
 water_life_water_life_moskito_maxpos (no moskitos in heights larger than this) int 100
 
 # -
+# moskitos will die in areas with lightlevel above this (default 8)
+water_life_water_life_moskito_lightmax (die if brighter than this) int 8
+
+# -
+# moskitos need at least this temperature to show up (default 20)
+water_life_water_life_moskito_mintemp (noshow if colder than this) int 20
+
+# -
+# moskitos love humid biomes, small values will make them love dry biomes as well (default 200)
+water_life_water_life_moskito_humidity (the smaller the more likely) int 200
+
+# -
 # total max number of animals in an aktive area
 # other mods might not care about this setting
 water_life_maxmobs (Max possible animals in aktive area) int 60

@@ -38,6 +38,10 @@ water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust"
 water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
 water_life.moskito_minpos = tonumber(minetest.settings:get("water_life_moskito_minpos")) or -10
 water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_maxpos")) or 100
+water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito_lightmax")) or 8
+water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity")) or 200
+water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
+
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 

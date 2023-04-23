@@ -131,21 +131,22 @@ local function spawnstep(dtime)
 		end
 		-- mosqitos only bettween -10 < y < 100
 		if moskitopos and not water_life.dangerous 
-			and moskitopos.y > water_life.moskito_minpos and moskitopos.y < water_life.moskito_maxpos then
-			local mlevel = minetest.get_node_light(moskitopos)
-			local ptime = water_life.get_game_time()
-			local mdata = water_life.get_biome_data(moskitopos)
-			local mmintime = water_life.moskitolifetime / 3
-			local mmaxtime = water_life.moskitolifetime
-			if ((ptime and ptime > 2) or mlevel < 8) 
-				and mdata.temp > 20 then			
-				minetest.set_node(moskitopos, 
-					{name = "water_life:moskito"})
-				minetest.get_node_timer(moskitopos):start(
-					random(mmintime, mmaxtime))
-				local pmeta = minetest.get_meta(moskitopos)
-				pmeta:set_int("mlife",math.floor(os.time()))
-			end
+			and moskitopos.y > water_life.moskito_minpos and
+			moskitopos.y < water_life.moskito_maxpos then
+				local mlevel = minetest.get_node_light(moskitopos)
+				local ptime = water_life.get_game_time()
+				local mdata = water_life.get_biome_data(moskitopos)
+				local mmintime = water_life.moskitolifetime / 3
+				local mmaxtime = water_life.moskitolifetime
+				if ((ptime and ptime > 2) or mlevel < water_life.moskito_lightmax) 
+					and mdata.temp > water_life.moskito_mintemp then
+					minetest.set_node(moskitopos, 
+						{name = "water_life:moskito"})
+					minetest.get_node_timer(moskitopos):start(
+						random(mmintime, mmaxtime))
+					local pmeta = minetest.get_meta(moskitopos)
+					pmeta:set_int("mlife",math.floor(os.time()))
+				end
 		end
 		
 		if landpos then
