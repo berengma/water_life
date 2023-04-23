@@ -7,8 +7,8 @@ local dtmax=0
 local dttimer = 10
 local pi = math.pi
 local random = water_life.random
-local landinterval = 20
-local waterinterval = 10
+local landinterval = 120
+local waterinterval = 30
 
 
 local function getcount(name)

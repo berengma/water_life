@@ -65,13 +65,13 @@ local function croc_brain(self)
 			if target and mobkit.is_alive(target)  and target:get_attach() == nil 
 				and water_life.isinliquid(target) then
 				local dist = water_life.dist2tgt(self,target)
-				if dist > 2 then
+				if dist > 2 and dist < 16 then
 					water_life.hq_water_attack(self,target,24,7,true)
 				end
 			end
 			if food and mobkit.is_in_deep(food) and not aliveinwater then
 				local dist = water_life.dist2tgt(self,food)
-				if dist > 2 then
+				if dist > 2 and dist < 16 then
 					water_life.hq_water_attack(self,food,25,7,true)
 				end
 			end
