@@ -75,8 +75,12 @@ function water_life.get_game_time()
 	if hour > 20 or hour < 5 then return 4 end
 end
 
-
+--compatibility function
 function water_life_get_biome_data(pos)
+	return water_life.get_biome_data(pos)
+end
+
+function water_life.get_biome_data(pos)
 	if not pos then return nil end
 	local table = minetest.get_biome_data(pos)
 	if not table then return nil end
@@ -107,17 +111,15 @@ function water_life.get_closest_enemy(self,player)
 	if not self.predators and not player then return nil end
 	for _,obj in ipairs(otable) do
 		local luaent = obj:get_luaentity()
+		local opos = obj:get_pos()
+		local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 		if mobkit.is_alive(obj) and not obj:is_player() and luaent and
 				self.predators[luaent.name] then
-			local opos = obj:get_pos()
-			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 			if odist < dist then
 				dist=odist
 				cobj=obj
 			end
 		elseif mobkit.is_alive(obj) and obj:is_player() and player then
-			local opos = obj:get_pos()
-			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 			if odist < dist then
 				dist=odist
 				cobj=obj
@@ -219,12 +221,25 @@ function water_life.handle_drops(self)
     end
 end
 
+function water_life.no_spawn_of(mobname)
+	if not mobname then
+		return
+	end
+	table.insert(water_life.no_spawn_table, mobname)
+end
+
 function water_life.register_shark_food(name)
-    table.insert(water_life.shark_food,name)
+	if not name then
+		return
+	end
+    table.insert(water_life.shark_food, name)
 end
 
 function water_life.register_gull_bait(name)
-    if name then water_life.gull_bait[name] = 1 end
+    if not name then 
+		return
+	end
+	water_life.gull_bait[name] = 1
 end
 
 function water_life.feed_shark(self)

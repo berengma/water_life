@@ -1,22 +1,23 @@
 -----------------------------------------------------------
 --
--- Water_life copyright 2022 by Gundul
+-- Water_life copyright 2023 by Gundul
 -- see software and media licenses in the doc folder
 -- 
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "220710"
+water_life.version = "230430"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
+water_life.no_spawn_table = {}
 water_life.catchNet = "water_life:placeholder"
 water_life.petz = minetest.get_modpath("petz")
 water_life.mobsredo = minetest.get_modpath("mobs")
 water_life.farming = minetest.get_modpath("farming")
 water_life.swampz = minetest.get_modpath("swaz")
 water_life.abr = tonumber(minetest.settings:get('active_block_range')) or 2
-water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 3
+water_life.abo = tonumber(minetest.settings:get('active_object_send_range_blocks')) or 2
 water_life.avg_dtime = 0
 water_life.max_dtime = 0
 
@@ -35,6 +36,12 @@ water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust"
 
 -- lifetime in sec. ( <15 = no reproducing)
 water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
+water_life.moskito_minpos = tonumber(minetest.settings:get("water_life_moskito_minpos")) or -10
+water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_maxpos")) or 100
+water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito_lightmax")) or 8
+water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity")) or 200
+water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
+
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
 

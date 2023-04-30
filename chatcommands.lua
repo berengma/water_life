@@ -77,6 +77,15 @@ minetest.register_chatcommand("wl_lb", {
 	end
 })
 
+minetest.register_chatcommand("wl_noSpawn", {
+	params = "",
+	description = "list nospawning mobs",
+	privs = {interact = true},
+	func = function(name)
+		minetest.chat_send_player(name, dump(water_life.no_spawn_table))
+	end
+})
+
 minetest.register_chatcommand("wl_test", {
 	params = "<mob_name>",
 	description = "test",

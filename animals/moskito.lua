@@ -77,20 +77,28 @@ minetest.register_node("water_life:moskito", {
 		local level = minetest.get_node_light(pos)
 		local mmeta = minetest.get_meta(pos)
 		local killer = math.floor(os.time()) - mmeta:get_int("mlife")
-		if  (ptime and ptime < 3 and level and level > 7) or killer > water_life.moskitolifetime then
-			minetest.set_node(pos, {name = "air"})
+		local mmintime = water_life.moskitolifetime / 3
+		local mmaxtime = water_life.moskitolifetime
+		if  (ptime and ptime < 3 and level and
+			level > water_life.moskito_lightmax) or
+			killer > water_life.moskitolifetime then
+				mmeta:set_int("mlife", 0)
+				minetest.set_node(pos, {name = "air"})
 		else
 			local bdata = water_life_get_biome_data(pos)
 			local nodes = minetest.find_nodes_in_area({x=pos.x-4, y=pos.y-2, z=pos.z-4},
 				{x=pos.x+4, y=pos.y+1, z=pos.z+4}, {"air"})
 			if nodes and #nodes > 0 then                             
 				local spos = nodes[random(#nodes)]
-				local rnd = random (200)
-				if bdata.temp > 20 and spos and spos.y > -10 and spos.y < 100 and not
-					water_life.ihateinsects then
+				local rnd = random (water_life.moskito_humidity)
+				--minetest.chat_send_all("Temp = "..bdata.temp.."  Humidity = "..bdata.humid.." <<< "..dump(rnd))
+				if bdata.temp > water_life.moskito_mintemp and spos and 
+					spos.y > water_life.moskito_minpos and 
+					spos.y < water_life.moskito_maxpos and 
+					not water_life.ihateinsects then
 						if rnd < bdata.humid then
 							minetest.set_node(spos, {name = "water_life:moskito"})
-							minetest.get_node_timer(spos):start(random(15,45))
+							minetest.get_node_timer(spos):start(random(mmintime, mmaxtime))
 							local pmeta = minetest.get_meta(spos)
 							pmeta:set_int("mlife",math.floor(os.time()))
 						end
