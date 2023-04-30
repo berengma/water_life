@@ -111,17 +111,15 @@ function water_life.get_closest_enemy(self,player)
 	if not self.predators and not player then return nil end
 	for _,obj in ipairs(otable) do
 		local luaent = obj:get_luaentity()
+		local opos = obj:get_pos()
+		local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 		if mobkit.is_alive(obj) and not obj:is_player() and luaent and
 				self.predators[luaent.name] then
-			local opos = obj:get_pos()
-			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 			if odist < dist then
 				dist=odist
 				cobj=obj
 			end
 		elseif mobkit.is_alive(obj) and obj:is_player() and player then
-			local opos = obj:get_pos()
-			local odist = abs(opos.x-pos.x) + abs(opos.z-pos.z)
 			if odist < dist then
 				dist=odist
 				cobj=obj
