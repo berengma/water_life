@@ -1,12 +1,12 @@
 -----------------------------------------------------------
 --
--- Water_life copyright 2022 by Gundul
+-- Water_life copyright 2023 by Gundul
 -- see software and media licenses in the doc folder
 -- 
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "220710"
+water_life.version = "230430"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
