@@ -524,8 +524,8 @@ function water_life.hq_attack(self,prty,tgtobj)
 				poison = meta:get_int("snakepoison") or 1
 				noob = meta:get_int("bitten") or 1
 			else
-				poison = 1
-				noob = 1
+				poison = 0
+				noob = 0
 			end
 			
 			if (dist and dist > 3) or poison > 0 or noob > 0 then 
