@@ -79,7 +79,6 @@ minetest.register_node("water_life:moskito", {
 		local killer = math.floor(os.time()) - mmeta:get_int("mlife")
 		local mmintime = water_life.moskitolifetime / 5
 		local mmaxtime = water_life.moskitolifetime
-		minetest.chat_send_all(dump(killer).." : "..mmaxtime)
 		if  (ptime and ptime < 3 and level and
 			level > water_life.moskito_lightmax) or
 			killer > water_life.moskitolifetime then
@@ -92,7 +91,7 @@ minetest.register_node("water_life:moskito", {
 			if nodes and #nodes > 0 then                             
 				local spos = nodes[random(#nodes)]
 				local rnd = random (water_life.moskito_humidity)
-				minetest.chat_send_all("Temp = "..bdata.temp.."  Humidity = "..bdata.humid.." <<< "..dump(rnd))
+				--minetest.chat_send_all("Temp = "..bdata.temp.."  Humidity = "..bdata.humid.." <<< "..dump(rnd))
 				if bdata.temp > water_life.moskito_mintemp and spos and 
 					spos.y > water_life.moskito_minpos and 
 					spos.y < water_life.moskito_maxpos and 
