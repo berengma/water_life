@@ -74,10 +74,10 @@ minetest.register_node("water_life:moskito", {
 	end,
 	on_timer = function(pos, elapsed)
 		local ptime = water_life.get_game_time()
-		local level = minetest.get_node_light(pos)
+		local level = minetest.get_natural_light(pos)
 		local mmeta = minetest.get_meta(pos)
 		local killer = math.floor(os.time()) - mmeta:get_int("mlife")
-		local mmintime = water_life.moskitolifetime / 3
+		local mmintime = water_life.moskitolifetime / 5
 		local mmaxtime = water_life.moskitolifetime
 		if  (ptime and ptime < 3 and level and
 			level > water_life.moskito_lightmax) or
@@ -104,7 +104,7 @@ minetest.register_node("water_life:moskito", {
 						end
 				end
 			end
-			minetest.get_node_timer(pos):start(random(15,45))
+			minetest.get_node_timer(pos):start(random(mmintime,mmaxtime))
 		end
 	end
 })

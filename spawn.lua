@@ -7,7 +7,7 @@ local dtmax=0
 local dttimer = 10
 local pi = math.pi
 local random = water_life.random
-local landinterval = 120
+local landinterval = 30
 local waterinterval = 30
 
 
@@ -133,10 +133,10 @@ local function spawnstep(dtime)
 		if moskitopos and not water_life.dangerous 
 			and moskitopos.y > water_life.moskito_minpos and
 			moskitopos.y < water_life.moskito_maxpos then
-				local mlevel = minetest.get_node_light(moskitopos)
+				local mlevel = minetest.get_natural_light(moskitopos)
 				local ptime = water_life.get_game_time()
 				local mdata = water_life.get_biome_data(moskitopos)
-				local mmintime = water_life.moskitolifetime / 3
+				local mmintime = water_life.moskitolifetime / 5
 				local mmaxtime = water_life.moskitolifetime
 				if ((ptime and ptime > 2) or mlevel < water_life.moskito_lightmax) 
 					and mdata.temp > water_life.moskito_mintemp then
