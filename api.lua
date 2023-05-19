@@ -260,7 +260,7 @@ function water_life.get_close_drops(self,name)
 	if #objs < 1 then return nil end
 	for i = #objs,1,-1 do
 		local entity = objs[i]:get_luaentity()
-		if not entity or not entity.name == "__builtin:item" then
+		if not entity or entity.name ~= "__builtin:item" then
 			table.remove(objs,i)
 		end
 	end
