@@ -592,13 +592,19 @@ function water_life.hq_slow_roam(self,prty,idle)
 	
 	local func=function(self)
 		if self.isinliquid then return true end
-		if mobkit.is_queue_empty_low(self) and self.isonground then
-			local pos = mobkit.get_stand_pos(self)
+		if mobkit.is_queue_empty_low(self) then
 			local neighbor = random(8)
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(
 				self,neighbor)
-			if height and not liquidflag then 
-				mobkit.dumbstep(self,height,tpos,1,idle)
+			if tpos then
+				minetest.chat_send_all(minetest.pos_to_string(tpos))
+			else
+				minetest.chat_send_all("NIL")
+			end
+			if height and tpos then 
+				mobkit.dumbstep(self,height,tpos,0.1)--,idle)
+			else
+				return true
 			end
 		end
 	end
@@ -610,13 +616,16 @@ function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
 	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
 	if not speed then speed = 0.1 end
+	if not target then
+		return true
+	end
 	
 	local func=function(self)
-		if self.isinliquid or not target then return true end
-		if mobkit.is_queue_empty_low(self) and self.isonground then
-			pos = mobkit.get_stand_pos(self)
-			local height = target.y - pos.y
-			mobkit.dumbstep(self,height,target,speed,0)
+		if self.isinliquid then 
+			return true 
+		end
+		if mobkit.is_queue_empty_low(self) or self.isonground then
+			mobkit.dumbstep(self,0,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)

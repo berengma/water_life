@@ -9,6 +9,15 @@ local pow = math.pow
 local sign = math.sign
 local rad = math.rad
 
+local function MoskitosAround(pos)
+	if not pos then
+		return 0
+	end
+	local nodes = minetest.find_nodes_in_area({x=pos.x-1, y=pos.y-1, z=pos.z-1},
+		{x=pos.x+1, y=pos.y+1, z=pos.z+1}, {"water_life:moskito"})
+	return #nodes
+end
+
 minetest.register_on_player_hpchange(function(player, hp_change, reason)
 	if not player then return hp_change end
 	if hp_change > 0 then return hp_change end
@@ -96,7 +105,7 @@ minetest.register_node("water_life:moskito", {
 					spos.y > water_life.moskito_minpos and 
 					spos.y < water_life.moskito_maxpos and 
 					not water_life.ihateinsects then
-						if rnd < bdata.humid then
+						if rnd < bdata.humid and MoskitosAround(spos) < 3 then
 							minetest.set_node(spos, {name = "water_life:moskito"})
 							minetest.get_node_timer(spos):start(random(mmintime, mmaxtime))
 							local pmeta = minetest.get_meta(spos)

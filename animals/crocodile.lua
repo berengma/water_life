@@ -129,9 +129,9 @@ end
 
 minetest.register_entity("water_life:croc",{
 	physical = true,
-	stepheight = 0.5,
+	stepheight = 1.1,
 	collide_with_objects = true,
-	collisionbox = {-0.5, 0, -0.5, 0.5, 0.3, 0.5},
+	collisionbox = {-0.49, -0.01, -0.49, 0.49, 0.3, 0.49},
 	visual = "mesh",
 	mesh = "water_life_crocodile.b3d",
 	textures = {"water_life_crocodile.png"},
