@@ -596,11 +596,6 @@ function water_life.hq_slow_roam(self,prty,idle)
 			local neighbor = random(8)
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(
 				self,neighbor)
-			if tpos then
-				minetest.chat_send_all(minetest.pos_to_string(tpos))
-			else
-				minetest.chat_send_all("NIL")
-			end
 			if height and tpos then 
 				mobkit.dumbstep(self,height,tpos,0.1)--,idle)
 			else
