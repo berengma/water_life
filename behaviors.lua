@@ -474,12 +474,15 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 			mobkit.animate(self,anim)
 			init = false
 		end
+		if mobkit.timer(self,1) and self.isonground then
+			return true
+		end
 		local pos = mobkit.get_stand_pos(self)
 		local yaw = self.object:get_yaw()
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
 			prvscanpos=scanpos
-			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,true,true)
+			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,false,true)
 			if height and height > pos.y then
 				local vel = self.object:get_velocity()
 				vel.y = vel.y+1
@@ -488,7 +491,7 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 			if yaw ~= nyaw then
 				tyaw=nyaw
 				mobkit.hq_aqua_turn(self,prty + 1,tyaw,speed)
-				--return
+				return true
 			end
 		end
 		if mobkit.timer(self,1) then
@@ -528,12 +531,16 @@ function water_life.hq_attack(self,prty,tgtobj)
 				noob = 0
 			end
 			
-			if (dist and dist > 3) or poison > 0 or noob > 0 then 
+			if (self.name == "water_life.rattlesnake") and ((dist and dist > 3)
+					 or poison > 0 or noob > 0) then 
 				return true
 			else
+				if dist and dist > 8 then
+					return true
+				end
 				mobkit.lq_turn2pos(self,tpos)
 				local height = tgtobj:is_player() and 0.35 or
-					tgtobj:get_luaentity().height*0.6
+					tgtobj:get_luaentity().height*0.3
 				if tpos.y+height>pos.y then 
 					mobkit.make_sound(self,"attack")
 					water_life.lq_jumpattack(self,tpos.y+height-pos.y,tgtobj) 
@@ -592,13 +599,14 @@ function water_life.hq_slow_roam(self,prty,idle)
 	
 	local func=function(self)
 		if self.isinliquid then return true end
-		if mobkit.is_queue_empty_low(self) and self.isonground then
-			local pos = mobkit.get_stand_pos(self)
+		if mobkit.is_queue_empty_low(self) then
 			local neighbor = random(8)
 			local height, tpos, liquidflag = mobkit.is_neighbor_node_reachable(
 				self,neighbor)
-			if height and not liquidflag then 
-				mobkit.dumbstep(self,height,tpos,1,idle)
+			if height and tpos then 
+				mobkit.dumbstep(self,height,tpos,0.1)--,idle)
+			else
+				return true
 			end
 		end
 	end
@@ -610,13 +618,16 @@ function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
 	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
 	if not speed then speed = 0.1 end
+	if not target then
+		return true
+	end
 	
 	local func=function(self)
-		if self.isinliquid or not target then return true end
-		if mobkit.is_queue_empty_low(self) and self.isonground then
-			pos = mobkit.get_stand_pos(self)
-			local height = target.y - pos.y
-			mobkit.dumbstep(self,height,target,speed,0)
+		if self.isinliquid then 
+			return true 
+		end
+		if mobkit.is_queue_empty_low(self) or self.isonground then
+			mobkit.dumbstep(self,0,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)

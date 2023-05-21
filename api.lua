@@ -260,7 +260,7 @@ function water_life.get_close_drops(self,name)
 	if #objs < 1 then return nil end
 	for i = #objs,1,-1 do
 		local entity = objs[i]:get_luaentity()
-		if not entity or not entity.name == "__builtin:item" then
+		if not entity or entity.name ~= "__builtin:item" then
 			table.remove(objs,i)
 		end
 	end
@@ -299,11 +299,14 @@ function water_life.aqua_radar_dumb(pos,yaw,range,reverse,shallow)
 	local function okpos(p)
 		local node = mobkit.nodeatpos(p)
 		if node then 
-			if node.drawtype == 'liquid' then 
+			if node.drawtype == 'liquid' then
+				if shallow then
+					return true
+				end
 				local nodeu = mobkit.nodeatpos(mobkit.pos_shift(p,{y=1}))
 				local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-1}))
 				if ((nodeu and nodeu.drawtype == 'liquid') or (noded and
-					noded.drawtype == 'liquid')) or shallow then
+					noded.drawtype == 'liquid')) then
 						return true
 				else
 					return false
