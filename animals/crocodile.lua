@@ -12,6 +12,7 @@ local rad = math.rad
 local function croc_brain(self)
 
 	local prty = mobkit.get_queue_priority(self)
+--	minetest.chat_send_all(dump(prty))
 
 	--die
 	if self.hp <= 0 then	
@@ -66,13 +67,13 @@ local function croc_brain(self)
 				and water_life.isinliquid(target) then
 				local dist = water_life.dist2tgt(self,target)
 				if dist > 2 and dist < 16 then
-					water_life.hq_water_attack(self,target,24,7,true)
+					water_life.hq_water_attack(self,target,26,7,true)
 				end
 			end
 			if food and mobkit.is_in_deep(food) and not aliveinwater then
 				local dist = water_life.dist2tgt(self,food)
 				if dist > 2 and dist < 16 then
-					water_life.hq_water_attack(self,food,25,7,true)
+					water_life.hq_water_attack(self,food,26,7,true)
 				end
 			end
 			if self.isinliquid then
@@ -85,7 +86,7 @@ local function croc_brain(self)
 				end
 				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
 					local dist = water_life.dist2tgt(self,food)
-					if dist < 10 then
+					if dist < 16 then
 						water_life.hq_go2land(self,15,food)
 					end
 				end
@@ -99,13 +100,13 @@ local function croc_brain(self)
 				end
 				if target and mobkit.is_alive(target)  then
 					local dist = water_life.dist2tgt(self,target)
-					if dist < 7 then
+					if dist < 8 and prty < 24 then
 						water_life.hq_hunt(self,24,target,7)
 					end
 				end
 				if food and mobkit.is_alive(food) then
 					local dist = water_life.dist2tgt(self,food)
-					if dist < 7 then
+					if dist < 8 and prty < 25 then
 						water_life.hq_hunt(self,25,food,7)
 					end
 				end
@@ -130,7 +131,7 @@ end
 minetest.register_entity("water_life:croc",{
 	physical = true,
 	stepheight = 1.1,
-	collide_with_objects = true,
+	collide_with_objects = false,
 	collisionbox = {-0.49, -0.01, -0.49, 0.49, 0.3, 0.49},
 	visual = "mesh",
 	mesh = "water_life_crocodile.b3d",
