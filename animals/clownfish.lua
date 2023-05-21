@@ -19,6 +19,7 @@ local function fish_brain(self)
 		end
 	end
 	if mobkit.timer(self,1) then 
+		local prty = mobkit.get_queue_priority(self)
         if not self.isinliquid	then 
             mobkit.hurt(self,1)
         end
@@ -30,10 +31,13 @@ local function fish_brain(self)
         if self.isinliquid and self.isinliquid =="default:river_water_source" then
             water_life.hq_swimto(self,30,1,"default:water_source")
         end
-        if mobkit.is_queue_empty_high(self) then
+        if mobkit.is_queue_empty_high(self) and self.isinliquid then
             mobkit.animate(self,"def")
-            mobkit.hq_aqua_roam(self,10,0.5) 
+            water_life.hq_aqua_roam(self,10,0.5,false,true) 
         end
+		if prty < 90 and not self.isinliquid then
+			water_life.hq_go2water(self,99,2)
+		end
     end
 end
 

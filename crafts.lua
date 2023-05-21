@@ -114,7 +114,7 @@ if not water_life.apionly then
 			on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos)
 				if number.all > water_life.maxmobs or number.fish > 10 then return itemstack end
@@ -140,7 +140,7 @@ if not water_life.apionly then
 			on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos,nil,"water_life:piranha")
 				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
@@ -165,7 +165,7 @@ if not water_life.apionly then
 			on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos,nil,"water_life:coralfish_tamed")
 				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
@@ -195,7 +195,7 @@ if not water_life.apionly then
 					on_place = function(itemstack, placer, pointed_thing)
 						if placer and not placer:is_player() then return itemstack end
 						if not pointed_thing then return itemstack end
-						if not pointed_thing.type == "node" then return itemstack end
+						if pointed_thing.type ~= "node" then return itemstack end
 						local pos = pointed_thing.above
 						local number = water_life.count_objects(pos,nil,"water_life:clownfish_tamed")
 						if number.all > water_life.maxmobs or number.name > 10 then
@@ -223,7 +223,7 @@ if not water_life.apionly then
 			on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos,10,"water_life:urchin")
 				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
@@ -248,7 +248,7 @@ if not water_life.apionly then
 			on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos,10,"water_life:jellyfish")
 				if number.all > water_life.maxmobs or number.name > 10 then return itemstack end
@@ -272,7 +272,7 @@ if not water_life.apionly then
 				on_place = function(itemstack, placer, pointed_thing)
 				if placer and not placer:is_player() then return itemstack end
 				if not pointed_thing then return itemstack end
-				if not pointed_thing.type == "node" then return itemstack end
+				if pointed_thing.type ~= "node" then return itemstack end
 				local pos = pointed_thing.above
 				local number = water_life.count_objects(pos,water_life.abr * 16,"water_life:snake")
 				if number.all > water_life.maxmobs or number.name > 5 then return itemstack end
