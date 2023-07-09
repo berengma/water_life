@@ -68,7 +68,7 @@ end
 minetest.register_entity("water_life:piranha",{
 	physical = true,
 	stepheight = 0.3,				
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-0.15, 0, -0.15, 0.15, 0.3, 0.15},
 	visual = "mesh",
 	mesh = "water_life_piranha.b3d",
@@ -118,7 +118,7 @@ minetest.register_entity("water_life:piranha",{
 minetest.register_entity("water_life:piranha_tamed",{
 	physical = true,
 	stepheight = 0.3,				
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-0.15, 0, -0.15, 0.15, 0.3, 0.15},
 	visual = "mesh",
 	mesh = "water_life_piranha.b3d",

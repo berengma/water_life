@@ -835,7 +835,7 @@ minetest.register_entity("water_life:pos", {
 	}
 })
 
-if water_life.radar_debug then
+if water_life.godLike then
 minetest.register_on_player_hpchange(function(player, hp_change, reason)
         if not player or hp_change >= 0 then return hp_change end
         local name = player:get_player_name()

@@ -69,7 +69,7 @@ end
 minetest.register_entity("water_life:shark",{
 	physical = true,
 	stepheight = 0.1,
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-0.5, -0.3, -0.5, 0.5, 0.3, 0.5},
 	visual = "mesh",
 	mesh = "water_life_shark.b3d",

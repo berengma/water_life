@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "230505"
+water_life.version = "230709"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -54,6 +54,9 @@ water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") 
 
 -- let there be blood !
 water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
+
+-- add god priv 
+water_life.godLike = minetest.settings:get_bool("water_life_godLike") or true
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
