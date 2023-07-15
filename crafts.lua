@@ -56,13 +56,21 @@ minetest.register_abm({
 	chance = 5,
 	catch_up = false,
 	action = function(pos, node)
+		local depth, wtype, surface_pos
 		local table = minetest.find_nodes_in_area({x=pos.x-2, y=pos.y-2, z=pos.z-2},
 			{x=pos.x+2, y=pos.y+2, z=pos.z+2}, water_life.urchinspawn)
 		local nname = "default:coral_skeleton"
+		depth, wtype, surface_pos = water_life.water_depth(
+			{x = pos.x, y = pos.y + 1, z = pos.z}, 50)
+		if (depth and depth > 20) then
+			depth = 20
+		end
+		local height = math.random(5, depth or 0)
 		if table and #table > 0 then
 				nname = minetest.get_node(table[water_life.random(#table)]).name
 		end
-		minetest.set_node(pos, {name = nname})
+		minetest.set_node(pos, {name = nname,
+			param2 = height * 16})
 	end,
 })
 
