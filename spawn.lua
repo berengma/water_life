@@ -423,5 +423,6 @@ local function spawnstep(dtime)
 	timer = 0
 end
 
-
-minetest.register_globalstep(spawnstep)
+minetest.register_globalstep(function(dtime)
+	spawnstep(dtime)
+end)
