@@ -69,13 +69,13 @@ local function spawn_it_here(pos, mobname)
 
 	for i = 0, #water_life.no_spawn_table, 1 do
 		if water_life.no_spawn_table[i] == mobname then
-			return
+			return nil
 		end
 	end
 	if water_life.radar_debug then
 		minetest.chat_send_all(mobname.." spawned.")
 	end
-	minetest.add_entity(pos,mobname)
+	return minetest.add_entity(pos,mobname)
 end
 	
 local function spawnstep(dtime)
@@ -104,6 +104,7 @@ local function spawnstep(dtime)
 		local geckopos = nil
 		local moskitopos = nil
 		local mobname = ""
+		local obj = nil
 
 		if not plyr or not plyr:is_player() then
 			goto continue
@@ -334,7 +335,7 @@ local function spawnstep(dtime)
 				cfish.y = cfish.y + 1
 				local maxfish = random(3,7)
 				for i = 1,maxfish,1 do
-					spawn_it_here(cfish,mobname)
+					obj = spawn_it_here(cfish,mobname)
 					if obj then
 						local entity = obj:get_luaentity()
 						entity.base = cfish
@@ -349,7 +350,7 @@ local function spawnstep(dtime)
 				#coraltable > 1 then
 				local cfish = coraltable[random(#coraltable)]
 				cfish.y = cfish.y +1
-				spawn_it_here(cfish,mobname)
+				obj = spawn_it_here(cfish,mobname)
 				if obj then
 					local entity = obj:get_luaentity()
 					entity.base = cfish
@@ -422,5 +423,6 @@ local function spawnstep(dtime)
 	timer = 0
 end
 
-
-minetest.register_globalstep(spawnstep)
+minetest.register_globalstep(function(dtime)
+	spawnstep(dtime)
+end)

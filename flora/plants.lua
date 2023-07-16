@@ -99,6 +99,14 @@ minetest.register_node("water_life:kelpgreen", {
 	end,
 	after_destruct  = function(pos, oldnode)
 		minetest.set_node(pos, {name = "default:sand"})
+	end,
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		if not oldnode or not oldnode.param2 or not digger then
+			return
+		end
+		local height = oldnode.param2 / 32 
+		local value = water_life.random(height)
+		minetest.handle_node_drops(pos, {oldnode.name.." "..value}, digger)
 	end
 })
 
@@ -165,6 +173,14 @@ minetest.register_node("water_life:kelpbrown", {
 	end,
 	after_destruct  = function(pos, oldnode)
 		minetest.set_node(pos, {name = "default:sand"})
+	end,
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		if not oldnode or not oldnode.param2 or not digger then
+			return
+		end
+		local height = oldnode.param2 / 32 
+		local value = water_life.random(height)
+		minetest.handle_node_drops(pos, {oldnode.name.." "..value}, digger)
 	end
 })
 

@@ -76,7 +76,7 @@ end
 minetest.register_entity("water_life:urchin",{
 	physical = true,
 	stepheight = 0.5,				
-	collide_with_objects = false,
+	collide_with_objects = true,
 	collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
 	visual = "mesh",
 	mesh = "water_life_urchin.b3d",
