@@ -372,7 +372,7 @@ if water_life.muddy_water then
 					backface_culling = false,
 				},
 			},
-			alpha = 224,
+			alpha = 255,
 			paramtype = "light",
 			walkable = false,
 			pointable = false,

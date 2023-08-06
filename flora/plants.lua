@@ -46,7 +46,7 @@ minetest.register_node("water_life:kelpgreen", {
 	inventory_image = "water_life_kelpgreenmiddle.png",
 	paramtype = "light",
 	paramtype2 = "leveled",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -120,7 +120,7 @@ minetest.register_node("water_life:kelpbrown", {
 	inventory_image = "water_life_kelpbrownmiddle.png",
 	paramtype = "light",
 	paramtype2 = "leveled",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -193,7 +193,7 @@ minetest.register_node("water_life:seagrassgreen", {
 	tiles = {"default_sand.png"},
 	special_tiles = {{name = "water_life_seagrassgreen.png", tileable_vertical = true}},
 	inventory_image = "water_life_seagrassgreen.png",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -221,7 +221,7 @@ minetest.register_node("water_life:seagrassred", {
 	tiles = {"default_sand.png"},
 	special_tiles = {{name = "water_life_seagrassred.png", tileable_vertical = true}},
 	inventory_image = "water_life_seagrassred.png",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {

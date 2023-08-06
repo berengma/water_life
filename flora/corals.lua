@@ -45,7 +45,7 @@ minetest.register_node("water_life:coralmagenta", {
 	tiles = {"default_coral_skeleton.png"},
 	special_tiles = {{name = "water_life_coralmagenta.png", tileable_vertical = true}},
 	inventory_image = "water_life_coralmagenta.png",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {
@@ -75,7 +75,7 @@ minetest.register_node("water_life:coralskyblue", {
 	tiles = {"default_coral_skeleton.png"},
 	special_tiles = {{name = "water_life_coralskyblue.png", tileable_vertical = true}},
 	inventory_image = "water_life_coralskyblue.png",
-	groups = {snappy = 3},
+	groups = {flora = 1, snappy = 3},
 	selection_box = {
 		type = "fixed",
 		fixed = {
