@@ -1,6 +1,10 @@
 # all settings for client menu or in minetest.conf on servers
 
 # -
+# turn off water_life spawning - use this if you have a third party spawning mod
+water_life_nospawn (user third party mod for spawning) bool false
+
+# -
 # I am a baby, please turn off the dangerous wild animals
 water_life_dangerous (turn off agressive animals)  bool false
 
