@@ -615,7 +615,7 @@ function water_life.find_node_under_air(pos,radius,name)
 	end
 end
 
--- function to find liquid surface and depth at that position
+-- function to find liquid surface and depth at that position returns depth or max, type of water node and surface position
 function water_life.water_depth(pos,max)
 	local surface = {}
 	local depth = 0

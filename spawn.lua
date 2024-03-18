@@ -7,11 +7,12 @@ local dtmax=0
 local dttimer = 10
 local pi = math.pi
 local random = water_life.random
-local landinterval = 30
+local landinterval = 60
 local waterinterval = 30
 
 
-local function getcount(name)
+local function getCount(mobname, name)
+	--minetest.chat_send_all("FOUND: ".. mobname .." ".. dump(name).."#")
 	if not name then
 		return 0 
 	else
@@ -65,7 +66,7 @@ local function repel_insects(player)
 	end
 end
 
-local function spawn_it_here(pos, mobname)
+local function spawn_it_here(animal, pos, mobname)
 
 	for i = 0, #water_life.no_spawn_table, 1 do
 		if water_life.no_spawn_table[i] == mobname then
@@ -73,7 +74,9 @@ local function spawn_it_here(pos, mobname)
 		end
 	end
 	if water_life.radar_debug then
-		minetest.chat_send_all(mobname.." spawned.")
+		minetest.chat_send_all("SPAWN>> "..mobname.." spawned."..
+		" At Pos "..minetest.pos_to_string(pos).."\n"..
+		"Already found before: "..dump(animal[mobname]))
 	end
 	return minetest.add_entity(pos,mobname)
 end
@@ -93,7 +96,7 @@ local function spawnstep(dtime)
 		local yaw = plyr:get_look_horizontal()
 		local animal = water_life.count_objects(pos)
 		local meta = plyr:get_meta()
-		local radius = (water_life.abo * 12)
+		local radius = random(10, (water_life.abr * 12))
 		local angel = math.rad(random(75))
 		local pos2 = mobkit.pos_translate2d(pos,yaw,radius)
 		local depth, stype, surface = water_life.water_depth(pos2,25)
@@ -154,7 +157,7 @@ local function spawnstep(dtime)
 			local landdata =  water_life.get_biome_data(landpos)
 			if not water_life.dangerous then
 				mobname = 'water_life:snake'
-				local faktor = (100 - getcount(animal[mobname]) * 50) 
+				local faktor = (100 - getCount(mobname, animal[mobname]) * 50) 
 				if random(100) < faktor then
 					local fits = minetest.is_protected(
 						landpos,mobname)
@@ -162,17 +165,17 @@ local function spawnstep(dtime)
 						string.match(landdata.name,"savanna"))
 						and not fits and 
 						landdata.temp > 15 then
-							spawn_it_here(landpos,mobname)
+							spawn_it_here(animal,landpos,mobname)
 					end
 				end
 			end
 			
 			mobname = 'water_life:beaver'
-			local faktor = (100 - getcount(animal[mobname]) * 25) 
+			local faktor = (100 - getCount(mobname, animal[mobname]) * 25) 
 			if random(100) < faktor then
 				if string.match(landdata.name,"coniferous") 
 					and landdata.temp > -5 and landdata.temp < 20 then
-					spawn_it_here(landpos,mobname)
+					spawn_it_here(animal,landpos,mobname)
 				end
 			end
 		end
@@ -180,12 +183,12 @@ local function spawnstep(dtime)
 		if geckopos then
 			local landdata =  water_life.get_biome_data(geckopos)
 			mobname = 'water_life:gecko'
-			local faktor = (100 - getcount(animal[mobname]) * 50)
+			local faktor = (100 - getCount(mobname, animal[mobname]) * 50)
 			if random(100) < faktor then
 				if (string.match(landdata.name,"rainforest") 
 					or string.match(landdata.name,"savanna"))
 					and landdata.temp > 20 then
-					spawn_it_here(geckopos,mobname)
+					spawn_it_here(animal,geckopos,mobname)
 				end
 			end
 		end
@@ -199,7 +202,10 @@ local function spawnstep(dtime)
 				minetest.chat_send_all(dump(bdata.name))
 			end
 			pos2 = surface
+		else
+			goto continue
 		end
+
 		
 		local liquidflag = nil
 		if stype == "default:water_source" or stype == "islands:water_source" then 
@@ -221,19 +227,19 @@ local function spawnstep(dtime)
 			if not water_life.dangerous then
 				if water_life.swampz then
 					mobname = 'water_life:alligator'
-					local faktor = 100 - getcount(animal[mobname]) * 20
+					local faktor = 100 - getCount(mobname, animal[mobname]) * 20
 					if random(100) < faktor then
 						local fits = false
 						if string.match(bdata.name,"swampz") and 
 							liquidflag == "swamp" then fits = true end
 						if depth < 4 and fits then
-							spawn_it_here(surface,mobname)
+							spawn_it_here(animal,surface,mobname)
 						end
 					end
 				end
 				
 				mobname = 'water_life:croc'
-				local faktor = 100 - getcount(animal[mobname]) * 33
+				local faktor = 100 - getCount(mobname, animal[mobname]) * 33
 				if random(100) < faktor then
 					local fits = false
 					if string.match(bdata.name,"rainforest") or 
@@ -241,13 +247,13 @@ local function spawnstep(dtime)
 						fits = true 
 					end
 					if depth < 4 and fits and pool == false then
-						spawn_it_here(surface,mobname)
+						spawn_it_here(animal,surface,mobname)
 					end
 				end
 			
 				--[[
 				mobname = 'water_life:snake'
-				local faktor = (100 - getcount(animal[mobname]) * 50) +25
+				local faktor = (100 - getCount(mobname, animal[mobname]) * 50) +25
 				if random(100) < faktor then
 					local fits = false
 					if string.match(bdata.name,"desert") or 
@@ -255,7 +261,7 @@ local function spawnstep(dtime)
 						fits = true 
 					end
 					if depth < 3 and fits then
-						spawn_it_here(surface,mobname)
+						spawn_it_here(animal,surface,mobname)
 					end
 				end
 				--]]
@@ -263,12 +269,12 @@ local function spawnstep(dtime)
 				mobname = 'water_life:shark'
 				if water_life.shark_spawn_rate >= random(1000) then
 					local bcheck = water_life.count_objects(pos2,12)
-					if getcount(animal[mobname]) < water_life.maxsharks and 
+					if getCount(mobname, animal[mobname]) < water_life.maxsharks and 
 						liquidflag == "sea" and 
 						not bcheck["water_life:shark_buoy"] and
 						not animal["water_life:croc"] then
 							if depth > 4 and pool == false then
-								spawn_it_here(
+								spawn_it_here(animal,
 									mobkit.pos_shift(ground,{y=2}),mobname)
 							end
 					end
@@ -282,7 +288,7 @@ local function spawnstep(dtime)
 				local coraltable = minetest.find_nodes_in_area(upos1,
 					upos2, water_life.urchinspawn)
 				if coraltable and #coraltable > 0 and 
-					getcount(animal[mobname]) < 15 and 
+					getCount(mobname, animal[mobname]) < 15 and 
 					liquidflag == "sea" then
 					local coralpos = coraltable[random(#coraltable)]
 					coralpos.y = coralpos.y +1
@@ -303,7 +309,7 @@ local function spawnstep(dtime)
 				local nearlife = water_life.count_objects(
 					ground,8,"water_life:clams")
 				if coraltable and #coraltable > 0 and 
-					getcount(animal[mobname]) < 10 and 
+					getCount(mobname, animal[mobname]) < 10 and 
 					liquidflag == "sea" then
 					local coralpos = mobkit.pos_shift(
 						coraltable[random(#coraltable)],{y=1})
@@ -316,10 +322,10 @@ local function spawnstep(dtime)
 			end
 			
 			mobname = "water_life:jellyfish"
-			local faktor = 100 - getcount(animal[mobname]) * 20
+			local faktor = 100 - getCount(mobname, animal[mobname]) * 20
 			if random(100) < faktor and liquidflag == "sea" and 
 				depth > 2 then
-				spawn_it_here(
+				spawn_it_here(animal,
 				mobkit.pos_shift(ground,{y=2}),mobname)
 			end
 			
@@ -328,14 +334,14 @@ local function spawnstep(dtime)
 			local cfpos2 = mobkit.pos_shift(ground,{x=5,y=2,z=5})
 			local coraltable = minetest.find_nodes_in_area(
 				cfpos1,cfpos2,water_life.urchinspawn)
-			faktor = 100 - getcount(animal[mobname]) * 6.66
+			faktor = 100 - getCount(mobname, animal[mobname]) * 6.66
 			if random(100) < faktor and liquidflag == "sea" and 
 				#coraltable > 1 then
 				local cfish = coraltable[random(#coraltable)]
 				cfish.y = cfish.y + 1
 				local maxfish = random(3,7)
 				for i = 1,maxfish,1 do
-					obj = spawn_it_here(cfish,mobname)
+					obj = spawn_it_here(animal,cfish,mobname)
 					if obj then
 						local entity = obj:get_luaentity()
 						entity.base = cfish
@@ -345,12 +351,12 @@ local function spawnstep(dtime)
 			end
 			
 			mobname = "water_life:clownfish"
-			faktor = 100 - getcount(animal[mobname]) * 50
+			faktor = 100 - getCount(mobname, animal[mobname]) * 50
 			if random(100) < faktor and liquidflag == "sea" and 
 				#coraltable > 1 then
 				local cfish = coraltable[random(#coraltable)]
 				cfish.y = cfish.y +1
-				obj = spawn_it_here(cfish,mobname)
+				obj = spawn_it_here(animal,cfish,mobname)
 				if obj then
 					local entity = obj:get_luaentity()
 					entity.base = cfish
@@ -360,7 +366,7 @@ local function spawnstep(dtime)
 			mobname = 'water_life:fish'
 			if water_life.fish_spawn_rate >= random(1000) and 
 				((animal.all < (water_life.maxmobs-5)) or 
-				getcount(animal[mobname]) < 5) and (((liquidflag == 
+				getCount(mobname, animal[mobname]) < 5) and (((liquidflag == 
 				"river" or liquidflag == "muddy")) or 
 				(water_life.spawn_on_islands and not 
 				water_life.check_for_pool(nil,2,3,pos2) and
@@ -374,11 +380,11 @@ local function spawnstep(dtime)
 				end
 				if depth > 2 then
 					if mobname == "water_life:fish" then
-						spawn_it_here(pos2,mobname)
+						spawn_it_here(animal,pos2,mobname)
 					else
-						if getcount(animal[mobname]) < 10 then
+						if getCount(mobname, animal[mobname]) < 10 then
 							for i = 1,3,1 do
-								spawn_it_here(pos2,mobname)
+								spawn_it_here(animal,pos2,mobname)
 							end
 						end
 					end
@@ -387,7 +393,7 @@ local function spawnstep(dtime)
 				
 			mobname = 'water_life:whale'
 			if water_life.whale_spawn_rate >= random(1000) and 
-				getcount(animal[mobname]) < (
+				getCount(mobname, animal[mobname]) < (
 				water_life.maxwhales) and 
 				liquidflag == "sea" then
 				if depth > 8 then
@@ -402,16 +408,16 @@ local function spawnstep(dtime)
 						end
 					end
 					if gotwhale then 
-						spawn_it_here(surface,mobname) 
+						spawn_it_here(animal,surface,mobname) 
 					end
 				end
 			end
 
 			mobname = "water_life:gull"
-			local faktor = 100 - getcount(animal[mobname]) * 20
+			local faktor = 100 - getCount(mobname, animal[mobname]) * 20
 			if random(100) < faktor and (liquidflag == "sea" or liquidflag == "river") then
 				if depth > 2 and not water_life.check_for_pool(nil,2,10,surface)then
-					spawn_it_here(surface,mobname)
+					spawn_it_here(animal,surface,mobname)
 				end
 			end
 		end

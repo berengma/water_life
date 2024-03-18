@@ -1,12 +1,12 @@
 -----------------------------------------------------------
 --
--- Water_life copyright 2023 by Gundul
+-- Water_life copyright 2024 by Gundul
 -- see software and media licenses in the doc folder
 -- 
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "230716"
+water_life.version = "240316"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -58,6 +58,9 @@ water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
 -- add god priv 
 water_life.godLike = minetest.settings:get_bool("water_life_godLike") or true
 
+-- turn spawning off and let a third party mod taking control
+water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn ") or false
+
 local path = minetest.get_modpath(minetest.get_current_modname())
 
 -- load water_life api
@@ -78,7 +81,9 @@ dofile(path.."/bio.lua")
 
 if not water_life.apionly then
 	dofile(path.."/hud.lua")
-	dofile(path.."/spawn.lua")
+	if (not water_life.noSpawn) then
+		dofile(path.."/spawn.lua")
+	end
 	dofile(path.."/animals/whale.lua")
 	dofile(path.."/animals/riverfish.lua")
 	dofile(path.."/animals/sea_urchin.lua")
