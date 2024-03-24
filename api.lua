@@ -189,7 +189,7 @@ function water_life.dist2tgt(self,tgt)
 	local pos = mobkit.get_stand_pos(self)
 	local tpos = tgt:get_pos()
 	if (not tgt or not self) then
-		return 100
+		return 100 
 	else
 		return vector.distance(pos,tpos)
 	end
@@ -612,6 +612,33 @@ function water_life.find_node_under_air(pos,radius,name)
 		local rpos = spawner[random(#spawner)]
 		rpos = mobkit.pos_shift(rpos,{y=1})
 		return rpos
+	end
+end
+
+-- recursively search for a water node with depth or return nil after stop tries
+function water_life.get_pos_with_depth(start, radius, depth, stop, yaw)
+	local tgt = nil
+
+	if not start or stop <= 0 then
+		return nil
+	end
+	if not yaw then
+		tgt = minetest.find_node_near(start, radius, {"group:water"})
+		if not tgt then
+			return nil
+		end
+		yaw = minetest.dir_to_yaw(vector.direction(start, tgt))
+	else
+		tgt = mobkit.pos_translate2d(start, yaw, 3)
+	end
+	local dep, type, surface = water_life.water_depth(tgt)
+	--minetest.chat_send_all(dump(dep).." : "..dump(type))
+	if (surface and dep < depth) then
+		return water_life.get_pos_with_depth(tgt, radius, depth, stop - 1, yaw)
+	elseif surface then
+		return tgt
+	else
+		return nil
 	end
 end
 

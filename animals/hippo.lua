@@ -9,10 +9,9 @@ local pow = math.pow
 local sign = math.sign
 local rad = math.rad
 
-local function croc_brain(self)
+local function hippo_brain(self)
 
 	local prty = mobkit.get_queue_priority(self)
---	minetest.chat_send_all(dump(prty))
 
 	--die
 	if self.hp <= 0 then	
@@ -28,13 +27,15 @@ local function croc_brain(self)
 		local water = mobkit.recall(self,"waterlife")
 		if land and prty < 15 then
 			land = math.floor(os.time() - land)
-			if random(500) < land then
+			minetest.chat_send_all("Hippo_land: "..land)
+			if land > 30 and random(100) < land then
 				water_life.hq_go2water(self,15)
 			end
 		end
 		if water and prty < 15 then
 			water = math.floor(os.time() - water)
-			if random (500) < water then
+			minetest.chat_send_all("Hippo_water: "..water)
+			if water > 30 and random (100) < water then
 				water_life.hq_go2land(self,15)
 			end
 		end
@@ -42,6 +43,7 @@ local function croc_brain(self)
 
 	--every other action check each second
 	if mobkit.timer(self,1) then
+		minetest.chat_send_all(dump(prty))
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.time())
 		end
@@ -62,33 +64,20 @@ local function croc_brain(self)
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
 			local corpse = water_life.get_close_drops(self,"meat")
-			local food = water_life.feed_shark(self)
 			if target and mobkit.is_alive(target)  and target:get_attach() == nil 
 				and water_life.isinliquid(target) then
 				local dist = water_life.dist2tgt(self,target)
-				if dist > 2 and dist < 16 then
+				if dist > 2 and dist < 8 then
 					water_life.hq_water_attack(self,target,26,7,true)
-				end
-			end
-			if food and mobkit.is_in_deep(food) and not aliveinwater then
-				local dist = water_life.dist2tgt(self,food)
-				if dist > 2 and dist < 16 then
-					water_life.hq_water_attack(self,food,26,7,true)
 				end
 			end
 			if self.isinliquid then
 				if target and mobkit.is_alive(target)  and target:get_attach() == nil
 					and not water_life.isinliquid(target) then
 						local dist = water_life.dist2tgt(self,target)
-						if dist < 10 then
+						if dist < 8 then
 							water_life.hq_go2land(self,20,target)
 						end
-				end
-				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
-					local dist = water_life.dist2tgt(self,food)
-					if dist < 16 then
-						water_life.hq_go2land(self,20,food)
-					end
 				end
 			end
 
@@ -102,12 +91,6 @@ local function croc_brain(self)
 					local dist = water_life.dist2tgt(self,target)
 					if dist < 8 and prty < 24 then
 						water_life.hq_hunt(self,24,target,7)
-					end
-				end
-				if food and mobkit.is_alive(food) then
-					local dist = water_life.dist2tgt(self,food)
-					if dist < 8 and prty < 25 then
-						water_life.hq_hunt(self,25,food,7)
 					end
 				end
 				if corpse and not water_life.inwater(corpse) then
@@ -128,59 +111,53 @@ local function croc_brain(self)
 	end
 end
 
-minetest.register_entity("water_life:croc",{
+minetest.register_entity("water_life:hippo",{
 	physical = true,
 	stepheight = 1.1,
 	collide_with_objects = true,
-	collisionbox = {-0.49, 0.0, -0.49, 0.49, 0.49, 0.49},
+	collisionbox = {-0.49, 0, -0.49, 0.49, 1.99, 0.49},
 	visual = "mesh",
-	mesh = "water_life_crocodile.b3d",
-	textures = {"water_life_crocodile.png"},
-	visual_size = {x = 5.5, y = 5.5},
+	mesh = "water_life_hippo.b3d",
+	textures = {"water_life_hippo.png"},
+	visual_size = {x = 1.5, y = 1.5},
 	static_save = true,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
 	springiness=0,
-	buoyancy = 0.99,
-	max_speed = 6,                        
-	jump_height = 1.26,
-	view_range = water_life.abr * 12,
+	buoyancy = 0.98,
+	max_speed = 3,                        
+	jump_height = 0.5,
+	view_range = 16,
 	max_hp = 50,
-	timeout=30,
+	timeout=300,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
-		{name = "water_life:meat_raw", chance = 1, min = 1, max = 5,},
-		{name = "water_life:crocleather", chance = 2, min = 1, max = 2},
+		{name = "water_life:meat_raw", chance = 1, min = 2, max = 5,},
 	},
 	attack={range=0.8,damage_groups={fleshy=7}},
 	sounds = {
 		attack={
-			{name = 'water_life_crocattack',
+			{name = 'water_life_hippoattack',
 			gain = water_life.soundadjust}
 			},
 		idle={
-			{name = "water_life_croc1",
+			{name = "water_life_hippo1",
                gain = water_life.soundadjust},
-			{name = "water_life_croc2",
+			{name = "water_life_hippo2",
 			gain = water_life.soundadjust},
-			{name = "water_life_croc3",
-			gain = water_life.soundadjust},
-			{name = "water_life_croc4",
-			gain = water_life.soundadjust},
-			{name = "water_life_croc5",
-			gain = water_life.soundadjust}
 			}
 		},
 	animation = {
-		def={range={x=14,y=25},speed=5,loop=true},
-		stand={range={x=1,y=1},speed=1,loop=false},
-		walk={range={x=1,y=13},speed=5,loop=true},	
-		swim={range={x=14,y=25},speed=5,loop=true},
+		def={range={x=0,y=100},speed=5,loop=true},
+		stand={range={x=0,y=100},speed=1,loop=false},
+		die={range={x=100,y=200},speed=1,loop=false},
+		walk={range={x=300,y=400},speed=15,loop=true},	
+		swim={range={x=300,y=400},speed=30,loop=true},
 		},
 	
-	brainfunc = croc_brain,
+	brainfunc = hippo_brain,
 	
 	on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if mobkit.is_alive(self) then

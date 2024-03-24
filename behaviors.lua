@@ -429,7 +429,7 @@ function water_life.big_aqua_roam(self,prty,speed,anim)
 			init = false
 		end
 		if self.isonground then return true end
-		local pos = mobkit.get_stand_pos(self)
+		local pos = mobkit.get_stand_pos(selfwater_life/animals/crocodile.lua)
 		local yaw = self.object:get_yaw()
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
@@ -616,15 +616,17 @@ end
 --find any water nearby and go into it
 function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
-	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
-	if not speed then speed = 0.1 end
+	local target = water_life.get_pos_with_depth(pos, self.view_range, 2, 100)
+	speed = speed or 0.1
 	if not target then
 		return true
 	end
+	water_life.temp_show(target, 5, 15)	
 	
 	local func=function(self)
-		if self.isinliquid then 
-			return true 
+		if (vector.distance(mobkit.get_stand_pos(self), target) < 0.01) then
+			water_life.hq_aqua_roam(self, prty + 1, 1)
+			return true
 		end
 		if mobkit.is_queue_empty_low(self) or self.isonground then
 			mobkit.dumbstep(self,0,target,speed,0)
@@ -633,8 +635,7 @@ function water_life.hq_go2water(self,prty,speed)
 	mobkit.queue_high(self,func,prty)
 end
 
--- looks for a landing point on shore under air. tgt is optional
--- and must be an object, so it will start searching yaw2tgt - 15 degrees
+-- looks for a landing point on shore under air. tgt is object (optional)
 function water_life.hq_go2land(self,prty,tgt) 
 	local init = false
 	local offset = 1

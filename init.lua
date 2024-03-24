@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "240316"
+water_life.version = "240324"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -96,6 +96,7 @@ if not water_life.apionly then
 	dofile(path.."/animals/gulls.lua")
 	dofile(path.."/animals/gecko.lua")
 	dofile(path.."/animals/beaver.lua")
+	dofile(path.."/animals/hippo.lua")
 	if not water_life.dangerous then
 		dofile(path.."/animals/snake.lua")
 		dofile(path.."/animals/piranha.lua")
