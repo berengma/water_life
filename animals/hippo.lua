@@ -60,7 +60,7 @@ local function hippo_brain(self)
 			end
 		end
 
-		if prty < 20 then 
+		if prty > 5 and prty < 20 then 
 			local target = mobkit.get_nearby_player(self)
 			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
 			local corpse = water_life.get_close_drops(self,"meat")

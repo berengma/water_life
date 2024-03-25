@@ -624,11 +624,10 @@ function water_life.hq_go2water(self,prty,speed)
 	water_life.temp_show(target, 5, 15)	
 	
 	local func=function(self)
-		if (vector.distance(mobkit.get_stand_pos(self), target) < 0.01) then
-			water_life.hq_aqua_roam(self, prty + 1, 1)
+		if self.isinliquid then
 			return true
 		end
-		if mobkit.is_queue_empty_low(self) or self.isonground then
+		if mobkit.is_queue_empty_low(self) then
 			mobkit.dumbstep(self,0,target,speed,0)
 		end
 	end
