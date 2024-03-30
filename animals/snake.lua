@@ -22,15 +22,13 @@ local function snake_brain(self)
 		if land then
 			land = math.floor(os.time() - land)
 			if random(240,360) < land then
-				mobkit.clear_queue_high(self)
-				water_life.hq_go2water(self, 15)
+				water_life.hq_go2water(self, 5)
 			end
 		end
 		if water then
 			water = math.floor(os.time()-water)
 			if random (60,120) < water then
-				mobkit.clear_queue_high(self)
-				water_life.hq_go2land(self, 25)
+				water_life.hq_go2land(self, 5)
 			end
 		end
 	end
@@ -64,9 +62,7 @@ local function snake_brain(self)
 					-- snakes do not attack when in water
 				end
 			end
-			if self.isinliquid then
-				mobkit.clear_queue_high(self)
-				mobkit.clear_queue_low(self)
+			if self.isinliquid  and prty < 21 then
 				water_life.hq_aqua_roam(self, 21, 1, "swim")
 			end
 			if self.isonground then
@@ -75,8 +71,6 @@ local function snake_brain(self)
 					local pname = target:get_player_name()
 					local dist = water_life.dist2tgt(self, target)
 					if  dist > 4 and dist < self.view_range and not action then
-						mobkit.clear_queue_high(self)
-						mobkit.clear_queue_low(self)
 						water_life.hq_snake_warn(self, target, 30, 8)
 					elseif dist < 5 or action == pname then
 						mobkit.forget(self, "warned")

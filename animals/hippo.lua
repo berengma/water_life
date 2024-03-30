@@ -27,14 +27,12 @@ local function hippo_brain(self)
 		local water = mobkit.recall(self,"waterlife")
 		if land and prty < 15 then
 			land = math.floor(os.time() - land)
-			minetest.chat_send_all("Hippo_land: "..land)
 			if land > 30 and random(100) < land then
 				water_life.hq_go2water(self,15)
 			end
 		end
 		if water and prty < 15 then
 			water = math.floor(os.time() - water)
-			minetest.chat_send_all("Hippo_water: "..water)
 			if water > 30 and random (100) < water then
 				water_life.hq_go2land(self,15)
 			end
@@ -43,7 +41,6 @@ local function hippo_brain(self)
 
 	--every other action check each second
 	if mobkit.timer(self,1) then
-		minetest.chat_send_all(dump(prty))
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.time())
 		end
@@ -89,8 +86,9 @@ local function hippo_brain(self)
 				end
 				if target and mobkit.is_alive(target)  then
 					local dist = water_life.dist2tgt(self,target)
-					if dist < 8 and prty < 24 then
-						water_life.hq_hunt(self,24,target,7)
+					if dist < self.view_range then
+						--water_life.hq_hunt(self,24,target,7)
+						water_life.hq_findpath(self, 24, mobkit.get_stand_pos(target), dist, 1, 1)
 					end
 				end
 				if corpse and not water_life.inwater(corpse) then
@@ -127,7 +125,7 @@ minetest.register_entity("water_life:hippo",{
 	get_staticdata = mobkit.statfunc,
 	springiness=0,
 	buoyancy = 0.98,
-	max_speed = 3,                        
+	max_speed = 5,                        
 	jump_height = 0.5,
 	view_range = 16,
 	max_hp = 50,

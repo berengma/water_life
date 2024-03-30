@@ -1180,16 +1180,14 @@ function water_life.hq_snake_move(self,prty,anim)
 			mobkit.animate(self,anim)
 			init=false
 			yaw = rad(random(360))
-			pos = mobkit.pos_translate2d(pos,yaw,self.view_range+5)
+			pos = mobkit.pos_translate2d(pos,yaw,self.view_range + 2)
 			getpos = water_life.find_node_under_air(pos,self.view_range)
 		end
 		if getpos then
 			water_life.hq_idle(self,prty+2,5,anim)
-			water_life.hq_findpath(self,prty+1,getpos, 1.5,0.1,true)
-			return true
-		else
-			return true
+			water_life.hq_findpath(self,prty+1,getpos, self.view_range * 1.5, 0.1,true)
 		end
+		return true
 	end
 	mobkit.queue_high(self,func,prty)
 end
