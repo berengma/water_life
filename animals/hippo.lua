@@ -33,7 +33,7 @@ local function hippo_brain(self)
 		end
 		if water and prty < 15 then
 			water = math.floor(os.time() - water)
-			if water > 30 and random (100) < water then
+			if water > 120 and random (1000) < water then
 				water_life.hq_go2land(self,15)
 			end
 		end
@@ -57,45 +57,43 @@ local function hippo_brain(self)
 			end
 		end
 
-		if prty > 5 and prty < 20 then 
-			local target = mobkit.get_nearby_player(self)
-			local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
-			local corpse = water_life.get_close_drops(self,"meat")
-			if target and mobkit.is_alive(target)  and target:get_attach() == nil 
-				and water_life.isinliquid(target) then
-				local dist = water_life.dist2tgt(self,target)
-				if dist > 2 and dist < 8 then
-					water_life.hq_water_attack(self,target,26,7,true)
-				end
+		local target = mobkit.get_nearby_player(self)
+		local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
+		local corpse = water_life.get_close_drops(self,"meat")
+		if target and mobkit.is_alive(target)  and target:get_attach() == nil 
+			and water_life.isinliquid(target) then
+			local dist = water_life.dist2tgt(self,target)
+			if dist > 2 and dist < 8 then
+				water_life.hq_water_attack(self,target,26,7,true)
 			end
-			if self.isinliquid then
-				if target and mobkit.is_alive(target)  and target:get_attach() == nil
-					and not water_life.isinliquid(target) then
-						local dist = water_life.dist2tgt(self,target)
-						if dist < 8 then
-							water_life.hq_go2land(self,20,target)
-						end
-				end
-			end
-
-			--on land
-			if self.isonground then
-				local rnd = random(1000)
-				if rnd < 30 then
-					mobkit.make_sound(self,"idle")
-				end
-				if target and mobkit.is_alive(target)  then
+		end
+		if self.isinliquid and prty < 20 then
+			if target and mobkit.is_alive(target)  and target:get_attach() == nil
+				and not water_life.isinliquid(target) then
 					local dist = water_life.dist2tgt(self,target)
-					if dist < self.view_range then
-						--water_life.hq_hunt(self,24,target,7)
-						water_life.hq_findpath(self, 24, mobkit.get_stand_pos(target), dist, 1, 1)
+					if dist < 8 then
+						water_life.hq_go2land(self,20,target)
 					end
+			end
+		end
+
+		--on land
+		if self.isonground then
+			local rnd = random(1000)
+			if rnd < 30 then
+				mobkit.make_sound(self,"idle")
+			end
+			if target and mobkit.is_alive(target)  then
+				local dist = water_life.dist2tgt(self,target)
+				if dist < self.view_range then
+					water_life.hq_hunt(self,24,target,7)
+					--water_life.hq_findpath(self, 24, mobkit.get_stand_pos(target), dist, 1, 1)
 				end
-				if corpse and not water_life.inwater(corpse) then
-					local dist = water_life.dist2tgt(self,corpse)
-					if dist < 16 and prty < 23 then
-						water_life.hq_catch_drop(self,23,corpse)
-					end
+			end
+			if corpse and not water_life.inwater(corpse) then
+				local dist = water_life.dist2tgt(self,corpse)
+				if dist < 16 and prty < 23 then
+					water_life.hq_catch_drop(self,23,corpse)
 				end
 			end
 		end

@@ -196,12 +196,12 @@ function water_life.dist2tgt(self,tgt)
 end
 
 function water_life.dumbstep(self,height,tpos,speed_factor,idle_duration)
-	if height <= 0.001 then
+	if height <= 0.001 or self.isinliquid then
 		mobkit.lq_turn2pos(self,tpos) 
 		water_life.lq_dumbwalk(self,tpos,speed_factor)
 	else
 		mobkit.lq_turn2pos(self,tpos) 
-		water_life.lq_dumbjump(self,height) 
+		mobkit.lq_dumbjump(self,height) 
 	end
 	idle_duration = idle_duration or 6
 	mobkit.lq_idle(self,random(ceil(idle_duration*0.5),idle_duration))
@@ -616,8 +616,9 @@ function water_life.find_node_under_air(pos,radius,name)
 end
 
 -- recursively search for a water node with depth or return nil after stop tries
-function water_life.get_pos_with_depth(start, radius, depth, stop, yaw)
+function water_life.get_pos_with_depth(start, radius, depth, stop, yaw, doNotUse)
 	local tgt = nil
+	doNotUse = doNotUse or stop
 
 	if not start or stop <= 0 then
 		return nil
@@ -632,9 +633,8 @@ function water_life.get_pos_with_depth(start, radius, depth, stop, yaw)
 		tgt = mobkit.pos_translate2d(start, yaw, 3)
 	end
 	local dep, type, surface = water_life.water_depth(tgt)
-	--minetest.chat_send_all(dump(dep).." : "..dump(type))
-	if (surface and dep < depth) then
-		return water_life.get_pos_with_depth(tgt, radius, depth, stop - 1, yaw)
+	if (surface and (dep < depth or stop > doNotUse - 5)) then
+		return water_life.get_pos_with_depth(tgt, radius, depth, stop - 1, yaw, doNotUse)
 	elseif surface then
 		return tgt
 	else

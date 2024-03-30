@@ -222,8 +222,6 @@ function water_life.lq_fly_pitch(self,lift,pitch,roll,acc,anim)
 	mobkit.queue_low(self,func)
 end
 
-
-
 function water_life.lq_dumbjump(self,height,anim)
 	anim = anim or 'stand'
 	local jump = true
@@ -245,7 +243,6 @@ function water_life.lq_dumbjump(self,height,anim)
 	mobkit.queue_low(self,func)
 end
 
-
 function water_life.lq_dumbwalk(self,dest,speed_factor)
 	local timer = 3			-- failsafe
 	speed_factor = speed_factor or 1
@@ -257,7 +254,7 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 		local pos = mobkit.get_stand_pos(self)
 		local y = self.object:get_velocity().y
 		local dir = vector.normalize(vector.direction({x=pos.x,y=0,z=pos.z},
-			{x=dest.x,y=0,z=dest.z}))
+													{x=dest.x,y=0,z=dest.z}))
 		dir = vector.multiply(dir,self.max_speed*speed_factor)
 		mobkit.turn2yaw(self,minetest.dir_to_yaw(dir))
 		dir.y = y
@@ -265,7 +262,6 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 	end
 	mobkit.queue_low(self,func)
 end
-
 
 function water_life.lq_jumpattack(self,height,target,extra)
 	local phase=1		
@@ -469,6 +465,7 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
+
 	local func = function(self)
 		if init then
 			mobkit.animate(self,anim)
@@ -509,7 +506,6 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 	end
 	mobkit.queue_high(self,func,prty)
 end
-
 
 function water_life.hq_attack(self,prty,tgtobj)
 	local func = function(self)
@@ -618,17 +614,21 @@ function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
 	local target = water_life.get_pos_with_depth(pos, self.view_range, 2, 100)
 	speed = speed or 0.1
+	local dist = self.collisionbox[5] or 2
+	dist = dist - (self.collisionbox[2] or 1)
 	if not target then
 		return true
 	end
-	water_life.temp_show(target, 5, 15)	
+	--water_life.temp_show(target, 5, 15)	
 	
 	local func=function(self)
-		if self.isinliquid then
+		if self.isinliquid and vector.distance(target, self.object:get_pos()) <= dist then
+			mobkit.clear_queue_high(self)
+			mobkit.clear_queue_low(self)
 			return true
 		end
 		if mobkit.is_queue_empty_low(self) then
-			mobkit.dumbstep(self,0,target,speed,0)
+			water_life.dumbstep(self,0,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
