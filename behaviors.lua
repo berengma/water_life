@@ -425,7 +425,7 @@ function water_life.big_aqua_roam(self,prty,speed,anim)
 			init = false
 		end
 		if self.isonground then return true end
-		local pos = mobkit.get_stand_pos(selfwater_life/animals/crocodile.lua)
+		local pos = mobkit.get_stand_pos(self)
 		local yaw = self.object:get_yaw()
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
