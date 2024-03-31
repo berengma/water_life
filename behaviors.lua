@@ -459,8 +459,9 @@ end
 
 
 -- this is the same as mobkit's, but allows movement in shallow water
-function water_life.hq_aqua_roam(self,prty,speed,anim)
+function water_life.hq_aqua_roam(self,prty,speed,anim,shallow)
 	if not anim then anim = "def" end
+	if shallow == nil then shallow = true end
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
@@ -479,7 +480,7 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
 			prvscanpos=scanpos
-			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,false,true)
+			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,false,shallow)
 			if height and height > pos.y then
 				local vel = self.object:get_velocity()
 				vel.y = vel.y+1

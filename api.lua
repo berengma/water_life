@@ -618,6 +618,9 @@ end
 -- recursively search for a water node with depth or return nil after stop tries
 function water_life.get_pos_with_depth(start, radius, depth, stop, yaw, doNotUse)
 	local tgt = nil
+	radius = radius or 16
+	depth = depth or 2
+	stop = stop or radius
 	doNotUse = doNotUse or stop
 
 	if not start or stop <= 0 then
@@ -633,7 +636,7 @@ function water_life.get_pos_with_depth(start, radius, depth, stop, yaw, doNotUse
 		tgt = mobkit.pos_translate2d(start, yaw, 3)
 	end
 	local dep, type, surface = water_life.water_depth(tgt)
-	if (surface and (dep < depth or stop > doNotUse - 5)) then
+	if (surface and (dep < depth or stop > doNotUse - 3)) then
 		return water_life.get_pos_with_depth(tgt, radius, depth, stop - 1, yaw, doNotUse)
 	elseif surface then
 		return tgt

@@ -100,7 +100,7 @@ local function hippo_brain(self)
 	end
 	if mobkit.is_queue_empty_high(self) then
 		if self.isinliquid then 
-			water_life.hq_aqua_roam(self,10,1) 
+			water_life.hq_aqua_roam(self,10,1,nil,false) 
 		else
 			water_life.hq_slow_roam(self,12) 
 		end
