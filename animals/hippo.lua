@@ -34,7 +34,7 @@ local function hippo_brain(self)
 		end
 		if water and prty < 15 then
 			water = math.floor(os.time() - water)
-			if water > 30 and random (100) < water then
+			if water > 120 and random (1000) < water then
 				water_life.hq_go2land(self,15)
 			end
 		end

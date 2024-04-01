@@ -43,7 +43,7 @@ water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito
 water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
 
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
-water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
+water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or true
 
 -- the repellent lasts half a minetest day
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
