@@ -222,8 +222,6 @@ function water_life.lq_fly_pitch(self,lift,pitch,roll,acc,anim)
 	mobkit.queue_low(self,func)
 end
 
-
-
 function water_life.lq_dumbjump(self,height,anim)
 	anim = anim or 'stand'
 	local jump = true
@@ -245,7 +243,6 @@ function water_life.lq_dumbjump(self,height,anim)
 	mobkit.queue_low(self,func)
 end
 
-
 function water_life.lq_dumbwalk(self,dest,speed_factor)
 	local timer = 3			-- failsafe
 	speed_factor = speed_factor or 1
@@ -257,7 +254,7 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 		local pos = mobkit.get_stand_pos(self)
 		local y = self.object:get_velocity().y
 		local dir = vector.normalize(vector.direction({x=pos.x,y=0,z=pos.z},
-			{x=dest.x,y=0,z=dest.z}))
+													{x=dest.x,y=0,z=dest.z}))
 		dir = vector.multiply(dir,self.max_speed*speed_factor)
 		mobkit.turn2yaw(self,minetest.dir_to_yaw(dir))
 		dir.y = y
@@ -265,7 +262,6 @@ function water_life.lq_dumbwalk(self,dest,speed_factor)
 	end
 	mobkit.queue_low(self,func)
 end
-
 
 function water_life.lq_jumpattack(self,height,target,extra)
 	local phase=1		
@@ -463,12 +459,14 @@ end
 
 
 -- this is the same as mobkit's, but allows movement in shallow water
-function water_life.hq_aqua_roam(self,prty,speed,anim)
+function water_life.hq_aqua_roam(self,prty,speed,anim,shallow)
 	if not anim then anim = "def" end
+	if shallow == nil then shallow = true end
 	local tyaw = 0
 	local init = true
 	local prvscanpos = {x=0,y=0,z=0}
 	local center = self.object:get_pos()
+
 	local func = function(self)
 		if init then
 			mobkit.animate(self,anim)
@@ -482,7 +480,7 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 		local scanpos = mobkit.get_node_pos(mobkit.pos_translate2d(pos,yaw,speed))
 		if not vector.equals(prvscanpos,scanpos) then
 			prvscanpos=scanpos
-			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,false,true)
+			local nyaw,height = water_life.aqua_radar_dumb(pos,yaw,speed,false,shallow)
 			if height and height > pos.y then
 				local vel = self.object:get_velocity()
 				vel.y = vel.y+1
@@ -509,7 +507,6 @@ function water_life.hq_aqua_roam(self,prty,speed,anim)
 	end
 	mobkit.queue_high(self,func,prty)
 end
-
 
 function water_life.hq_attack(self,prty,tgtobj)
 	local func = function(self)
@@ -557,7 +554,7 @@ end
 
 function water_life.hq_hunt(self, prty, tgtobj, lost, anim)
 	if not lost then lost = self.view_range end
-	if random(100) < 20 then mobkit.make_sound(self,"attack") end
+	if water_life.random(100) < 33 then mobkit.make_sound(self,"attack") end
 	
 	local func = function(self)
 		if not mobkit.is_alive(tgtobj) or not tgtobj then return true end
@@ -616,27 +613,31 @@ end
 --find any water nearby and go into it
 function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
-	local target = minetest.find_node_near(pos, self.view_range, {"group:water"})
-	if not speed then speed = 0.1 end
+	local target = water_life.get_pos_with_depth(pos, self.view_range, 2, 100)
+	speed = speed or 0.1
+	local dist = self.collisionbox[5] or 2
+	dist = dist - (self.collisionbox[2] or 1)
 	if not target then
 		return true
 	end
+	--water_life.temp_show(target, 5, 15)	
 	
 	local func=function(self)
-		if self.isinliquid then 
-			return true 
+		if self.isinliquid and vector.distance(target, self.object:get_pos()) <= dist then
+			mobkit.clear_queue_high(self)
+			mobkit.clear_queue_low(self)
+			return true
 		end
-		if mobkit.is_queue_empty_low(self) or self.isonground then
-			mobkit.dumbstep(self,0,target,speed,0)
+		if mobkit.is_queue_empty_low(self) then
+			water_life.dumbstep(self,0,target,speed,0)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
 end
 
--- looks for a landing point on shore under air. tgt is optional
--- and must be an object, so it will start searching yaw2tgt - 15 degrees
+-- looks for a landing point on shore under air. tgt is object (optional)
 function water_life.hq_go2land(self,prty,tgt) 
-	local init = false
+	local init = true
 	local offset = 1
 	local target = nil
 	local start = 1
@@ -648,40 +649,39 @@ function water_life.hq_go2land(self,prty,tgt)
 
 	local func = function(self)
 		local pos = mobkit.get_stand_pos(self)
-		if not init then
+		if init then
 			target = water_life.getLandPos(self, start)
-			init = true
+			if not target then
+				return true
+			end
+			init = false
 		end
-		if self.isonground then
+		local y=self.object:get_velocity().y
+		local pos2d = {x=pos.x,y=0,z=pos.z}
+		local dir=vector.normalize(vector.direction(pos2d,target))
+		local yaw = minetest.dir_to_yaw(dir)
+		if mobkit.timer(self,1) then
+			if self.isonground and target and vector.distance(pos,target) < 1 then
 				mobkit.clear_queue_low(self)
 				mobkit.clear_queue_high(self)
 				return true 
-		end
-		if target then
-			local y=self.object:get_velocity().y
-			local pos2d = {x=pos.x,y=0,z=pos.z}
-			local dir=vector.normalize(vector.direction(pos2d,target))
-			local yaw = minetest.dir_to_yaw(dir)
-			if mobkit.timer(self,1) then
-				local pos1 = mobkit.pos_shift(mobkit.pos_shift(pos,
-					{x=-dir.z*offset,z=dir.x*offset}),dir)
-				local h,l = mobkit.get_terrain_height(pos1)
+			end
+			local pos1 = mobkit.pos_shift(mobkit.pos_shift(pos,
+				{x=-dir.z*offset,z=dir.x*offset}),dir)
+			local h,l = mobkit.get_terrain_height(pos1)
+			if h and h > pos.y then
+				mobkit.lq_freejump(self)
+			else 
+				local pos2 = mobkit.pos_shift(mobkit.pos_shift(pos,
+					{x=dir.z*offset,z=-dir.x*offset}),dir)
+				local h,l = mobkit.get_terrain_height(pos2)
 				if h and h > pos.y then
 					mobkit.lq_freejump(self)
-				else 
-					local pos2 = mobkit.pos_shift(mobkit.pos_shift(pos,
-						{x=dir.z*offset,z=-dir.x*offset}),dir)
-					local h,l = mobkit.get_terrain_height(pos2)
-					if h and h > pos.y then
-						mobkit.lq_freejump(self)
-					end
 				end
-			elseif mobkit.turn2yaw(self,yaw) then
-				dir.y = y
-				self.object:set_velocity(dir)
 			end
-		else
-			return true
+		elseif mobkit.turn2yaw(self,yaw) then
+			dir.y = y
+			self.object:set_velocity(dir)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
@@ -1180,16 +1180,14 @@ function water_life.hq_snake_move(self,prty,anim)
 			mobkit.animate(self,anim)
 			init=false
 			yaw = rad(random(360))
-			pos = mobkit.pos_translate2d(pos,yaw,self.view_range+5)
+			pos = mobkit.pos_translate2d(pos,yaw,self.view_range + 2)
 			getpos = water_life.find_node_under_air(pos,self.view_range)
 		end
 		if getpos then
 			water_life.hq_idle(self,prty+2,5,anim)
-			water_life.hq_findpath(self,prty+1,getpos, 1.5,0.1,true)
-			return true
-		else
-			return true
+			water_life.hq_findpath(self,prty+1,getpos, self.view_range * 1.5, 0.1,true)
 		end
+		return true
 	end
 	mobkit.queue_high(self,func,prty)
 end

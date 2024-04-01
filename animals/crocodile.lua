@@ -81,13 +81,13 @@ local function croc_brain(self)
 					and not water_life.isinliquid(target) then
 						local dist = water_life.dist2tgt(self,target)
 						if dist < 10 then
-							water_life.hq_go2land(self,15,target)
+							water_life.hq_go2land(self,20,target)
 						end
 				end
 				if food and mobkit.is_alive(food) and not water_life.isinliquid(food) then
 					local dist = water_life.dist2tgt(self,food)
 					if dist < 16 then
-						water_life.hq_go2land(self,15,food)
+						water_life.hq_go2land(self,20,food)
 					end
 				end
 			end
@@ -154,7 +154,7 @@ minetest.register_entity("water_life:croc",{
 		{name = "water_life:meat_raw", chance = 1, min = 1, max = 5,},
 		{name = "water_life:crocleather", chance = 2, min = 1, max = 2},
 	},
-	attack={range=0.8,damage_groups={fleshy=7}},
+	attack={range=1.1,damage_groups={fleshy=7}},
 	sounds = {
 		attack={
 			{name = 'water_life_crocattack',

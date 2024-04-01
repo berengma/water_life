@@ -251,6 +251,25 @@ local function spawnstep(dtime)
 					end
 				end
 			
+				mobname = 'water_life:hippo'
+				local faktor = 100 - getCount(mobname, animal[mobname]) * 33
+				if random(100) < faktor then
+					local fits = false
+					if (string.match(bdata.name,"rainforest") or 
+						string.match(bdata.name,"savanna")) and
+						liquidflag == "muddy" then 
+						fits = true 
+					end
+					if depth > 3 and fits and pool == false then
+						local obj = spawn_it_here(animal,surface,mobname)
+						if obj then
+							local props = obj:get_properties()
+							local size = water_life.random(0.5, 1.5)
+							props.visual_size = {x = size, y = size}
+							obj:set_properties(props)
+						end
+					end
+				end
 				--[[
 				mobname = 'water_life:snake'
 				local faktor = (100 - getCount(mobname, animal[mobname]) * 50) +25

@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "240316"
+water_life.version = "240401"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -43,7 +43,7 @@ water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito
 water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
 
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
-water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or false
+water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or true
 
 -- the repellent lasts half a minetest day
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
@@ -96,6 +96,7 @@ if not water_life.apionly then
 	dofile(path.."/animals/gulls.lua")
 	dofile(path.."/animals/gecko.lua")
 	dofile(path.."/animals/beaver.lua")
+	dofile(path.."/animals/hippo.lua")
 	if not water_life.dangerous then
 		dofile(path.."/animals/snake.lua")
 		dofile(path.."/animals/piranha.lua")

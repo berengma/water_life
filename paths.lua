@@ -4,11 +4,15 @@ local closedSet = {}
 local random = water_life.random
 local abs = math.abs
 
-local function show_path(ptable)
-	if not ptable or #ptable < 1 then return end
-	
+
+local function show_path(ptable, duration)
+	duration = duration or 1
+
+	if not ptable or #ptable < 1 then
+		return
+	end
 	for i= 1,#ptable,1 do
-		water_life.temp_show(ptable[i],1,1)
+		water_life.temp_show(ptable[i],duration,1)
 	end
 end
 
@@ -118,7 +122,7 @@ local function get_neighbor_ground_level(pos, jump_height, fall_height, current_
 	end
 end
 
-function water_life.find_path(pos, endpos, entity, dtime, fast)
+function water_life.find_path_deprecated(pos, endpos, entity, dtime, fast)
 	if fast then
 		return minetest.find_path(pos,endpos,water_life.abr*16,entity.jump_height,1,"A*")
 	end
@@ -322,46 +326,66 @@ function water_life.find_path(pos, endpos, entity, dtime, fast)
 	return {pos}
 end
 
+function water_life.find_path(pos, endpos, entity, dtime, fast)
+	local searchdistance = entity.view_range or water_life.abr * 8
+	local max_jump = entity.jump_height or 1
+	local max_drop = 1
+
+	return minetest.find_path(pos, endpos, searchdistance, max_jump, max_drop, "A*_noprefetch")
+end
+
+function water_life.show_path(ptable, duration)
+	show_path(ptable, duration)
+end
 
 ------------------------------------
 -- Bahaviors and helper functions --
 ------------------------------------
 
 
-
 function water_life.hq_findpath(self,prty,tpos,dist,speed,fast)
 	mobkit.clear_queue_low(self)
-	if not dist then dist = 1 end
-	if not speed then speed = 1 end
-	local way = water_life.find_path(self.object:get_pos(), tpos, self, self.dtime,fast)
-	
+	dist = dist or 0
+	speed = speed or 1
+	local init = true
+	local way = {}
+		
 	local func = function(self)
-		if not way or #way < 2 then return true end
+		if init then
+			local startpos = mobkit.get_stand_pos(self)
+			way = water_life.find_path(startpos, tpos, self, self.dtime,fast)
+			if not way then
+				return true
+			end
+			init = false;
+		end
+		if #way < 2 then
+			return true
+		end
 		if mobkit.is_queue_empty_low(self) and self.isonground then
 			local pos = self.object:get_pos()
 			local pos2 = way[2]
-			local height = abs(pos.y - pos2.y)-0.5
-			local node = mobkit.nodeatpos({x=pos2.x, y=pos2.y -1, z = pos2.z})
-			if not node or not node.walkable then return true end
-			if vector.distance(pos,tpos) > dist then
-				if height <= 0.01 then
-					local yaw = self.object:get_yaw()
-					local tyaw = minetest.dir_to_yaw(vector.direction(self.object:get_pos(),pos2))
-					if math.abs(tyaw-yaw) > 1 then
-						mobkit.lq_turn2pos(self,pos2) 
-					end
-					mobkit.lq_dumbwalk(self,pos2,speed)
-				else
+			pos2 = mobkit.pos_shift(pos2,{y = -0.49})
+			local height = pos2.y - pos.y
+			local node = mobkit.nodeatpos(pos2)
+			if height <= 0.01 then
+				local yaw = self.object:get_yaw()
+				local tyaw = minetest.dir_to_yaw(vector.direction(pos,pos2))
+				if math.abs(tyaw-yaw) > 1 then
 					mobkit.lq_turn2pos(self,pos2) 
-					mobkit.lq_dumbjump(self,height) 
 				end
-				
-				if vector.distance(pos,pos2) <= 2 then
-					table.remove(way,2)
-				end
+				mobkit.lq_dumbwalk(self,pos2,speed)
 			else
-				return true
+				mobkit.lq_turn2pos(self,pos2) 
+				mobkit.lq_dumbjump(self,height) 
 			end
+			
+			if vector.distance(pos,pos2) <= 1.49 then
+				table.remove(way, 1)
+			end
+		end
+		if self.isinliquid then
+			return true
 		end
 	end
 	mobkit.queue_high(self,func,prty)
