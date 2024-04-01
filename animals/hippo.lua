@@ -25,6 +25,7 @@ local function hippo_brain(self)
 	if mobkit.timer(self,10) then
 		local land = mobkit.recall(self,"landlife")
 		local water = mobkit.recall(self,"waterlife")
+
 		if land and prty < 15 then
 			land = math.floor(os.time() - land)
 			if land > 30 and random(100) < land then
@@ -33,7 +34,7 @@ local function hippo_brain(self)
 		end
 		if water and prty < 15 then
 			water = math.floor(os.time() - water)
-			if water > 120 and random (1000) < water then
+			if water > 30 and random (100) < water then
 				water_life.hq_go2land(self,15)
 			end
 		end
@@ -44,36 +45,22 @@ local function hippo_brain(self)
 		if not mobkit.recall(self,"landlife") and not mobkit.recall(self,"waterlife") then
 			mobkit.remember(self,"waterlife",os.time())
 		end
-		if self.isinliquid then
-			if mobkit.recall(self,"landlife") then
-				mobkit.remember(self,"waterlife",os.time())
-				mobkit.forget(self,"landlife")
-			end
+		if self.isinliquid and mobkit.recall(self,"landlife") then
+			mobkit.remember(self,"waterlife",os.time())
+			mobkit.forget(self,"landlife")
 		end
-		if self.isonground then
-			if mobkit.recall(self,"waterlife") then
-				mobkit.remember(self,"landlife",os.time())
-				mobkit.forget(self,"waterlife")
-			end
+		if self.isonground and mobkit.recall(self,"waterlife") then
+			mobkit.remember(self,"landlife",os.time())
+			mobkit.forget(self,"waterlife")
 		end
 
 		local target = mobkit.get_nearby_player(self)
 		local aliveinwater = target and mobkit.is_alive(target) and water_life.isinliquid(target)
-		local corpse = water_life.get_close_drops(self,"meat")
 		if target and mobkit.is_alive(target)  and target:get_attach() == nil 
 			and water_life.isinliquid(target) then
 			local dist = water_life.dist2tgt(self,target)
-			if dist > 2 and dist < 8 then
-				water_life.hq_water_attack(self,target,26,7,true)
-			end
-		end
-		if self.isinliquid and prty < 20 then
-			if target and mobkit.is_alive(target)  and target:get_attach() == nil
-				and not water_life.isinliquid(target) then
-					local dist = water_life.dist2tgt(self,target)
-					if dist < 8 then
-						water_life.hq_go2land(self,20,target)
-					end
+			if dist and dist < 8 then
+				water_life.hq_water_attack(self,target,26,5,true)
 			end
 		end
 
@@ -85,15 +72,8 @@ local function hippo_brain(self)
 			end
 			if target and mobkit.is_alive(target)  then
 				local dist = water_life.dist2tgt(self,target)
-				if dist < self.view_range then
+				if dist < self.view_range / 2 then
 					water_life.hq_hunt(self,24,target,7)
-					--water_life.hq_findpath(self, 24, mobkit.get_stand_pos(target), dist, 1, 1)
-				end
-			end
-			if corpse and not water_life.inwater(corpse) then
-				local dist = water_life.dist2tgt(self,corpse)
-				if dist < 16 and prty < 23 then
-					water_life.hq_catch_drop(self,23,corpse)
 				end
 			end
 		end
@@ -124,25 +104,33 @@ minetest.register_entity("water_life:hippo",{
 	springiness=0,
 	buoyancy = 0.98,
 	max_speed = 5,                        
-	jump_height = 0.5,
+	jump_height = 1.49,
 	view_range = 16,
-	max_hp = 50,
+	max_hp = 100,
 	timeout=300,
 	drops = {
-		{name = "default:diamond", chance = 5, min = 1, max = 5,},		
-		{name = "water_life:meat_raw", chance = 1, min = 2, max = 5,},
+		{name = "default:diamond", chance = 5, min = 2, max = 6,},		
+		{name = "water_life:meat_raw", chance = 1, min = 4, max = 10,},
 	},
-	attack={range=0.8,damage_groups={fleshy=7}},
+	attack={range=0.8,damage_groups={fleshy=12}},
 	sounds = {
 		attack={
-			{name = 'water_life_hippoattack',
+			{name = 'water_life_hippo_angry1',
+			gain = water_life.soundadjust},
+			{name = 'water_life_hippo_angry2',
 			gain = water_life.soundadjust}
 			},
 		idle={
-			{name = "water_life_hippo1",
-               gain = water_life.soundadjust},
-			{name = "water_life_hippo2",
-			gain = water_life.soundadjust},
+			{name = "water_life_hippo_idle1",
+   	        	gain = water_life.soundadjust},
+			{name = "water_life_hippo_idle2",
+				gain = water_life.soundadjust},
+			{name = "water_life_hippo_idle3",
+				gain = water_life.soundadjust},
+			{name = "water_life_hippo_idle4",
+				gain = water_life.soundadjust},
+			{name = "water_life_hippo_idle5",
+				gain = water_life.soundadjust},
 			}
 		},
 	animation = {

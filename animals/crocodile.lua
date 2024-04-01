@@ -154,7 +154,7 @@ minetest.register_entity("water_life:croc",{
 		{name = "water_life:meat_raw", chance = 1, min = 1, max = 5,},
 		{name = "water_life:crocleather", chance = 2, min = 1, max = 2},
 	},
-	attack={range=0.8,damage_groups={fleshy=7}},
+	attack={range=1.1,damage_groups={fleshy=7}},
 	sounds = {
 		attack={
 			{name = 'water_life_crocattack',

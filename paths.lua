@@ -357,7 +357,6 @@ function water_life.hq_findpath(self,prty,tpos,dist,speed,fast)
 			if not way then
 				return true
 			end
-			water_life.show_path(way, 5)
 			init = false;
 		end
 		if #way < 2 then

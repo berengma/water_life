@@ -734,25 +734,22 @@ function water_life.getLandPos(self, start)
 	local target = nil
 	local fpos = nil
 	local pos = mobkit.get_stand_pos(self)
+	local radius = math.abs(self.collisionbox[5] - self.collisionbox[2])
+	pos = mobkit.pos_shift(pos, {y = radius - 1})
 
-	for i = start,359,15 do
-		local yaw = rad(i)
-		target = mobkit.pos_translate2d(pos,yaw,self.view_range)
+	for yaw = start,359,15 do
+		target = mobkit.pos_translate2d(pos, rad(yaw), self.view_range)
 		fpos = water_life.find_collision(pos,target,false)
 		if fpos then
-			target = mobkit.pos_translate2d(pos,yaw,fpos+0.5)
-			local node=minetest.get_node({x=target.x,y=target.y+1,
+			target = mobkit.pos_translate2d(pos, rad(yaw), fpos+0.5)
+			local node=minetest.get_node({x=target.x,y=target.y + 1,
 				z=target.z})
-			 if node.name == "air" then
+			if node.name == "air" then
 				return target	
-			 else
-				 target = nil
-			 end
-		else
-			target = nil
+			end
 		end
 	end
-	return target
+	return nil
 end
 
 function water_life.goto_next_waypoint(self,tpos)

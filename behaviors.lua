@@ -554,7 +554,7 @@ end
 
 function water_life.hq_hunt(self, prty, tgtobj, lost, anim)
 	if not lost then lost = self.view_range end
-	if random(100) < 20 then mobkit.make_sound(self,"attack") end
+	if water_life.random(100) < 33 then mobkit.make_sound(self,"attack") end
 	
 	local func = function(self)
 		if not mobkit.is_alive(tgtobj) or not tgtobj then return true end
@@ -637,7 +637,7 @@ end
 
 -- looks for a landing point on shore under air. tgt is object (optional)
 function water_life.hq_go2land(self,prty,tgt) 
-	local init = false
+	local init = true
 	local offset = 1
 	local target = nil
 	local start = 1
@@ -649,40 +649,39 @@ function water_life.hq_go2land(self,prty,tgt)
 
 	local func = function(self)
 		local pos = mobkit.get_stand_pos(self)
-		if not init then
+		if init then
 			target = water_life.getLandPos(self, start)
-			init = true
+			if not target then
+				return true
+			end
+			init = false
 		end
-		if self.isonground then
+		local y=self.object:get_velocity().y
+		local pos2d = {x=pos.x,y=0,z=pos.z}
+		local dir=vector.normalize(vector.direction(pos2d,target))
+		local yaw = minetest.dir_to_yaw(dir)
+		if mobkit.timer(self,1) then
+			if self.isonground and target and vector.distance(pos,target) < 1 then
 				mobkit.clear_queue_low(self)
 				mobkit.clear_queue_high(self)
 				return true 
-		end
-		if target then
-			local y=self.object:get_velocity().y
-			local pos2d = {x=pos.x,y=0,z=pos.z}
-			local dir=vector.normalize(vector.direction(pos2d,target))
-			local yaw = minetest.dir_to_yaw(dir)
-			if mobkit.timer(self,1) then
-				local pos1 = mobkit.pos_shift(mobkit.pos_shift(pos,
-					{x=-dir.z*offset,z=dir.x*offset}),dir)
-				local h,l = mobkit.get_terrain_height(pos1)
+			end
+			local pos1 = mobkit.pos_shift(mobkit.pos_shift(pos,
+				{x=-dir.z*offset,z=dir.x*offset}),dir)
+			local h,l = mobkit.get_terrain_height(pos1)
+			if h and h > pos.y then
+				mobkit.lq_freejump(self)
+			else 
+				local pos2 = mobkit.pos_shift(mobkit.pos_shift(pos,
+					{x=dir.z*offset,z=-dir.x*offset}),dir)
+				local h,l = mobkit.get_terrain_height(pos2)
 				if h and h > pos.y then
 					mobkit.lq_freejump(self)
-				else 
-					local pos2 = mobkit.pos_shift(mobkit.pos_shift(pos,
-						{x=dir.z*offset,z=-dir.x*offset}),dir)
-					local h,l = mobkit.get_terrain_height(pos2)
-					if h and h > pos.y then
-						mobkit.lq_freejump(self)
-					end
 				end
-			elseif mobkit.turn2yaw(self,yaw) then
-				dir.y = y
-				self.object:set_velocity(dir)
 			end
-		else
-			return true
+		elseif mobkit.turn2yaw(self,yaw) then
+			dir.y = y
+			self.object:set_velocity(dir)
 		end
 	end
 	mobkit.queue_high(self,func,prty)
