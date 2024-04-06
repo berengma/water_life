@@ -137,7 +137,7 @@ minetest.register_entity("water_life:croc",{
 	mesh = "water_life_crocodile.b3d",
 	textures = {"water_life_crocodile.png"},
 	visual_size = {x = 5.5, y = 5.5},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

@@ -40,7 +40,7 @@ minetest.register_entity("water_life:fish",{
 	mesh = "water_life_riverfish.b3d",
 	textures = {"water_life_riverfish.png"},
 	visual_size = {x = 2.5, y = 2.5},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

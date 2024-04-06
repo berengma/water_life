@@ -103,7 +103,7 @@ minetest.register_entity("water_life:snake",{
 	mesh = "water_life_snake.b3d",
 	textures = {"water_life_snake.png"},
 	visual_size = {x = 0.05, y = 0.05},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

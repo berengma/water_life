@@ -96,7 +96,7 @@ minetest.register_entity("water_life:hippo",{
 	mesh = "water_life_hippo.b3d",
 	textures = {"water_life_hippo.png"},
 	visual_size = {x = 1.5, y = 1.5},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
