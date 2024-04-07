@@ -145,7 +145,7 @@ minetest.register_entity("water_life:croc",{
 	springiness=0,
 	buoyancy = 0.99,
 	max_speed = 6,                        
-	jump_height = 1.26,
+	jump_height = 0.25,
 	view_range = water_life.abr * 12,
 	max_hp = 50,
 	timeout=30,

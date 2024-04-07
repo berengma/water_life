@@ -96,7 +96,7 @@ end
 
 minetest.register_entity("water_life:snake",{
 	physical = true,
-	stepheight = 0.1,
+	stepheight = 1.1,
 	collide_with_objects = true,
 	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
 	visual = "mesh",

@@ -104,7 +104,7 @@ minetest.register_entity("water_life:hippo",{
 	springiness=0,
 	buoyancy = 0.98,
 	max_speed = 5,                        
-	jump_height = 1.49,
+	jump_height = 0.15,
 	view_range = 16,
 	max_hp = 100,
 	timeout=300,
