@@ -108,6 +108,7 @@ minetest.register_entity("water_life:hippo",{
 	view_range = 16,
 	max_hp = 100,
 	timeout=300,
+	is_mob = true,
 	drops = {
 		{name = "default:diamond", chance = 5, min = 2, max = 6,},		
 		{name = "water_life:meat_raw", chance = 1, min = 4, max = 10,},
