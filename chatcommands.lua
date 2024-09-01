@@ -117,3 +117,27 @@ minetest.register_chatcommand("wl_showdtime", {
 			..dump(water_life.avg_dtime).."      Max dtime= "..dump(water_life.max_dtime)))
 	end
 })
+
+minetest.register_chatcommand("wl_testRandom", {
+	params = "",
+	description = "tests the random number generator",
+	privs = {server = true},
+	func = function(name, action)
+		local player = minetest.get_player_by_name(name)
+		local arr = {}
+		local nbr = 0
+		local i = 0
+
+		if not player then return false end
+		for row = 1,100000,1 do
+			nbr = water_life.random(1000)
+			i = math.floor(nbr/100) + 1
+			if not arr[i] then
+				arr[i] = 1
+			else
+				arr[i] = arr[i] + 1
+			end
+		end
+		minetest.chat_send_player(name, dump(arr))
+	end
+})

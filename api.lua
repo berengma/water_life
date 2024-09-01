@@ -31,10 +31,13 @@ water_life.randomtable = PcgRandom(math.random(2^23)+1)
 function water_life.random(min,max)
 	if not min and not max then return math.abs(water_life.randomtable:next() / 2^31) end
 	if not max then
-		max = min
+		max = min - 1
 		min = 1
 	end
-	if max and not min then min = 1 end
+	if max and not min then
+		min = 1
+		max = max -1
+	end
 	if max < min then return water_life.randomtable:next(max,min) end
 	return water_life.randomtable:next(min,max)
 end
