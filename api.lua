@@ -628,7 +628,9 @@ function water_life.find_node_under_air(pos,radius,name)
 		return nil
 	else
 		local rpos = spawner[random(#spawner)]
-		rpos = mobkit.pos_shift(rpos,{y=1})
+		if rpos then
+			rpos = mobkit.pos_shift(rpos,{y=1})
+		end
 		return rpos
 	end
 end

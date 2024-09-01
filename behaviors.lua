@@ -311,13 +311,17 @@ function water_life.lq_jumpattack(self,height,target,extra)
 							meta:set_int("water_life_bitecount", biteCount + 1)
 						end
 						if immune > 0 then
+							meta:set_int("bitten", 1)
+							minetest.after(10,function()
+								meta:set_int("bitten",0)
+								end,meta)
 							return true
 						end
 						if water_life.checkSnakeImmunity(biteCount, snakeCount) then
 							meta:set_int("water_life_immune", 1)
 							minetest.chat_send_player(target:get_player_name(),
 								minetest.colorize('#fd4000', "CONGRATS!\nAfter "
-								..biteCount.." times bitten by a rattlesnake"..
+								..(biteCount + 1).." times bitten by a rattlesnake"..
 								" you are finally IMMUNE to their poison."))
 							return true
 						end
@@ -335,11 +339,11 @@ function water_life.lq_jumpattack(self,height,target,extra)
 									">>> A rattlesnake bit you. New player"..
 									"bonus of "..left.. " days left. Catch "..
 									"3 snakes to craft antiserum"))
-								meta:set_int("bitten", 1)
-								minetest.after(10,function()
-									meta:set_int("bitten",0)
-									end,meta)
 						end
+						meta:set_int("bitten", 1)
+						minetest.after(10,function()
+							meta:set_int("bitten",0)
+							end,meta)
 					end
 				end
 				-- bounce off
@@ -531,23 +535,21 @@ function water_life.hq_attack(self,prty,tgtobj)
 		if not mobkit.is_alive(tgtobj) then return true end
 		if mobkit.is_queue_empty_low(self) then
 			local meta = nil
+			local name = self.object:get_luaentity().name
 			local poison = 0
 			local noob = 0
 			local pos = mobkit.get_stand_pos(self)
 			local tpos = mobkit.get_stand_pos(tgtobj)
 			local dist = vector.distance(pos,tpos)
+
 			if tgtobj:is_player() then
 				meta = tgtobj:get_meta()
-				poison = meta:get_int("snakepoison") or 1
-				noob = meta:get_int("bitten") or 1
-			else
-				poison = 0
-				noob = 0
+				poison = meta:get_int("snakepoison")
+				noob = meta:get_int("bitten")
 			end
-			
-			if (self.name == "water_life.rattlesnake") and ((dist and dist > 3)
-					 or poison > 0 or noob > 0) then 
-				return true
+			if ( name == "water_life:snake") and (
+					 poison > 0 or noob > 0) then 
+						return true
 			else
 				if dist and dist > 8 then
 					return true
@@ -589,9 +591,9 @@ function water_life.hq_hunt(self, prty, tgtobj, lost, anim)
 				poison = meta:get_int("snakepoison")
 				noob = meta:get_int("bitten")
 			end
-			
-			if poison > 0 or noob > 0 then return true end
-			
+			if poison > 0 or noob > 0 then
+				return true
+			end
 			if mobkit.is_in_deep(tgtobj) then
 				return true
 			end
@@ -600,7 +602,8 @@ function water_life.hq_hunt(self, prty, tgtobj, lost, anim)
 			elseif dist > 3 then
 				water_life.goto_next_waypoint(self,opos)
 			else
-				water_life.hq_attack(self,prty+1,tgtobj)					
+				water_life.hq_attack(self,prty,tgtobj)
+				return true
 			end
 		end
 	end

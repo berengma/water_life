@@ -65,14 +65,14 @@ local function snake_brain(self)
 			if self.isinliquid  and prty < 21 then
 				water_life.hq_aqua_roam(self, 21, 1, "swim")
 			end
-			if self.isonground then
+			if self.isonground and prty < 30 then
 				if target and mobkit.is_alive(target)  then
 					local action = mobkit.recall(self,"warned")
 					local pname = target:get_player_name()
 					local dist = water_life.dist2tgt(self, target)
 					if  dist > 4 and dist < self.view_range and not action then
 						water_life.hq_snake_warn(self, target, 30, 8)
-					elseif dist < 5 or action == pname then
+					else --if dist < 5 or action == pname then
 						mobkit.forget(self, "warned")
 						local meta = target:get_meta()
 						if meta:get_int("snakepoison") > 0 or meta:get_int("bitten") > 0 then
