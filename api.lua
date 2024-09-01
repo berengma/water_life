@@ -43,6 +43,18 @@ end
 local random = water_life.random -- do not delete, this MUST be here!
 --
 
+-- calculate player snakepoison immunity
+function water_life.checkSnakeImmunity(biteCount, snakeCount)
+	local value = 10 -- chance of 10 promille to get immune to snakes
+
+	if biteCount > water_life.immuneToSnakes then
+		value = 333
+	end
+	value = value + snakeCount
+	return value < water_life.random(1000)
+end
+
+
 --checks if entity is in a small water pool
 function water_life.check_for_pool(self,deep,minr,pos)
 	if not self and not pos then return nil end

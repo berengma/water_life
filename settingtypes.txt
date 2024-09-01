@@ -91,6 +91,10 @@ water_life_radar_debug (api function debug shown in chat) bool false
 water_life_newplayerbonus (days for newplayer immune to rattlesnake) int 5
 
 #-
+#number of snake bites until the chance to get immune raises to 33%
+water_life_immuneToSnakes (snakebites until 33% chance to get immune) int 25
+
+#-
 #I really hate insects, kill 'em all
 water_life_hate_insects (no spawning of insects if true) bool false
 

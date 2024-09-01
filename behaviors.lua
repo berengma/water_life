@@ -303,25 +303,42 @@ function water_life.lq_jumpattack(self,height,target,extra)
 						local meta = target:get_meta()
 						local name = target:get_player_name()
 						local join = meta:get_int("jointime")
-						if not join or
-						(os.time() - join) >
-						water_life.newplayerbonus * 86400 then
-							meta:set_int("snakepoison",1)
-							water_life.change_hud(target,"poison")
+						local immune = meta:get_int("water_life_immune")
+						local biteCount  = meta:get_int("water_life_bitecount")
+						local snakeCount = meta:get_int("snakecount")
+
+						if biteCount < 65535 then
+							meta:set_int("water_life_bitecount", biteCount + 1)
+						end
+						if immune > 0 then
+							return true
+						end
+						if water_life.checkSnakeImmunity(biteCount, snakeCount) then
+							meta:set_int("water_life_immune", 1)
+							minetest.chat_send_player(target:get_player_name(),
+								minetest.colorize('#fd4000', "CONGRATS!\nAfter "
+								..biteCount.." times bitten by a rattlesnake"..
+								" you are finally IMMUNE to their poison."))
+							return true
+						end
+						if not join or (os.time() - join) >
+							water_life.newplayerbonus * 86400 then
+								meta:set_int("snakepoison",1)
+								water_life.change_hud(target,"poison")
 						else
 							local left = water_life.newplayerbonus -
-								math.floor((os.time() - join) / 
-								86400 * 100) / 100
-							minetest.chat_send_player(
-								target:get_player_name(),
-								minetest.colorize('#fd4000', 
-								">>> A rattlesnake bit you. New player"..
-								"bonus of "..left.. " days left. Catch "..
-								"3 snakes to craft antiserum"))
-							meta:set_int("bitten", 1)
-							minetest.after(10,function()
-								meta:set_int("bitten",0)
-								end,meta)
+									math.floor((os.time() - join) / 
+									86400 * 100) / 100
+								minetest.chat_send_player(
+									target:get_player_name(),
+									minetest.colorize('#fd4000', 
+									">>> A rattlesnake bit you. New player"..
+									"bonus of "..left.. " days left. Catch "..
+									"3 snakes to craft antiserum"))
+								meta:set_int("bitten", 1)
+								minetest.after(10,function()
+									meta:set_int("bitten",0)
+									end,meta)
 						end
 					end
 				end
