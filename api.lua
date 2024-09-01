@@ -54,7 +54,10 @@ function water_life.checkSnakeImmunity(biteCount, snakeCount)
 		value = 333
 	end
 	value = value + snakeCount
-	return value < water_life.random(1000)
+	if water_life.radar_debug then
+		minetest.chat_send_all("Chance is "..value..":1000")
+	end
+	return water_life.random(1000) < value
 end
 
 
