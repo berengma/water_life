@@ -310,11 +310,13 @@ local function spawnstep(dtime)
 					getCount(mobname, animal[mobname]) < 15 and 
 					liquidflag == "sea" then
 					local coralpos = coraltable[random(#coraltable)]
-					coralpos.y = coralpos.y +1
-					local node = minetest.get_node(coralpos)
-					if node.name == "default:water_source" or
-					node.name == "islands:water_source" then
-						water_life.set_urchin(coralpos)
+					if coralpos then
+						coralpos.y = coralpos.y +1
+						local node = minetest.get_node(coralpos)
+						if node.name == "default:water_source" or
+							node.name == "islands:water_source" then
+								water_life.set_urchin(coralpos)
+						end
 					end
 				end
 			end
