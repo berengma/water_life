@@ -713,9 +713,15 @@ function water_life.hq_snail_move(self,prty)
 		z=ground.z-3}, {x=ground.x+3, y=ground.y, z=ground.z+3}, water_life.urchinspawn)
 	if not coraltable or #coraltable < 1 then return end
 	local tgpos = coraltable[random(#coraltable)]
+
 	local func = function(self)
-		if not mobkit.is_alive(self) then return true end
+		if not mobkit.is_alive(self) then
+			return true
+		end
 		local pos = mobkit.get_stand_pos(self)
+		if not tgpos or not pos then
+			return true
+		end
 		local dist = vector.distance(pos,tgpos)
 		mobkit.drive_to_pos(self,tgpos,0.01,0.1,1.5)
 		if dist <= 1.8 then return true end
