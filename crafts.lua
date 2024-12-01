@@ -52,8 +52,8 @@ end
 minetest.register_abm({
 	nodenames = {"default:coral_skeleton","water_life:artificial_skeleton"},
 	neighbors = {"default:water_source"},
-	interval = 30,
-	chance = 5,
+	interval = 60,
+	chance = 10,
 	catch_up = false,
 	action = function(pos, node)
 		local parent = nil
