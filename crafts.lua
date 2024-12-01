@@ -56,6 +56,9 @@ minetest.register_abm({
 	chance = 5,
 	catch_up = false,
 	action = function(pos, node)
+		local parent = nil
+		local cpos = nil
+
 		if not node or not pos then
 			return
 		end
@@ -70,10 +73,18 @@ minetest.register_abm({
 		end
 		local height = math.random(5, depth or 0)
 		if table and #table > 0 then
-				nname = minetest.get_node(table[water_life.random(#table)]).name
+			cpos = table[water_life.random(#table)]
+			if cpos then
+					parent = minetest.get_node(cpos)
+					if not parent then
+							return
+					end
+			end
 		end
-		minetest.set_node(pos, {name = nname,
-			param2 = height * 16})
+		if parent and parent.name then
+				minetest.set_node(pos, {name = parent.name,
+						param2 = height * 16})
+		end
 	end,
 })
 
