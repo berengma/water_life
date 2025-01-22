@@ -52,10 +52,16 @@ end
 minetest.register_abm({
 	nodenames = {"default:coral_skeleton","water_life:artificial_skeleton"},
 	neighbors = {"default:water_source"},
-	interval = 30,
-	chance = 5,
+	interval = 60,
+	chance = 10,
 	catch_up = false,
 	action = function(pos, node)
+		local parent = nil
+		local cpos = nil
+
+		if not node or not pos then
+			return
+		end
 		local depth, wtype, surface_pos
 		local table = minetest.find_nodes_in_area({x=pos.x-2, y=pos.y-2, z=pos.z-2},
 			{x=pos.x+2, y=pos.y+2, z=pos.z+2}, water_life.urchinspawn)
@@ -67,10 +73,18 @@ minetest.register_abm({
 		end
 		local height = math.random(5, depth or 0)
 		if table and #table > 0 then
-				nname = minetest.get_node(table[water_life.random(#table)]).name
+			cpos = table[water_life.random(#table)]
+			if cpos then
+					parent = minetest.get_node(cpos)
+					if not parent then
+							return
+					end
+			end
 		end
-		minetest.set_node(pos, {name = nname,
-			param2 = height * 16})
+		if parent and parent.name then
+				minetest.set_node(pos, {name = parent.name,
+						param2 = height * 16})
+		end
 	end,
 })
 
@@ -372,7 +386,8 @@ if water_life.muddy_water then
 					backface_culling = false,
 				},
 			},
-			alpha = 255,
+			--alpha = 255,
+			use_texture_alpha = "opaque",
 			paramtype = "light",
 			walkable = false,
 			pointable = false,
@@ -418,7 +433,8 @@ if water_life.muddy_water then
 					},
 				},
 			},
-			alpha = 224,
+			--alpha = 224,
+			use_texture_alpha = "opaque",
 			paramtype = "light",
 			paramtype2 = "flowingliquid",
 			walkable = false,

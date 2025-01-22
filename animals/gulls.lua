@@ -128,7 +128,7 @@ minetest.register_entity("water_life:gull",{
 	mesh = "water_life_gull.b3d",
 	textures = {"water_life_gull1.png","water_life_gull2.png","water_life_gull3.png"},
 	visual_size = {x = 0.75, y = 0.5, z = 0.75},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

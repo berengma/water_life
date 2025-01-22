@@ -106,7 +106,7 @@ minetest.register_entity("water_life:whale",{
 		{name = "default:diamond", chance = 5, min = 10, max = 50,},		
 		{name = "water_life:meat_raw", chance = 1, min = 15, max = 65,},
 	},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

@@ -65,14 +65,14 @@ local function snake_brain(self)
 			if self.isinliquid  and prty < 21 then
 				water_life.hq_aqua_roam(self, 21, 1, "swim")
 			end
-			if self.isonground then
+			if self.isonground and prty < 30 then
 				if target and mobkit.is_alive(target)  then
 					local action = mobkit.recall(self,"warned")
 					local pname = target:get_player_name()
 					local dist = water_life.dist2tgt(self, target)
 					if  dist > 4 and dist < self.view_range and not action then
 						water_life.hq_snake_warn(self, target, 30, 8)
-					elseif dist < 5 or action == pname then
+					else --if dist < 5 or action == pname then
 						mobkit.forget(self, "warned")
 						local meta = target:get_meta()
 						if meta:get_int("snakepoison") > 0 or meta:get_int("bitten") > 0 then
@@ -96,14 +96,14 @@ end
 
 minetest.register_entity("water_life:snake",{
 	physical = true,
-	stepheight = 0.1,
+	stepheight = 1.1,
 	collide_with_objects = true,
 	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
 	visual = "mesh",
 	mesh = "water_life_snake.b3d",
 	textures = {"water_life_snake.png"},
 	visual_size = {x = 0.05, y = 0.05},
-	static_save = true,
+	static_save = false,
 	makes_footstep_sound = false,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
@@ -155,20 +155,31 @@ minetest.register_entity("water_life:snake",{
 		end
 	end,
 	on_rightclick = function(self, clicker)
-		if not clicker or not clicker:is_player() then return end
+		if not clicker or not clicker:is_player() then
+			return
+		end
 		local inv = clicker:get_inventory()
 		local item = clicker:get_wielded_item()
 		local name = clicker:get_player_name()
+		local meta = clicker:get_meta()
+		local snakeCount = meta:get_int("snakecount")
+
 		if not item or (item:get_name() ~= "fireflies:bug_net" 
 			and item:get_name() ~= water_life.catchNet) then
 				return
 		end
 		if not inv:room_for_item("main", "water_life:snake_item") then
+			if snakeCount < 666 then
+				meta:set_int("snakecount", snakeCount + 1)
+			end
 			return
 		end
-		if random(1000) < 333 then
+		if random(1000) < 333 + snakeCount then
 			inv:add_item("main", "water_life:snake_item")
 			self.object:remove()
+			if snakeCount < 666 then
+				meta:set_int("snakecount", snakeCount + 1)
+			end
 		else
 			minetest.chat_send_player(name,"*** You missed the snake")
 		end

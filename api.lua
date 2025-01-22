@@ -31,10 +31,13 @@ water_life.randomtable = PcgRandom(math.random(2^23)+1)
 function water_life.random(min,max)
 	if not min and not max then return math.abs(water_life.randomtable:next() / 2^31) end
 	if not max then
-		max = min
+		max = min - 1
 		min = 1
 	end
-	if max and not min then min = 1 end
+	if max and not min then
+		min = 1
+		max = max -1
+	end
 	if max < min then return water_life.randomtable:next(max,min) end
 	return water_life.randomtable:next(min,max)
 end
@@ -42,6 +45,21 @@ end
 --
 local random = water_life.random -- do not delete, this MUST be here!
 --
+
+-- calculate player snakepoison immunity
+function water_life.checkSnakeImmunity(biteCount, snakeCount)
+	local value = 10 -- chance of 10 promille to get immune to snakes
+
+	if biteCount > water_life.immuneToSnakes then
+		value = 333
+	end
+	value = value + snakeCount
+	if water_life.radar_debug then
+		minetest.chat_send_all("Chance is "..value..":1000")
+	end
+	return water_life.random(1000) < value
+end
+
 
 --checks if entity is in a small water pool
 function water_life.check_for_pool(self,deep,minr,pos)
@@ -610,7 +628,9 @@ function water_life.find_node_under_air(pos,radius,name)
 		return nil
 	else
 		local rpos = spawner[random(#spawner)]
-		rpos = mobkit.pos_shift(rpos,{y=1})
+		if rpos then
+			rpos = mobkit.pos_shift(rpos,{y=1})
+		end
 		return rpos
 	end
 end

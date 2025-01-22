@@ -6,7 +6,7 @@
 -----------------------------------------------------------
 
 water_life = {}
-water_life.version = "240401"
+water_life.version = "250122"
 water_life.shark_food = {}
 water_life.repellant = {}
 water_life.gull_bait = {}
@@ -50,6 +50,7 @@ water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_s
 
 -- 5 days savety from rattlenakes for new players
 water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5
+water_life.immuneToSnakes = tonumber(minetest.settings:get("water_life_immuneToSnakes")) or 25
 water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") or false
 
 -- let there be blood !
