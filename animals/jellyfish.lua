@@ -29,6 +29,7 @@ minetest.register_entity("water_life:jellyfish",{
 		collide_with_objects = true,
 		collisionbox = {-0.15, -0.65, -0.15, 0.15, 0.3, 0.15},
 		visual = "mesh",
+		glow = 4,
 		mesh = "water_life_jellyfish.b3d",
 		textures = {"water_life_jellyfish.png"},
 		visual_size = {x = 1.5, y = 1.5}, --2.5
@@ -45,7 +46,6 @@ minetest.register_entity("water_life:jellyfish",{
 	view_range = 4,
 	max_hp = 10,
 	timeout = 30,
-	glow = 4,
 	drops = {
 		{name = "water_life:meat_raw", chance = 5, min = 1, max = 1,},
 	},
