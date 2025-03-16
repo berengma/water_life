@@ -93,24 +93,27 @@ local function whale_brain(self)
 end
 
 minetest.register_entity("water_life:whale",{
-	physical = true,
-	stepheight = 0.1,
-    	weight = 250,
-	collide_with_objects = true,
-	collisionbox = {-2, -2, -2, 2, 2, 2},
-	visual = "mesh",
-	mesh = "water_life_whale.b3d",
-	textures = {"water_life_whale.png"},
-	visual_size = {x = 3.5, y = 3.5},
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.1,
+		collide_with_objects = true,
+		collisionbox = {-2, -2, -2, 2, 2, 2},
+		visual = "mesh",
+		mesh = "water_life_whale.b3d",
+		textures = {"water_life_whale.png"},
+		visual_size = {x = 3.5, y = 3.5},
+		static_save = false,
+		makes_footstep_sound = true
+	},
+	on_step = mobkit.stepfunc,
+	on_activate = mobkit.actfunc,
+	get_staticdata = mobkit.statfunc,
+    weight = 250,
     drops = {
 		{name = "default:diamond", chance = 5, min = 10, max = 50,},		
 		{name = "water_life:meat_raw", chance = 1, min = 15, max = 65,},
 	},
-	static_save = false,
-	makes_footstep_sound = true,
-	on_step = mobkit.stepfunc,
-	on_activate = mobkit.actfunc,
-	get_staticdata = mobkit.statfunc,
 	springiness=0,
 	buoyancy = 0.98,
 	max_speed = -1,                        

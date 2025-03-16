@@ -232,7 +232,7 @@ function water_life.handle_drops(self)
         local amount = random (item.min, item.max)
         local chance = random(1,100) 
         local pos = self.object:get_pos()
-		pos.y = pos.y + self.collisionbox[5] +1
+		pos.y = pos.y + water_life.getCollisionBox(self)[5] --self.initial_properties.collisionbox[5] +1
         if chance < (100/item.chance) then
             local obj = minetest.add_item(pos, item.name.." "..tostring(amount))
         end
@@ -498,11 +498,11 @@ function water_life.radar_fast_cols(obj,dist,sonar,rev)
 	local rarray = {}
 	if obj:is_player() then
 		yaw = obj:get_look_horizontal()
-		box = obj:get_properties().collisionbox
+		box = water_life.getCollisionBox(obj) --obj:get_properties().initial_properties.collisionbox
 	else
 		yaw = obj:get_yaw()
 		if obj:get_luaentity().name == "water_life:whale" then yaw = yaw + rad(180) end
-		box = obj:get_luaentity().collisionbox
+		box = water_life.getCollisionBox(obj) --obj:get_luaentity().initial_properties.collisionbox
 	end
 	local vec = minetest.yaw_to_dir(yaw)
 	local crasha = mobkit.get_box_displace_cols(pos,box,vec,dist)
@@ -754,7 +754,7 @@ function water_life.getLandPos(self, start)
 	local target = nil
 	local fpos = nil
 	local pos = mobkit.get_stand_pos(self)
-	local radius = math.abs(self.collisionbox[5] - self.collisionbox[2])
+	local radius = math.abs(water_life.getCollisionBox(self)[5] - water_life.getCollisionBox(self)[2]) --self.initial_properties.collisionbox[5] - self.initial_properties.collisionbox[2])
 	pos = mobkit.pos_shift(pos, {y = radius - 1})
 
 	for yaw = start,359,15 do
@@ -867,6 +867,31 @@ function water_life.spilltheblood(object,size)
 			})
 end
 
+function water_life.getCollisionBox(input)
+	local props = nil
+	local obj = nil
+
+	if not input then
+		return {0, 0, 0, 0, 0, 0}
+	end
+	-- get obj from lua entity
+	if input.object then
+		obj = input.object
+	else
+		obj = input
+	end
+	props = obj:get_properties()
+	if (props and props.initial_properties) then
+		if props.initial_properties.collisionbox then
+			return props.initial_properties.collisionbox
+		end
+	end
+	if (props and props.collisionbox) then
+		return props.collisionbox
+	end
+	return {0, 0, 0, 0, 0, 0}
+end
+
 
 -- entity for showing positions in debug
 minetest.register_entity("water_life:pos", {
@@ -924,3 +949,4 @@ minetest.register_on_joinplayer(function(player)
 	meta:set_int("bitten",0)
 	meta:set_int("repellant",0)
 end)
+

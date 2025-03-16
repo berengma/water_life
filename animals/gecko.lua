@@ -75,16 +75,19 @@ local function gecko_brain(self)
 end
 
 minetest.register_entity("water_life:gecko",{
-	physical = true,
-	stepheight = 1.1,
-	collide_with_objects = true,
-	collisionbox = {-0.2, 0, -0.2, 0.2, 0.2, 0.2},
-	visual = "mesh",
-	mesh = "water_life_gecko.b3d",
-	textures = {"water_life_geckoskin.png"},
-	visual_size = {x = 0.15, y = 0.15},
-	static_save = false,
-	makes_footstep_sound = true,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 1.1,
+		collide_with_objects = true,
+		collisionbox = {-0.2, 0, -0.2, 0.2, 0.2, 0.2},
+		visual = "mesh",
+		mesh = "water_life_gecko.b3d",
+		textures = {"water_life_geckoskin.png"},
+		visual_size = {x = 0.15, y = 0.15},
+		static_save = false,
+		makes_footstep_sound = true
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,

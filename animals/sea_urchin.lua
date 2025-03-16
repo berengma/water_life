@@ -74,16 +74,19 @@ local function urchin_brain(self)
 end
 
 minetest.register_entity("water_life:urchin",{
-	physical = true,
-	stepheight = 0.5,				
-	collide_with_objects = true,
-	collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
-	visual = "mesh",
-	mesh = "water_life_urchin.b3d",
-	textures = {"water_life_urchin.png"},
-	visual_size = {x = 1, y = 1},
-	static_save = false,
-	makes_footstep_sound = false,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.5,				
+		collide_with_objects = true,
+		collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
+		visual = "mesh",
+		mesh = "water_life_urchin.b3d",
+		textures = {"water_life_urchin.png"},
+		visual_size = {x = 1, y = 1},
+		static_save = false,
+		makes_footstep_sound = false
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,

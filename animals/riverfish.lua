@@ -32,16 +32,19 @@ local function fish_brain(self)
 end
 
 minetest.register_entity("water_life:fish",{
-	physical = true,
-	stepheight = 0.3,				
-	collide_with_objects = true,
-	collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
-	visual = "mesh",
-	mesh = "water_life_riverfish.b3d",
-	textures = {"water_life_riverfish.png"},
-	visual_size = {x = 2.5, y = 2.5},
-	static_save = false,
-	makes_footstep_sound = true,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.3,				
+		collide_with_objects = true,
+		collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
+		visual = "mesh",
+		mesh = "water_life_riverfish.b3d",
+		textures = {"water_life_riverfish.png"},
+		visual_size = {x = 2.5, y = 2.5},
+		static_save = false,
+		makes_footstep_sound = true
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
@@ -82,16 +85,19 @@ minetest.register_entity("water_life:fish",{
 })
 
 minetest.register_entity("water_life:fish_tamed",{
-	physical = true,
-	stepheight = 0.3,				
-	collide_with_objects = true,
-	collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
-	visual = "mesh",
-	mesh = "water_life_riverfish.b3d",
-	textures = {"water_life_riverfish_tamed.png"},
-	visual_size = {x = 2.5, y = 2.5},
-	static_save = true,
-	makes_footstep_sound = true,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.3,				
+		collide_with_objects = true,
+		collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
+		visual = "mesh",
+		mesh = "water_life_riverfish.b3d",
+		textures = {"water_life_riverfish_tamed.png"},
+		visual_size = {x = 2.5, y = 2.5},
+		static_save = true,
+		makes_footstep_sound = true
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,

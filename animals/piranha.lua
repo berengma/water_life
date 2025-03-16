@@ -66,15 +66,18 @@ local function piranha_brain(self)
 end
 
 minetest.register_entity("water_life:piranha",{
-	physical = true,
-	stepheight = 0.3,				
-	collide_with_objects = true,
-	collisionbox = {-0.15, 0, -0.15, 0.15, 0.3, 0.15},
-	visual = "mesh",
-	mesh = "water_life_piranha.b3d",
-	textures = {"water_life_piranha.png"},
-	visual_size = {x = 0.3, y = 0.3},
-	static_save = false,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.3,				
+		collide_with_objects = true,
+		collisionbox = {-0.15, 0, -0.15, 0.15, 0.3, 0.15},
+		visual = "mesh",
+		mesh = "water_life_piranha.b3d",
+		textures = {"water_life_piranha.png"},
+		visual_size = {x = 0.3, y = 0.3},
+		static_save = false
+	},
 	makes_footstep_sound = true,
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,

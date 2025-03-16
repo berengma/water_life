@@ -3,7 +3,7 @@ water_life.playerhud.poison = {}
 water_life.playerhud.repellant = {}
 
 water_life.hud_poison =   {
-		type = "image",
+		hud_elem_type = "image",
 		position = {x=0.5, y=0.8},
 		name = "water_life_poison",
 		scale = {x = 0.1, y = 0.1},
@@ -11,7 +11,7 @@ water_life.hud_poison =   {
 }
 
 water_life.hud_repellant =   {
-        type = "image",
+        hud_elem_type = "image",
         position = {x=0.55, y=0.8},
         name = "water_life_repellant",
         scale = {x = 0.1, y = 0.1},
