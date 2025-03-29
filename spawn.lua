@@ -92,6 +92,9 @@ local function spawnstep(dtime)
 		return
 	end
 	for _,plyr in ipairs(minetest.get_connected_players()) do
+		if not plyr or not plyr:is_player() then
+			goto continue
+		end
 		local pos = plyr:get_pos()
 		local yaw = plyr:get_look_horizontal()
 		local animal = water_life.count_objects(pos)
@@ -109,12 +112,11 @@ local function spawnstep(dtime)
 		local mobname = ""
 		local obj = nil
 
-		if not plyr or not plyr:is_player() then
-			goto continue
-		end
 		poison_player(plyr)
 		repel_insects(plyr)
-		if pos.y < -50 or pos.y > 150 or animal.all > water_life.maxmobs then
+		if pos.y < -50 or pos.y > 150 
+				or animal.all > water_life.maxmobs 
+				or water_life.noSpawn then
 			goto continue
 		end
 		radius = random(7,radius)

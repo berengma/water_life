@@ -60,7 +60,7 @@ water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
 water_life.godLike = minetest.settings:get_bool("water_life_godLike") or true
 
 -- turn spawning off and let a third party mod taking control
-water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn ") or false
+water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn") or false
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
