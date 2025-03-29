@@ -313,7 +313,7 @@ local function spawnstep(dtime)
 					liquidflag == "sea" then
 					local coralpos = coraltable[random(#coraltable)]
 					if coralpos then
-						coralpos.y = coralpos.y +1
+						coralpos.y = coralpos.y + 1
 						local node = minetest.get_node(coralpos)
 						if node.name == "default:water_source" or
 							node.name == "islands:water_source" then
@@ -329,17 +329,19 @@ local function spawnstep(dtime)
 				local clpos2 = mobkit.pos_shift(ground,{x=8, y=2, z=8})
 				local coraltable = minetest.find_nodes_in_area(clpos1, 
 					clpos2, water_life.clams_spawn)
-				local nearlife = water_life.count_objects(
-					ground,8,"water_life:clams")
+				--local nearlife = water_life.count_objects(
+				--	ground,8,"water_life:clams")
 				if coraltable and #coraltable > 0 and 
 					getCount(mobname, animal[mobname]) < 10 and 
 					liquidflag == "sea" then
-					local coralpos = mobkit.pos_shift(
-						coraltable[random(#coraltable)],{y=1})
-					local node = minetest.get_node(coralpos)
-					if node.name == "default:water_source" or
-						node.name == "islands:water_source" then
-						water_life.set_urchin(coralpos,"water_life:clams")
+					local coralpos = coraltable[random(#coraltable)]
+					if coralpos then
+						coralpos = mobkit.pos_shift(coralpos, {y=1})
+						local node = minetest.get_node(coralpos)
+						if node.name == "default:water_source" or
+							node.name == "islands:water_source" then
+							water_life.set_urchin(coralpos,"water_life:clams")
+						end
 					end
 				end
 			end
