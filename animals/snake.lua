@@ -95,16 +95,19 @@ local function snake_brain(self)
 end
 
 minetest.register_entity("water_life:snake",{
-	physical = true,
-	stepheight = 1.1,
-	collide_with_objects = true,
-	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
-	visual = "mesh",
-	mesh = "water_life_snake.b3d",
-	textures = {"water_life_snake.png"},
-	visual_size = {x = 0.05, y = 0.05},
-	static_save = false,
-	makes_footstep_sound = false,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 1.1,
+		collide_with_objects = true,
+		collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.2, 0.35},
+		visual = "mesh",
+		mesh = "water_life_snake.b3d",
+		textures = {"water_life_snake.png"},
+		visual_size = {x = 0.05, y = 0.05},
+		static_save = false,
+		makes_footstep_sound = false
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,

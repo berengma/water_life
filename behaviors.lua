@@ -266,7 +266,7 @@ end
 function water_life.lq_jumpattack(self,height,target,extra)
 	local phase=1		
 	local timer=0.5
-	local tgtbox = target:get_properties().collisionbox
+	local tgtbox = water_life.getCollisionBox(target) --target:get_properties().initial_properties.collisionbox
 	local func=function(self)
 		local selfname = self.object:get_luaentity().name
 		if not mobkit.is_alive(target) then return true end
@@ -635,8 +635,8 @@ function water_life.hq_go2water(self,prty,speed)
 	local pos = mobkit.get_stand_pos(self)
 	local target = water_life.get_pos_with_depth(pos, self.view_range, 2, 100)
 	speed = speed or 0.1
-	local dist = self.collisionbox[5] or 2
-	dist = dist - (self.collisionbox[2] or 1)
+	local dist = water_life.getCollisionBox(self)[5] --self.initial_properties.collisionbox[5] or 2
+	dist = dist - water_life.getCollisionBox(self)[2] --(self.initial_properties.collisionbox[2] or 1)
 	if not target then
 		return true
 	end
@@ -826,8 +826,8 @@ end
 function water_life.hq_water_attack(self,tgtobj,prty,speed,shallow)
 	
 	local pos = self.object:get_pos()
-	local selfbox = self.object:get_properties().collisionbox
-	local tgtbox = tgtobj:get_properties().collisionbox
+	local selfbox = water_life.getCollisionBox(self) --self.object:get_properties().initial_properties.collisionbox
+	local tgtbox = water_life.getCollisionBox(tgtobj) --tgtobj:get_properties().initial_properties.collisionbox
 	if not speed then speed = 1 end
 	local func = function(self)
 	if not mobkit.is_alive(self) or not mobkit.is_alive(tgtobj) or 

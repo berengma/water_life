@@ -22,16 +22,20 @@ local function jellyfish_brain(self)
 end
 
 minetest.register_entity("water_life:jellyfish",{
-	physical = true,
-	stepheight = 0.3,				
-	collide_with_objects = true,
-	collisionbox = {-0.15, -0.65, -0.15, 0.15, 0.3, 0.15},
-	visual = "mesh",
-	mesh = "water_life_jellyfish.b3d",
-	textures = {"water_life_jellyfish.png"},
-	visual_size = {x = 1.5, y = 1.5}, --2.5
-	static_save = false,
-	makes_footstep_sound = false,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.3,				
+		collide_with_objects = true,
+		collisionbox = {-0.15, -0.65, -0.15, 0.15, 0.3, 0.15},
+		visual = "mesh",
+		glow = 4,
+		mesh = "water_life_jellyfish.b3d",
+		textures = {"water_life_jellyfish.png"},
+		visual_size = {x = 1.5, y = 1.5}, --2.5
+		static_save = false,
+		makes_footstep_sound = false
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
@@ -42,7 +46,6 @@ minetest.register_entity("water_life:jellyfish",{
 	view_range = 4,
 	max_hp = 10,
 	timeout = 30,
-	glow = 4,
 	drops = {
 		{name = "water_life:meat_raw", chance = 5, min = 1, max = 1,},
 	},

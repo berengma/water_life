@@ -88,16 +88,19 @@ local function hippo_brain(self)
 end
 
 minetest.register_entity("water_life:hippo",{
-	physical = true,
-	stepheight = 1.1,
-	collide_with_objects = true,
-	collisionbox = {-0.49, 0, -0.49, 0.49, 1.99, 0.49},
-	visual = "mesh",
-	mesh = "water_life_hippo.b3d",
-	textures = {"water_life_hippo.png"},
-	visual_size = {x = 1.5, y = 1.5},
-	static_save = false,
-	makes_footstep_sound = true,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 1.1,
+		collide_with_objects = true,
+		collisionbox = {-0.49, 0, -0.49, 0.49, 1.99, 0.49},
+		visual = "mesh",
+		mesh = "water_life_hippo.b3d",
+		textures = {"water_life_hippo.png"},
+		visual_size = {x = 1.5, y = 1.5},
+		static_save = false,
+		makes_footstep_sound = true
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,

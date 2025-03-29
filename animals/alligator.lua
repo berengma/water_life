@@ -135,16 +135,19 @@ end
 
 
 minetest.register_entity("water_life:alligator",{
-	physical = true,
-	stepheight = 0.5,
-	collide_with_objects = true,
-	collisionbox = {-0.25, -0.1, -0.25, 0.25, 0.5, 0.25},
-	visual = "mesh",
-	mesh = "water_life_alligator.b3d",
-	textures = {"water_life_alligator.png"},
-	visual_size = {x = 8, y = 8},
-	static_save = false,
-	makes_footstep_sound = true,
+	initial_properties =
+	{
+		physical = true,
+		stepheight = 0.5,
+		collide_with_objects = true,
+		collisionbox = {-0.25, -0.1, -0.25, 0.25, 0.5, 0.25},
+		visual = "mesh",
+		mesh = "water_life_alligator.b3d",
+		textures = {"water_life_alligator.png"},
+		visual_size = {x = 8, y = 8},
+		static_save = false,
+		makes_footstep_sound = true
+	},
 	on_step = mobkit.stepfunc,
 	on_activate = mobkit.actfunc,
 	get_staticdata = mobkit.statfunc,
