@@ -41,7 +41,6 @@ water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_m
 water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito_lightmax")) or 8
 water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity")) or 200
 water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
-
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or true
 
@@ -104,9 +103,7 @@ if not water_life.apionly then
 		dofile(path.."/animals/shark.lua")
 		dofile(path.."/animals/crocodile.lua")
 		dofile(path.."/animals/moskito.lua")
-		if water_life.swampz then
-			dofile(path.."/animals/alligator.lua")
-		end
+		dofile(path.."/animals/alligator.lua")
 	end
 end
 
