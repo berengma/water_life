@@ -42,7 +42,7 @@ water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito
 water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity")) or 200
 water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
 water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
-water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or true
+water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water", true)
 
 -- the repellent lasts half a minetest day
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
@@ -53,10 +53,10 @@ water_life.immuneToSnakes = tonumber(minetest.settings:get("water_life_immuneToS
 water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") or false
 
 -- let there be blood !
-water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
+water_life.bloody = minetest.settings:get_bool("water_life_bloody", true)
 
 -- add god priv 
-water_life.godLike = minetest.settings:get_bool("water_life_godLike") or true
+water_life.godLike = minetest.settings:get_bool("water_life_godLike", false)
 
 -- turn spawning off and let a third party mod taking control
 water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn") or false

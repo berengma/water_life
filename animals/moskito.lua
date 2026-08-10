@@ -38,6 +38,7 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
 			return hp_change
 		end
 	end
+	return hp_change
 end, true)
 
 minetest.register_node("water_life:moskito", {
