@@ -22,44 +22,44 @@ water_life.avg_dtime = 0
 water_life.max_dtime = 0
 
 -- settingtypes
-water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate")) or 100
-water_life.shark_spawn_rate =  tonumber(minetest.settings:get("water_life_shark_spawn_rate")) or 100
-water_life.urchin_spawn_rate =  tonumber(minetest.settings:get("water_life_urchin_spawn_rate")) or 700
-water_life.clams_spawn_rate = tonumber(minetest.settings:get("water_life_clams_spawn_rate")) or 500
-water_life.fish_spawn_rate = tonumber(minetest.settings:get("water_life_fish_spawn_rate")) or 1000
-water_life.maxwhales = tonumber(minetest.settings:get("water_life_maxwhales")) or 1
-water_life.maxsharks = tonumber(minetest.settings:get("water_life_maxsharks")) or 5
-water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs")) or 60
-water_life.apionly = minetest.settings:get_bool("water_life_apionly") or false
-water_life.dangerous = minetest.settings:get_bool("water_life_dangerous") or false
-water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust")) or 1.0
+water_life.whale_spawn_rate =  tonumber(minetest.settings:get("water_life_whale_spawn_rate") or 100)
+water_life.shark_spawn_rate =  tonumber(minetest.settings:get("water_life_shark_spawn_rate") or 100)
+water_life.urchin_spawn_rate =  tonumber(minetest.settings:get("water_life_urchin_spawn_rate") or 700)
+water_life.clams_spawn_rate = tonumber(minetest.settings:get("water_life_clams_spawn_rate") or 500)
+water_life.fish_spawn_rate = tonumber(minetest.settings:get("water_life_fish_spawn_rate") or 1000)
+water_life.maxwhales = tonumber(minetest.settings:get("water_life_maxwhales") or 1)
+water_life.maxsharks = tonumber(minetest.settings:get("water_life_maxsharks") or 5)
+water_life.maxmobs = tonumber(minetest.settings:get("water_life_maxmobs") or 60)
+water_life.apionly = minetest.settings:get_bool("water_life_apionly", false)
+water_life.dangerous = minetest.settings:get_bool("water_life_dangerous", false)
+water_life.soundadjust = tonumber(minetest.settings:get("water_life_soundadjust") or 1.0)
 
 -- lifetime in sec. ( <15 = no reproducing)
-water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime")) or 120
-water_life.moskito_minpos = tonumber(minetest.settings:get("water_life_moskito_minpos")) or -10
-water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_maxpos")) or 100
-water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito_lightmax")) or 8
-water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity")) or 200
-water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp")) or 20
-water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug") or false
-water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water") or true
+water_life.moskitolifetime = tonumber(minetest.settings:get("water_life_moskitolifetime") or 120)
+water_life.moskito_minpos = tonumber(minetest.settings:get("water_life_moskito_minpos") or -10)
+water_life.moskito_maxpos = tonumber(minetest.settings:get("water_life_moskito_maxpos") or 100)
+water_life.moskito_lightmax = tonumber(minetest.settings:get("water_life_moskito_lightmax") or 8)
+water_life.moskito_humidity = tonumber(minetest.settings:get("water_life_moskito_humidity") or 200)
+water_life.moskito_mintemp = tonumber(minetest.settings:get("water_life_moskito_mintemp") or 20)
+water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug", false)
+water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water", true)
 
 -- the repellent lasts half a minetest day
 water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
 
 -- 5 days savety from rattlenakes for new players
-water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus")) or 5
-water_life.immuneToSnakes = tonumber(minetest.settings:get("water_life_immuneToSnakes")) or 25
-water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects") or false
+water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus") or 5)
+water_life.immuneToSnakes = tonumber(minetest.settings:get("water_life_immuneToSnakes") or 25)
+water_life.ihateinsects = minetest.settings:get_bool("water_life_hate_insects", false)
 
 -- let there be blood !
-water_life.bloody = minetest.settings:get_bool("water_life_bloody") or true
+water_life.bloody = minetest.settings:get_bool("water_life_bloody", true)
 
 -- add god priv 
-water_life.godLike = minetest.settings:get_bool("water_life_godLike") or true
+water_life.godLike = minetest.settings:get_bool("water_life_godLike", true)
 
 -- turn spawning off and let a third party mod taking control
-water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn") or false
+water_life.noSpawn = minetest.settings:get_bool("water_life_nospawn", false)
 
 local path = minetest.get_modpath(minetest.get_current_modname())
 
