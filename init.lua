@@ -45,7 +45,7 @@ water_life.radar_debug = minetest.settings:get_bool("water_life_radar_debug", fa
 water_life.muddy_water = minetest.settings:get_bool("water_life_muddy_water", true)
 
 -- the repellent lasts half a minetest day
-water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed")) or 72)*60)
+water_life.repeltime = math.floor (720 / (tonumber(minetest.settings:get("time_speed") or 72))*60)
 
 -- 5 days savety from rattlenakes for new players
 water_life.newplayerbonus = tonumber(minetest.settings:get("water_life_newplayerbonus") or 5)
